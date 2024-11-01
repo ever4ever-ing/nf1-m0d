@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Mascota{% endblock %}
+
+{% block content %}
+<h1>Editar Mascota</h1>
+<form action="{{ url_for('actualizar_mascota') }}" method="post">
+    <input type="hidden" name="id" value="{{ mascota.id }}">
+    <div>
+        <label for="nombre">Nombre:</label>
+        <input type="text" id="nombre" name="nombre" value="{{ mascota.nombre }}" required>
+    </div>
+    <div>
+        <label for="tipo">Tipo:</label>
+        <input type="text" id="tipo" name="tipo" value="{{ mascota.tipo }}" required>
+    </div>
+    <div>
+        <label for="color">Color:</label>
+        <input type="text" id="color" name="color" value="{{ mascota.color }}" required>
+    </div>
+    <div>
+        <input type="submit" value="Actualizar Mascota">
+    </div>
+</form>
+{% endblock %}

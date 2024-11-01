@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Inicio - Registro de Mascotas{% endblock %}
+{% block content %}
+<h1> Mascotas</h1>
+
+
+
+<h2>Lista de Mascotas:</h2>
+
+{% if todas_mascotas|length == 0 %}
+    <p class="no-pets-message">No tienes mascotas aún. ¡Prueba registrar a tu primera mascota!</p>
+{% else %}
+    <div class="mascotas-grid">
+    {% for una_mascota in todas_mascotas %}
+        <div class="mascota-card">
+            <h3>{{ una_mascota.nombre }}</h3>
+            <p><strong>Tipo:</strong> {{ una_mascota.tipo }}</p>
+            <p><strong>Color:</strong> {{ una_mascota.color }}</p>
+            <div class="mascota-actions">
+                <a href="{{ url_for('editar_mascota', id=una_mascota.id) }}" class="btn btn-edit">Editar</a>
+                <a href="{{ url_for('eliminar_mascota', id=una_mascota.id) }}" class="btn btn-delete" onclick="return confirm('¿Estás seguro de que quieres eliminar esta mascota?');">Eliminar</a>
+      
+            </div>
+        </div>
+    {% endfor %}
+    </div>
+{% endif %}
+{% endblock %}
