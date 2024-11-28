@@ -2,9 +2,20 @@
 
 ## Instalación
 
- pip install -r requirements.txt
- o
- pipenv requirements > requirements.txt
+
+
+
+Crear un entorno virtual con el siguiente comando:
+`python3 -m venv venv` 
+
+Activar el entorno virtual con el siguiente comando:
+`source venv/bin/activate`
+
+Para instalar las dependencias del proyecto, se puede utilizar `pip` o `pipenv`:
+`pip install -r requirements.txt`
+
+
+## Configuración de la base de datos
 
 comandos: 
 
