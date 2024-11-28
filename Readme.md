@@ -3,7 +3,20 @@
 ## Instalación
 
  pip install -r requirements.txt
+ o
+ pipenv requirements > requirements.txt
 
+comandos: 
+
+    sudo apt-get update
+    sudo apt-get install mysql-server
+    sudo apt-get update
+    sudo mysql -uroot -p
+    sudo mysql_secure_installation
+    sudo mysql -u root -p
+    sudo apt-get update
+    sudo apt-get install python3-pip nginx git -y
+    sudo apt-get install python3-venv -y
 ## Estructura del proyecto
 
 Friendship-Flask/ 
