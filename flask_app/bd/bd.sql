@@ -30,6 +30,6 @@ CREATE TABLE participantes_partido (
     id_partido INT NOT NULL,
     id_usuario INT NOT NULL,
     fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (id_partido) REFERENCES partido(id),
-    FOREIGN KEY (id_usuario) REFERENCES usuarios(id)
+    FOREIGN KEY (id_partido) REFERENCES partidos(id_partido),
+    FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario)
 );

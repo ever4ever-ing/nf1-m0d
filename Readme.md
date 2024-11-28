@@ -15,6 +15,10 @@ Para instalar las dependencias del proyecto, se puede utilizar `pip` o `pipenv`:
 `pip install -r requirements.txt`
 
 
+sudo rm /etc/nginx/sites-enabled/default
+sudo service nginx restart
+sudo chmod 755 /home/ubuntu
+
 ## Configuración de la base de datos
 
 comandos: 
@@ -29,6 +33,9 @@ comandos:
     sudo apt-get install python3-pip nginx git -y
     sudo apt-get install python3-venv -y
 ## Estructura del proyecto
+
+
+
 
 Friendship-Flask/ 
 
