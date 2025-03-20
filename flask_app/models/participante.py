@@ -1,4 +1,4 @@
-from flask_app.config.dbconnection import connectToMySQL
+from flask_app.config.dbconnection import connectToPostgreSQL
 
 DATABASE = 'nosfalta1'
 
@@ -11,20 +11,27 @@ class Participante:
     @classmethod
     def agregar_participante(cls, data):
         query = """
-            INSERT INTO participantes_partido(id_partido, id_usuario)
-            VALUES (%(id_partido)s, %(id_usuario)s);
+            INSERT INTO participantes_partido (id_partido, id_usuario)
+            VALUES (%(id_partido)s, %(id_usuario)s)
+            RETURNING id_participante;
         """
         print("Agregando participante:")
         print(query)
-        return connectToMySQL(DATABASE).query_db(query, data)
+        resultado = connectToPostgreSQL(DATABASE).query_db(query, data)
+        if resultado:
+            return resultado[0]['id_participante']  # Devuelve el ID del participante generado
+        return None
+
     @classmethod
     def eliminar_participante(cls, data):
         query = """
-            DELETE FROM participantes_partido WHERE id_usuario = %(id_usuario)s and id_partido = %(id_partido)s;
+            DELETE FROM participantes_partido 
+            WHERE id_usuario = %(id_usuario)s AND id_partido = %(id_partido)s;
         """
         print("Eliminando participante:")
         print(query)
-        return connectToMySQL(DATABASE).query_db(query, data)
+        return connectToPostgreSQL(DATABASE).query_db(query, data)
+
     @classmethod
     def verificar_participante(cls, id_partido, id_usuario):
         query = """
@@ -35,8 +42,8 @@ class Participante:
             'id_partido': id_partido,
             'id_usuario': id_usuario
         }
-        result = connectToMySQL(DATABASE).query_db(query, data)
-        return result != None
+        result = connectToPostgreSQL(DATABASE).query_db(query, data)
+        return bool(result)  # Devuelve True si hay resultados, False si no
 
     @classmethod
     def obtener_participantes_por_partido(cls, id_partido):
@@ -47,7 +54,7 @@ class Participante:
             WHERE p.id_partido = %(id_partido)s;
         """
         data = {'id_partido': id_partido}
-        results = connectToMySQL(DATABASE).query_db(query, data)
+        results = connectToPostgreSQL(DATABASE).query_db(query, data)
         print(type(results))
         participantes = []
         if results:
@@ -60,4 +67,3 @@ class Participante:
             print("Datos del participante:", participante)
 
         return participantes
-

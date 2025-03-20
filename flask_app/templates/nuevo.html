@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    <div class="container">
+    <div class="container-nuevo">
         <h1>Nuevo partido</h1>
 
         {# Mostrar mensajes flash #}
@@ -25,7 +25,7 @@
         {% endwith %}
 
         <form id="newEventForm" action="{{ url_for('nuevo_partido') }}" method="POST">
-            <div class="form-group">
+            <div class="form-group" style="width: 30vw;">
                 <label for="lugar">Lugar</label>
                 <input
                     type="text"

@@ -1,5 +1,7 @@
+-- Crear la base de datos (si no existe)
 CREATE DATABASE nosfalta1;
-\c nosfalta1;
+
+-- Conectarse a la base de datos (esto se hace fuera del script, en la conexión de la aplicación o herramienta)
 
 -- Tabla de usuarios
 CREATE TABLE usuarios (
@@ -12,6 +14,20 @@ CREATE TABLE usuarios (
     fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Crear un trigger para actualizar fecha_actualizacion en la tabla usuarios
+CREATE OR REPLACE FUNCTION update_fecha_actualizacion()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.fecha_actualizacion = CURRENT_TIMESTAMP;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trigger_update_usuarios
+BEFORE UPDATE ON usuarios
+FOR EACH ROW
+EXECUTE FUNCTION update_fecha_actualizacion();
+
 -- Tabla de partidos
 CREATE TABLE partidos (
     id_partido SERIAL PRIMARY KEY,
@@ -21,8 +37,14 @@ CREATE TABLE partidos (
     id_organizador INT NOT NULL,
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_organizador FOREIGN KEY (id_organizador) REFERENCES usuarios(id_usuario)
+    FOREIGN KEY (id_organizador) REFERENCES usuarios(id_usuario)
 );
+
+-- Crear un trigger para actualizar fecha_actualizacion en la tabla partidos
+CREATE TRIGGER trigger_update_partidos
+BEFORE UPDATE ON partidos
+FOR EACH ROW
+EXECUTE FUNCTION update_fecha_actualizacion();
 
 -- Tabla de participantes
 CREATE TABLE participantes_partido (
@@ -30,6 +52,6 @@ CREATE TABLE participantes_partido (
     id_partido INT NOT NULL,
     id_usuario INT NOT NULL,
     fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_partido FOREIGN KEY (id_partido) REFERENCES partidos(id_partido),
-    CONSTRAINT fk_usuario FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario)
+    FOREIGN KEY (id_partido) REFERENCES partidos(id_partido),
+    FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario)
 );
