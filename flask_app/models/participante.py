@@ -1,4 +1,4 @@
-from flask_app.config.mysqlconnection import connectToMySQL
+from flask_app.config.dbconnection import connectToMySQL
 
 DATABASE = 'nosfalta1'
 

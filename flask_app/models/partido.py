@@ -1,5 +1,5 @@
 # modelos/viaje.py
-from flask_app.config.mysqlconnection import connectToMySQL
+from flask_app.config.dbconnection import connectToMySQL
 from flask_app.models import participante
 DATABASE = 'nosfalta1'
 class Partido:

@@ -1,4 +1,4 @@
-from flask_app.config.mysqlconnection import connectToMySQL
+from flask_app.config.dbconnection import connectToPostgreSQL
 from flask import flash
 import re
 
@@ -18,7 +18,7 @@ class Usuario:
     @classmethod
     def get_all(cls):
         query = "SELECT * FROM usuarios;"
-        resultados = connectToMySQL(DATABASE).query_db(query)
+        resultados = connectToPostgreSQL(DATABASE).query_db(query)
         usuarios = []
         for usuario in resultados:
             usuarios.append(cls(usuario))
@@ -28,14 +28,14 @@ class Usuario:
     def save(cls, data):
         query = """
         INSERT INTO usuarios (nombre, apellido, email, password) 
-        VALUES (%(nombre)s, %(apellido)s, %(email)s, %(password)s);
+        VALUES (%(nombre)s, %(apellido)s, %(email)s, %(password)s) RETURNING id_usuario;
         """
-        return connectToMySQL(DATABASE).query_db(query, data)
+        return connectToPostgreSQL(DATABASE).query_db(query, data)
 
     @classmethod
     def get_by_email(cls, email):
         query = "SELECT * FROM usuarios WHERE email = %(email)s;"
-        resultado = connectToMySQL(DATABASE).query_db(query, {'email': email})
+        resultado = connectToPostgreSQL(DATABASE).query_db(query, {'email': email})
         if len(resultado) < 1:
             return False
         return cls(resultado[0])
@@ -43,7 +43,7 @@ class Usuario:
     @classmethod
     def get_by_id(cls, id_usuario):
         query = "SELECT * FROM usuarios WHERE id = %(id_usuario)s;"
-        resultado = connectToMySQL(DATABASE).query_db(query, {'id': id})
+        resultado = connectToPostgreSQL(DATABASE).query_db(query, {'id': id})
         if not resultado:
             return False
         return cls(resultado[0])
