@@ -4,7 +4,8 @@ import re, os
 
 EMAIL_REGEX = re.compile(r'^[a-zA-Z0-9.+_-]+@[a-zA-Z0-9._-]+\.[a-zA-Z]+$')
 NOMBRE_REGEX = re.compile(r'^[a-zA-Z\s]+$')
-DATABASE =os.getenv('DATABASE', 'nosfalta1')
+DATABASE  = 'nf1_iv1y' #nosfalta1
+DATABASE =os.getenv('DATABASE', DATABASE)
 class Usuario:
     def __init__(self, data):
         self.id_usuario = data['id_usuario']
