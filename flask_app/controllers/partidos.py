@@ -46,11 +46,15 @@ def ver_partido(id):
     print("id:",id)
     print("partido:",partido)
     participantes = Participante.obtener_participantes_por_partido(id)
-    if not partido:
-        flash('partido no encontrado', 'error')
-        return redirect(url_for('dashboard'))
+    usuario_en_partido = any(participante['id_usuario'] == session['usuario_id'] for participante in participantes)
+    if usuario_en_partido:
+        print("Usuario ya esta en el partido")
+        ready = True
+    else:
+        print("Usuario no esta en el partido")
+        ready = False
     
-    return render_template('ver_partido.html', partido=partido, participantes=participantes)
+    return render_template('ver_partido.html', partido=partido, participantes=participantes, usuario_id=session['usuario_id'],ready=ready)
 
 @app.route('/eliminar_partido/<int:id>')
 def eliminar_partido(id):

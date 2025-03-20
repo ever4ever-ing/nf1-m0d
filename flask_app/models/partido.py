@@ -31,6 +31,23 @@ class Partido:
                 cls(partido).participantes = participante.Participante.obtener_participantes_por_partido(partido['id_partido'])
                 partidos.append(cls(partido))
         return partidos
+    
+    @classmethod
+    def get_match_disponibles(cls, id_usuario):
+        query = """
+            SELECT p.*, u.nombre as organizador
+            FROM partidos p
+            JOIN usuarios u ON p.id_organizador = u.id_usuario
+            WHERE p.id_organizador != %(id_usuario)s
+            ORDER BY p.fecha_inicio;
+        """
+        data = {'id_usuario': id_usuario}
+        results = connectToMySQL(DATABASE).query_db(query, data)
+        partidos = []
+        if results:
+            for row in results:
+                partidos.append(cls(row))
+        return partidos
 
     @classmethod
     def obtener_por_id(cls, id_partido):

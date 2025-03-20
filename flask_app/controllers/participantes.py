@@ -1,4 +1,4 @@
-from flask import render_template, request, redirect, url_for
+from flask import flash, render_template, request, redirect, url_for
 from flask_app import app
 from flask_app.models.participante import Participante
 
@@ -22,5 +22,16 @@ def eliminar_participante():
     print("Datos del formulario para ELIMINAR:", data)
     Participante.eliminar_participante(data)
     return redirect(url_for('editar_partido', id=data['id_partido']))
+
+@app.route('/unirse', methods=['POST'])
+def unirse():
+    data = {
+        'id_partido': request.form['id_partido'],
+        'id_usuario': request.form['id_usuario']
+    }
+    print("Datos del formulario para UNIRSE:", data)
+    flash("Te has unido al partido", "success")
+    Participante.agregar_participante(data)
+    return redirect(url_for('dashboard'))
     
 

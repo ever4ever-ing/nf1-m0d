@@ -27,11 +27,17 @@ def index():
 @app.route("/dashboard")
 @login_required
 def dashboard():
-    partidos = Partido.get_all()
+    mis_partidos = Partido.obtener_por_organizador(session['usuario_id'])
+    for partido in mis_partidos:
+        partido.participantes = Partido.obtener_participantes(partido.id_partido)
+    
+    partidos = Partido.get_match_disponibles(session['usuario_id'])
     for partido in partidos:
         partido.participantes = Partido.obtener_participantes(partido.id_partido)
+
     return render_template(
         "dashboard.html",
+        mis_partidos=mis_partidos,
         partidos=partidos,
         usuario_id=session['usuario_id']
     )

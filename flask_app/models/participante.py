@@ -20,7 +20,7 @@ class Participante:
     @classmethod
     def eliminar_participante(cls, data):
         query = """
-            DELETE FROM participantes_viaje WHERE id_usuario = %(id_usuario)s and id_partido = %(id_partido)s;
+            DELETE FROM participantes_partido WHERE id_usuario = %(id_usuario)s and id_partido = %(id_partido)s;
         """
         print("Eliminando participante:")
         print(query)

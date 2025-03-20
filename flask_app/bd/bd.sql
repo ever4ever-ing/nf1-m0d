@@ -16,7 +16,7 @@ CREATE TABLE usuarios (
 CREATE TABLE partidos (
     id_partido INT PRIMARY KEY AUTO_INCREMENT,
     lugar VARCHAR(100) NOT NULL,
-    fecha_inicio DATE NOT NULL,
+    fecha_inicio DATETIME NOT NULL,
     descripcion TEXT,
     id_organizador INT NOT NULL,
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

@@ -44,7 +44,7 @@ class Usuario:
     def get_by_id(cls, id_usuario):
         query = "SELECT * FROM usuarios WHERE id = %(id_usuario)s;"
         resultado = connectToMySQL(DATABASE).query_db(query, {'id': id})
-        if len(resultado) < 1:
+        if not resultado:
             return False
         return cls(resultado[0])
 
