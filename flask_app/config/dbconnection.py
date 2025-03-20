@@ -1,12 +1,13 @@
+import os
 import psycopg2
 from psycopg2.extras import RealDictCursor
 
 class PostgreSQLConnection:
     def __init__(self, db):
         self.connection = psycopg2.connect(
-            host='localhost',
-            user='postgres',  # Cambia esto si usas otro usuario
-            password='password',  # Cambia esto por tu contraseña
+            host=os.getenv('DB_HOST', 'localhost'),
+            user=os.getenv('DB_USER', 'postgres'),  # Usuario desde variable de entorno
+            password=os.getenv('DB_PASSWORD', 'password'),  # Contraseña desde variable de entorno
             database=db
         )
         self.connection.autocommit = True

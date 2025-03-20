@@ -1,6 +1,6 @@
 from flask_app.config.dbconnection import connectToPostgreSQL
-
-DATABASE = 'nosfalta1'
+import os
+DATABASE =os.getenv('DATABASE', 'nosfalta1')
 
 class Participante:
     def __init__(self, data):

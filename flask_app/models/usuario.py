@@ -1,11 +1,10 @@
 from flask_app.config.dbconnection import connectToPostgreSQL
 from flask import flash
-import re
+import re, os
 
 EMAIL_REGEX = re.compile(r'^[a-zA-Z0-9.+_-]+@[a-zA-Z0-9._-]+\.[a-zA-Z]+$')
 NOMBRE_REGEX = re.compile(r'^[a-zA-Z\s]+$')
-DATABASE = 'nosfalta1'
-
+DATABASE =os.getenv('DATABASE', 'nosfalta1')
 class Usuario:
     def __init__(self, data):
         self.id_usuario = data['id_usuario']
