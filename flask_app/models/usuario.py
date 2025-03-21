@@ -46,19 +46,16 @@ class Usuario:
     def get_by_email(cls, email):
         query = "SELECT * FROM usuarios WHERE email = %(email)s;"
         resultado = connectToPostgreSQL(DATABASE).query_db(query, {'email': email})
-        if not resultado:  # Verifica si el resultado es None o False
-            return False
-        if len(resultado) < 1:  # Si es una lista vacía
-            return False
+        if not resultado:  # Verifica si el resultado es None o vacío
+            return None  # Cambiado de False a None
         return cls(resultado[0])
 
     @classmethod
     def get_by_id(cls, id_usuario):
         query = "SELECT * FROM usuarios WHERE id = %(id_usuario)s;"
-        resultado = connectToPostgreSQL(DATABASE).query_db(
-            query, {'id_usuario': id_usuario})
+        resultado = connectToPostgreSQL(DATABASE).query_db(query, {'id_usuario': id_usuario})
         if not resultado:
-            return None  # Cambiado de False a None para mayor consistencia
+            return None  # Cambiado de False a None
         return cls(resultado[0])
 
     @staticmethod
