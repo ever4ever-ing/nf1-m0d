@@ -1,19 +1,11 @@
-import os
 import psycopg2
 import logging
-from dotenv import load_dotenv
 
 # Configuración básica de logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-# Cargar variables de entorno desde un archivo .env
-load_dotenv()
-
-# Obtener la URL de conexión desde las variables de entorno
-DB_URL = os.getenv("DATABASE_URL")
-
-if not DB_URL:
-    raise EnvironmentError("La variable de entorno 'DATABASE_URL' no está configurada.")
+# URL de conexión
+DB_URL = "postgresql://root:eEiZH4x3WKKgGm2bCGlWgA5iAia3o9dH@dpg-cve7hu52ng1s73ce43pg-a.oregon-postgres.render.com/nf1_iv1y"
 
 # Script SQL para crear las tablas
 CREATE_TABLES_SQL = """
