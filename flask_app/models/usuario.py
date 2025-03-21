@@ -1,6 +1,7 @@
 from flask_app.config.dbconnection import connectToPostgreSQL
 from flask import flash
-import re, os
+import re
+import os
 
 from dotenv import load_dotenv
 env_file = os.getenv('ENV_FILE', '.env')  # Por defecto, carga .env
@@ -15,6 +16,7 @@ DATABASE = os.getenv('DATABASE')
 EMAIL_REGEX = re.compile(r'^[a-zA-Z0-9.+_-]+@[a-zA-Z0-9._-]+\.[a-zA-Z]+$')
 NOMBRE_REGEX = re.compile(r'^[a-zA-Z\s]+$')
 
+
 class Usuario:
     def __init__(self, data):
         self.id_usuario = data['id_usuario']
@@ -22,7 +24,6 @@ class Usuario:
         self.apellido = data['apellido']
         self.email = data['email']
         self.password = data['password']
-
 
     @classmethod
     def get_all(cls):
@@ -44,17 +45,20 @@ class Usuario:
     @classmethod
     def get_by_email(cls, email):
         query = "SELECT * FROM usuarios WHERE email = %(email)s;"
-        resultado = connectToPostgreSQL(DATABASE).query_db(query, {'email': email})
+        resultado = connectToPostgreSQL(
+            DATABASE).query_db(query, {'email': email})
         if len(resultado) < 1:
             return False
         return cls(resultado[0])
 
+
     @classmethod
     def get_by_id(cls, id_usuario):
         query = "SELECT * FROM usuarios WHERE id = %(id_usuario)s;"
-        resultado = connectToPostgreSQL(DATABASE).query_db(query, {'id_usuario': id_usuario})o': id_usuario})
+        resultado = connectToPostgreSQL(DATABASE).query_db(
+            query, {'id_usuario': id_usuario})
         if not resultado:
-            return None  # Cambiado de False a None para mayor consistencia # Cambiado de False a None para mayor consistencia
+            return None  # Cambiado de False a None para mayor consistencia
         return cls(resultado[0])
 
     @staticmethod
@@ -70,6 +74,7 @@ class Usuario:
             flash("La contraseña debe tener al menos 8 caracteres.", "error")
             is_valid = False
         return is_valid
+
     @staticmethod
     def validar_login(usuario):
         is_valid = True
