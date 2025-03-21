@@ -22,8 +22,6 @@ def login_required(f):
 @app.route("/")
 def index():
     Usuarios = Usuario.get_all()
-    for usuario in Usuarios:
-        print(usuario.nombre)
     print("Usuarios:", Usuarios)
     return render_template("index.html")
 
