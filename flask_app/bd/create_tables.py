@@ -29,7 +29,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER IF NOT EXISTS trigger_update_usuarios
+CREATE TRIGGER trigger_update_usuarios
 BEFORE UPDATE ON usuarios
 FOR EACH ROW
 EXECUTE FUNCTION update_fecha_actualizacion();
@@ -47,7 +47,7 @@ CREATE TABLE IF NOT EXISTS partidos (
 );
 
 -- Crear el trigger para actualizar fecha_actualizacion en partidos
-CREATE TRIGGER IF NOT EXISTS trigger_update_partidos
+CREATE TRIGGER trigger_update_partidos
 BEFORE UPDATE ON partidos
 FOR EACH ROW
 EXECUTE FUNCTION update_fecha_actualizacion();
