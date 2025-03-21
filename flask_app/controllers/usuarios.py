@@ -58,7 +58,6 @@ def crear_usuario():
     if not Usuario.validar_usuario(request.form):
         return redirect('/registro_usuario')
 
-    #pw_hash = bcrypt.generate_password_hash(request.form['password'])
     pw_hash = request.form['password']
     data = {
         'nombre': request.form['name'],
@@ -66,9 +65,11 @@ def crear_usuario():
         'email': request.form['email'],
         'password': pw_hash
     }
+    logging.info(f"Datos enviados al modelo Usuario.save: {data}")
     usuario_id = Usuario.save(data)
     if not usuario_id:
         flash("No se pudo crear el usuario.", "error")
+        logging.error("El usuario no se guardó en la base de datos.")
         return redirect('/')
     else:
         logging.info(f"Usuario creado con ID: {usuario_id}")

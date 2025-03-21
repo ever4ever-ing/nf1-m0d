@@ -1,3 +1,4 @@
+import logging
 from flask_app.config.dbconnection import connectToPostgreSQL
 from flask import flash
 import re
@@ -42,7 +43,14 @@ class Usuario:
         INSERT INTO usuarios (nombre, apellido, email, password) 
         VALUES (%(nombre)s, %(apellido)s, %(email)s, %(password)s) RETURNING id_usuario;
         """
-        return connectToPostgreSQL(DATABASE).query_db(query, data)
+        logging.info(f"Datos enviados para guardar usuario: {data}")
+        try:
+            resultado = connectToPostgreSQL(DATABASE).query_db(query, data)
+            logging.info(f"Resultado de la consulta: {resultado}")
+            return resultado
+        except Exception as e:
+            logging.error(f"Error al guardar usuario: {e}")
+            return None
 
     @classmethod
     def get_by_email(cls, email):
