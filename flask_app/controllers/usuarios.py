@@ -64,12 +64,29 @@ def crear_usuario():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        usuario = Usuario.get_by_email(request.form['loginEmail'])
-        #if usuario and bcrypt.check_password_hash(usuario.password, request.form['loginPassword']):
-        if usuario.password and request.form['loginPassword']:
-            session['usuario_id'] = usuario.id_usuario
-            return redirect('/dashboard')
-        flash("Email/Contraseña inválidos", "error")
+        # Validar que los campos no estén vacíos
+        email = request.form['loginEmail'].strip()
+        password = request.form['loginPassword'].strip()
+
+        if not email or not password:
+            flash("Todos los campos son obligatorios.", "error")
+            return render_template("index.html")
+
+        # Buscar usuario por email
+        usuario = Usuario.get_by_email(email)
+        if not usuario:
+            flash("Credenciales inválidas.", "error")
+            return render_template("index.html")
+
+        # Comparar contraseñas directamente
+        if usuario.password != password:
+            flash("Credenciales inválidas.", "error")
+            return render_template("index.html")
+
+        # Iniciar sesión
+        session['usuario_id'] = usuario.id_usuario
+        return redirect('/dashboard')
+
     return render_template("index.html")
 
 @app.route('/logout')
