@@ -12,6 +12,7 @@ DB_USER = os.getenv('DB_USER')
 DB_PASSWORD = os.getenv('DB_PASSWORD')
 DATABASE = os.getenv('DATABASE')
 
+
 class Partido:
     def __init__(self, data):
         self.id_partido = data['id_partido']
@@ -29,10 +30,11 @@ class Partido:
         query = """
             SELECT v.*, u.nombre as organizador 
             FROM partidos v
-            JOIN usuarios u ON v.id_organizador = u.id_usuario
+            LEFT JOIN usuarios u ON v.id_organizador = u.id_usuario
             ORDER BY v.fecha_inicio;
         """
         resultado = connectToPostgreSQL(DATABASE).query_db(query)
+        print("#########Resultado get all :", resultado)
         partidos = []
         if resultado:
             for partido in resultado:
@@ -44,14 +46,17 @@ class Partido:
     @classmethod
     def get_match_disponibles(cls, id_usuario):
         query = """
-            SELECT p.*, u.nombre as organizador
-            FROM partidos p
-            JOIN usuarios u ON p.id_organizador = u.id_usuario
-            WHERE p.id_organizador != %s
-            ORDER BY p.fecha_inicio;
-        """
+                SELECT p.*, u.nombre AS organizador
+                FROM public.partidos p
+                LEFT JOIN public.usuarios u ON p.id_organizador = u.id_usuario
+                WHERE p.id_organizador != %s
+                ORDER BY p.fecha_inicio;
+        """  # Cambiar != por = para que solo muestre los partidos que el usuario ha creado
         data = (id_usuario,)
         results = connectToPostgreSQL(DATABASE).query_db(query, data)
+        # print((DATABASE))
+        # print("query get match:", query)
+        # print("result get match:", results)
         partidos = []
         if results:
             for row in results:
@@ -70,7 +75,6 @@ class Partido:
         results = connectToPostgreSQL(DATABASE).query_db(query, data)
         return cls(results[0]) if results else None
 
-
     @classmethod
     def crear(cls, data):
         query = """
@@ -82,8 +86,9 @@ class Partido:
         resultado = connectToPostgreSQL(DATABASE).query_db(query, data)
         print("Resultado:", resultado)
         # Verificar si se obtuvo un resultado y devolver el id_partido
-        if resultado:
-            return resultado[0]['id_partido']  # Devuelve el id_partido generado
+        if resultado and 'id_partido' in resultado:
+            # Devuelve el id_partido generado
+            return resultado['id_partido']
         return None  # Si no hay resultado, devuelve None
 
     @classmethod
@@ -113,12 +118,14 @@ class Partido:
         query = """
             SELECT v.*, u.nombre as organizador 
             FROM partidos v
-            JOIN usuarios u ON v.id_organizador = u.id_usuario
+            LEFT JOIN usuarios u ON v.id_organizador = u.id_usuario
             WHERE v.id_organizador = %s
             ORDER BY v.fecha_inicio;
         """
+        print("query obtener por organizador:", query)
         data = (id_organizador,)
         results = connectToPostgreSQL(DATABASE).query_db(query, data)
+        print("results obtener por organizador:", results)
         partidos = []
         if results:
             for row in results:

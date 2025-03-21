@@ -4,7 +4,8 @@ import psycopg2
 from psycopg2.extras import RealDictCursor
 
 # Cargar un archivo .env específico
-env_file = os.path.join(os.path.dirname(__file__), '.env')  # Busca el .env en el mismo directorio que este archivo
+# Busca el .env en el mismo directorio que este archivo
+env_file = os.path.join(os.path.dirname(__file__), '.env')
 load_dotenv(dotenv_path=env_file)
 
 # Asegurarse de que las variables de entorno estén configuradas
@@ -17,7 +18,9 @@ print("Variables de entorno:")
 print(DB_HOST, DB_USER, DB_PASSWORD, DATABASE)
 
 if not all([DB_HOST, DB_USER, DB_PASSWORD, DATABASE]):
-    raise EnvironmentError("Faltan variables de entorno necesarias para la configuración de la base de datos.")
+    raise EnvironmentError(
+        "Faltan variables de entorno necesarias para la configuración de la base de datos.")
+
 
 class PostgreSQLConnection:
     def __init__(self, db):
@@ -33,11 +36,13 @@ class PostgreSQLConnection:
         with self.connection.cursor(cursor_factory=RealDictCursor) as cursor:
             try:
                 cursor.execute(query, data)
-                if query.lower().startswith("insert"):
-                    return cursor.fetchone()['id'] if cursor.description else None
-                elif query.lower().startswith("select"):
+                if query.strip().lower().startswith("insert"):
+                    return cursor.fetchone()  # Devuelve toda la fila en lugar de asumir 'id'
+                elif query.strip().lower().startswith("select"):
+                    print("Selecting...")
                     return cursor.fetchall()
                 else:
+                    print("Query None.")
                     return None
             except Exception as e:
                 print("Something went wrong", e)
@@ -45,5 +50,8 @@ class PostgreSQLConnection:
             finally:
                 self.connection.close()
 
+
 def connectToPostgreSQL(db):
+    print("Conectando a PostgreSQL...")
+    print(PostgreSQLConnection(db))
     return PostgreSQLConnection(db)

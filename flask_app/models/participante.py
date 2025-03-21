@@ -1,4 +1,3 @@
-
 from flask_app.config.dbconnection import connectToPostgreSQL
 import os
 from dotenv import load_dotenv
@@ -26,8 +25,8 @@ class Participante:
         print("Agregando participante:")
         print(query)
         resultado = connectToPostgreSQL(DATABASE).query_db(query, data)
-        if resultado:
-            return resultado[0]['id_participante']  # Devuelve el ID del participante generado
+        if resultado and 'id_participante' in resultado:
+            return resultado['id_participante']  # Devuelve el ID del participante generado
         return None
 
     @classmethod
@@ -60,6 +59,7 @@ class Participante:
             FROM participantes_partido p
             JOIN usuarios u ON p.id_usuario = u.id_usuario
             WHERE p.id_partido = %(id_partido)s;
+
         """
         data = {'id_partido': id_partido}
         results = connectToPostgreSQL(DATABASE).query_db(query, data)
