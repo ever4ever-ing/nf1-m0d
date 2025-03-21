@@ -35,8 +35,10 @@ comandos:
 ## Estructura del proyecto
 
 
+## Produccion
+gunicorn --bind 0.0.0.0:5000 wsgi:application
 
-
+## Estructura del proyecto
 Friendship-Flask/ 
 
     ├── flask_app/  
