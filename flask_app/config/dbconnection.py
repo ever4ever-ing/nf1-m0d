@@ -37,6 +37,8 @@ class PostgreSQLConnection:
             try:
                 cursor.execute(query, data)
                 if query.strip().lower().startswith("insert"):
+                    print("Inserting...")
+                    print("query:", query)   
                     return cursor.fetchone()  # Devuelve toda la fila en lugar de asumir 'id'
                 elif query.strip().lower().startswith("select"):
                     print("Selecting...")

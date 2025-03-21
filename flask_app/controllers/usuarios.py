@@ -21,6 +21,10 @@ def login_required(f):
 
 @app.route("/")
 def index():
+    Usuarios = Usuario.get_all()
+    for usuario in Usuarios:
+        print(usuario.nombre)
+    print("Usuarios:", Usuarios)
     return render_template("index.html")
 
 
@@ -58,7 +62,12 @@ def crear_usuario():
         'password': pw_hash
     }
     usuario_id = Usuario.save(data)
-    session['usuario_id'] = usuario_id
+    if not usuario_id:
+        flash("No se pudo crear el usuario.", "error")
+        return redirect('/')
+    else:
+        print("Usuario creado con ID:", usuario_id)
+        session['usuario_id'] = usuario_id
     return redirect('/')
 
 @app.route('/login', methods=['GET', 'POST'])
