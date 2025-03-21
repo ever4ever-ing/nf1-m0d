@@ -1,9 +1,13 @@
+import logging
 from flask import render_template, request, redirect, session, flash
 from flask_app import app, bcrypt
 from flask_app.models.usuario import Usuario
 from flask_app.models.partido import Partido
 from datetime import date
 from functools import wraps
+
+# Configuración básica del logger
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # Decorator para verificar sesión
 
@@ -23,9 +27,9 @@ def login_required(f):
 def index():
     Usuarios = Usuario.get_all()
     if not Usuarios:  # Verifica si la lista está vacía
-        print("No hay usuarios registrados.")
+        logging.info("No hay usuarios registrados.")
     else:
-        print("Usuarios:", Usuarios)
+        logging.info(f"Usuarios: {Usuarios}")
     return render_template("index.html")
 
 
@@ -36,7 +40,7 @@ def dashboard():
     for partido in mis_partidos:
         partido.participantes = Partido.obtener_participantes(partido.id_partido)
     
-    print("user id", session['usuario_id'])
+    logging.info(f"user id: {session['usuario_id']}")
     partidos = Partido.get_match_disponibles(session['usuario_id'])
     for partido in partidos:
         partido.participantes = Partido.obtener_participantes(partido.id_partido)
@@ -67,7 +71,7 @@ def crear_usuario():
         flash("No se pudo crear el usuario.", "error")
         return redirect('/')
     else:
-        print("Usuario creado con ID:", usuario_id)
+        logging.info(f"Usuario creado con ID: {usuario_id}")
         session['usuario_id'] = usuario_id
     return redirect('/')
 
@@ -84,15 +88,15 @@ def login():
 
         # Buscar usuario por email
         usuario = Usuario.get_by_email(email)
-        print(usuario)
+        logging.info(f"Usuario encontrado: {usuario}")
         if not usuario:
-            print("Usuario no encontrado")
+            logging.warning("Usuario no encontrado")
             flash("Usuario no encontrado.", "error")
             return render_template("index.html")
 
         # Comparar contraseñas directamente
         if usuario.password != password:
-            print("Contraseña incorrecta")
+            logging.warning("Contraseña incorrecta")
             flash("Credenciales inválidas.", "error")
             return render_template("index.html")
 
