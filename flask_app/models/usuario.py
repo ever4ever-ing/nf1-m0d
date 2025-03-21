@@ -2,10 +2,19 @@ from flask_app.config.dbconnection import connectToPostgreSQL
 from flask import flash
 import re, os
 
+from dotenv import load_dotenv
+env_file = os.getenv('ENV_FILE', '.env')  # Por defecto, carga .env
+load_dotenv(dotenv_path=env_file)
+
+# Asegurarse de que las variables de entorno estén configuradas
+DB_HOST = os.getenv('DB_HOST')
+DB_USER = os.getenv('DB_USER')
+DB_PASSWORD = os.getenv('DB_PASSWORD')
+DATABASE = os.getenv('DATABASE')
+
 EMAIL_REGEX = re.compile(r'^[a-zA-Z0-9.+_-]+@[a-zA-Z0-9._-]+\.[a-zA-Z]+$')
 NOMBRE_REGEX = re.compile(r'^[a-zA-Z\s]+$')
-DATABASE  = 'nf1_iv1y' #nosfalta1
-DATABASE =os.getenv('DATABASE', DATABASE)
+
 class Usuario:
     def __init__(self, data):
         self.id_usuario = data['id_usuario']

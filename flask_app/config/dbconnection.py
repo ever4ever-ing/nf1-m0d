@@ -1,16 +1,30 @@
 import os
+from dotenv import load_dotenv
 import psycopg2
 from psycopg2.extras import RealDictCursor
-DB_HOST= 'dpg-cve7hu52ng1s73ce43pg-a' #localhost
-DB_USER= 'root' #postgres
-DB_PASSWORD= 'eEiZH4x3WKKgGm2bCGlWgA5iAia3o9dH' #password
-DATABASE= 'nf1_iv1y'
+
+# Cargar un archivo .env específico
+env_file = os.path.join(os.path.dirname(__file__), '.env')  # Busca el .env en el mismo directorio que este archivo
+load_dotenv(dotenv_path=env_file)
+
+# Asegurarse de que las variables de entorno estén configuradas
+DB_HOST = os.getenv('DB_HOST')
+DB_USER = os.getenv('DB_USER')
+DB_PASSWORD = os.getenv('DB_PASSWORD')
+DATABASE = os.getenv('DATABASE')
+
+print("Variables de entorno:")
+print(DB_HOST, DB_USER, DB_PASSWORD, DATABASE)
+
+if not all([DB_HOST, DB_USER, DB_PASSWORD, DATABASE]):
+    raise EnvironmentError("Faltan variables de entorno necesarias para la configuración de la base de datos.")
+
 class PostgreSQLConnection:
     def __init__(self, db):
         self.connection = psycopg2.connect(
-            host=os.getenv('DB_HOST', DB_HOST),
-            user=os.getenv('DB_USER', DB_USER),  # Usuario desde variable de entorno
-            password=os.getenv('DB_PASSWORD', DB_PASSWORD),  # Contraseña desde variable de entorno
+            host=DB_HOST,
+            user=DB_USER,
+            password=DB_PASSWORD,
             database=db
         )
         self.connection.autocommit = True

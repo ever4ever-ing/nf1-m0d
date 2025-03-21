@@ -1,8 +1,16 @@
 from flask_app.config.dbconnection import connectToPostgreSQL
 from flask_app.models import participante
 import os
-DATABASE  = 'nf1_iv1y' #nosfalta1
-DATABASE =os.getenv('DATABASE', DATABASE)
+
+from dotenv import load_dotenv
+env_file = os.getenv('ENV_FILE', '.env')  # Por defecto, carga .env
+load_dotenv(dotenv_path=env_file)
+
+# Asegurarse de que las variables de entorno estén configuradas
+DB_HOST = os.getenv('DB_HOST')
+DB_USER = os.getenv('DB_USER')
+DB_PASSWORD = os.getenv('DB_PASSWORD')
+DATABASE = os.getenv('DATABASE')
 
 class Partido:
     def __init__(self, data):
