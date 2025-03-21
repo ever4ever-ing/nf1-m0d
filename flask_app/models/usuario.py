@@ -64,15 +64,22 @@ class Usuario:
     @staticmethod
     def validar_usuario(usuario):
         is_valid = True
-        if len(usuario['name']) < 3:
+
+        # Verificar que 'usuario' sea un diccionario válido
+        if not isinstance(usuario, dict):
+            flash("Datos de usuario inválidos.", "error")
+            return False
+
+        if 'name' not in usuario or len(usuario['name']) < 3:
             flash("El nombre debe tener al menos 3 caracteres.", "error")
             is_valid = False
-        if not EMAIL_REGEX.match(usuario['email']):
+        if 'email' not in usuario or not EMAIL_REGEX.match(usuario['email']):
             flash("Email inválido.", "error")
             is_valid = False
-        if len(usuario['password']) < 8:
+        if 'password' not in usuario or len(usuario['password']) < 8:
             flash("La contraseña debe tener al menos 8 caracteres.", "error")
             is_valid = False
+
         return is_valid
 
     @staticmethod
