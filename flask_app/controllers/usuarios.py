@@ -74,12 +74,15 @@ def login():
 
         # Buscar usuario por email
         usuario = Usuario.get_by_email(email)
+        print(usuario)
         if not usuario:
-            flash("Credenciales inválidas.", "error")
+            print("Usuario no encontrado")
+            flash("Usuario no encontrado.", "error")
             return render_template("index.html")
 
         # Comparar contraseñas directamente
         if usuario.password != password:
+            print("Contraseña incorrecta")
             flash("Credenciales inválidas.", "error")
             return render_template("index.html")
 
