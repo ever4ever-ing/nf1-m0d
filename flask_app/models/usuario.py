@@ -29,6 +29,8 @@ class Usuario:
     def get_all(cls):
         query = "SELECT * FROM usuarios;"
         resultados = connectToPostgreSQL(DATABASE).query_db(query)
+        if not resultados:  # Si no hay resultados, devuelve una lista vacía
+            return []
         usuarios = []
         for usuario in resultados:
             usuarios.append(cls(usuario))

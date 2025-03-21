@@ -22,7 +22,10 @@ def login_required(f):
 @app.route("/")
 def index():
     Usuarios = Usuario.get_all()
-    print("Usuarios:", Usuarios)
+    if not Usuarios:  # Verifica si la lista está vacía
+        print("No hay usuarios registrados.")
+    else:
+        print("Usuarios:", Usuarios)
     return render_template("index.html")
 
 
