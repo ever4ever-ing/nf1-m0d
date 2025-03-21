@@ -52,9 +52,9 @@ class Usuario:
     @classmethod
     def get_by_id(cls, id_usuario):
         query = "SELECT * FROM usuarios WHERE id = %(id_usuario)s;"
-        resultado = connectToPostgreSQL(DATABASE).query_db(query, {'id': id})
+        resultado = connectToPostgreSQL(DATABASE).query_db(query, {'id_usuario': id_usuario})o': id_usuario})
         if not resultado:
-            return False
+            return None  # Cambiado de False a None para mayor consistencia # Cambiado de False a None para mayor consistencia
         return cls(resultado[0])
 
     @staticmethod

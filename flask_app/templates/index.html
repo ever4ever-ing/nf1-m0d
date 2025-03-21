@@ -76,13 +76,11 @@
                         <label for="loginEmail">Correo electrónico</label>
                         <input type="email" id="loginEmail" name="loginEmail" required
                             value="{{ request.form.loginEmail }}">
-                        <div class="error" id="loginEmailError">Por favor ingrese un correo válido</div>
                     </div>
 
                     <div class="form-group">
                         <label for="loginPassword">Contraseña</label>
                         <input type="password" id="loginPassword" name="loginPassword" required>
-                        <div class="error" id="loginPasswordError">Por favor ingrese su contraseña</div>
                     </div>
 
                     <button type="submit">Iniciar Sesión</button>
