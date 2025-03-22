@@ -85,7 +85,7 @@ def login():
 
         if not email or not password:
             flash("Todos los campos son obligatorios.", "error")
-            return render_template("index.html")
+            return render_template("login.html")
 
         # Buscar usuario por email
         usuario = Usuario.get_by_email(email)
@@ -93,19 +93,19 @@ def login():
         if not usuario:
             logging.warning("Usuario no encontrado")
             flash("Usuario no encontrado.", "error")
-            return render_template("index.html")
+            return render_template("login.html")
 
         # Comparar contraseñas directamente
         if usuario.password != password:
             logging.warning("Contraseña incorrecta")
             flash("Credenciales inválidas.", "error")
-            return render_template("index.html")
+            return render_template("login.html")
 
         # Iniciar sesión
         session['usuario_id'] = usuario.id_usuario
         return redirect('/dashboard')
 
-    return render_template("index.html")
+    return render_template("login.html")
 
 @app.route('/logout')
 def logout():
