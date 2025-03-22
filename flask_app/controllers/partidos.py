@@ -22,7 +22,8 @@ def nuevo_partido():
             'fecha_inicio': request.form['fechaInicio'],
             'descripcion': request.form['descripcion'],
         }
-
+        log = f"Datos del formulario: {data}"
+        print(log)
         # Validar los datos
         errores = Partido.validar_partido(data)
         if errores:
@@ -32,6 +33,7 @@ def nuevo_partido():
 
         # Crear el partido
         partido_id = Partido.crear(data)
+        print("Partido creado con ID:", partido_id)
         if partido_id:
             flash('partido creado exitosamente', 'success')
             return redirect(url_for('dashboard'))

@@ -1,9 +1,13 @@
+import logging
 from flask import render_template, request, redirect, session, flash
 from flask_app import app, bcrypt
 from flask_app.models.usuario import Usuario
 from flask_app.models.partido import Partido
 from datetime import date
 from functools import wraps
+
+# Configuración básica del logger
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # Decorator para verificar sesión
 
@@ -21,6 +25,11 @@ def login_required(f):
 
 @app.route("/")
 def index():
+    Usuarios = Usuario.get_all()
+    if not Usuarios:  # Verifica si la lista está vacía
+        logging.info("No hay usuarios registrados.")
+    else:
+        logging.info(f"Usuarios: {Usuarios}")
     return render_template("index.html")
 
 
@@ -31,6 +40,7 @@ def dashboard():
     for partido in mis_partidos:
         partido.participantes = Partido.obtener_participantes(partido.id_partido)
     
+    logging.info(f"user id: {session['usuario_id']}")
     partidos = Partido.get_match_disponibles(session['usuario_id'])
     for partido in partidos:
         partido.participantes = Partido.obtener_participantes(partido.id_partido)
@@ -48,25 +58,53 @@ def crear_usuario():
     if not Usuario.validar_usuario(request.form):
         return redirect('/registro_usuario')
 
-    pw_hash = bcrypt.generate_password_hash(request.form['password'])
+    pw_hash = request.form['password']
     data = {
         'nombre': request.form['name'],
         'apellido': request.form['apellido'],
         'email': request.form['email'],
         'password': pw_hash
     }
+    logging.info(f"Datos enviados al modelo Usuario.save: {data}")
     usuario_id = Usuario.save(data)
-    session['usuario_id'] = usuario_id
+    if not usuario_id:
+        flash("No se pudo crear el usuario.", "error")
+        logging.error("El usuario no se guardó en la base de datos.")
+        return redirect('/')
+    else:
+        logging.info(f"Usuario creado con ID: {usuario_id}")
+        session['usuario_id'] = usuario_id
     return redirect('/')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        usuario = Usuario.get_by_email(request.form['loginEmail'])
-        if usuario and bcrypt.check_password_hash(usuario.password, request.form['loginPassword']):
-            session['usuario_id'] = usuario.id_usuario
-            return redirect('/dashboard')
-        flash("Email/Contraseña inválidos", "error")
+        # Validar que los campos no estén vacíos
+        email = request.form['loginEmail'].strip()
+        password = request.form['loginPassword'].strip()
+
+        if not email or not password:
+            flash("Todos los campos son obligatorios.", "error")
+            return render_template("index.html")
+
+        # Buscar usuario por email
+        usuario = Usuario.get_by_email(email)
+        logging.info(f"Usuario encontrado: {usuario}")
+        if not usuario:
+            logging.warning("Usuario no encontrado")
+            flash("Usuario no encontrado.", "error")
+            return render_template("index.html")
+
+        # Comparar contraseñas directamente
+        if usuario.password != password:
+            logging.warning("Contraseña incorrecta")
+            flash("Credenciales inválidas.", "error")
+            return render_template("index.html")
+
+        # Iniciar sesión
+        session['usuario_id'] = usuario.id_usuario
+        return redirect('/dashboard')
+
     return render_template("index.html")
 
 @app.route('/logout')

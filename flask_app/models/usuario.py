@@ -1,10 +1,22 @@
-from flask_app.config.mysqlconnection import connectToMySQL
+import logging
+from flask_app.config.dbconnection import connectToPostgreSQL
 from flask import flash
 import re
+import os
+
+from dotenv import load_dotenv
+env_file = os.getenv('ENV_FILE', '.env')  # Por defecto, carga .env
+load_dotenv(dotenv_path=env_file)
+
+# Asegurarse de que las variables de entorno estén configuradas
+DB_HOST = os.getenv('DB_HOST')
+DB_USER = os.getenv('DB_USER')
+DB_PASSWORD = os.getenv('DB_PASSWORD')
+DATABASE = os.getenv('DATABASE')
 
 EMAIL_REGEX = re.compile(r'^[a-zA-Z0-9.+_-]+@[a-zA-Z0-9._-]+\.[a-zA-Z]+$')
 NOMBRE_REGEX = re.compile(r'^[a-zA-Z\s]+$')
-DATABASE = 'nosfalta1'
+
 
 class Usuario:
     def __init__(self, data):
@@ -14,11 +26,12 @@ class Usuario:
         self.email = data['email']
         self.password = data['password']
 
-
     @classmethod
     def get_all(cls):
         query = "SELECT * FROM usuarios;"
-        resultados = connectToMySQL(DATABASE).query_db(query)
+        resultados = connectToPostgreSQL(DATABASE).query_db(query)
+        if not resultados:  # Si no hay resultados, devuelve una lista vacía
+            return []
         usuarios = []
         for usuario in resultados:
             usuarios.append(cls(usuario))
@@ -28,39 +41,54 @@ class Usuario:
     def save(cls, data):
         query = """
         INSERT INTO usuarios (nombre, apellido, email, password) 
-        VALUES (%(nombre)s, %(apellido)s, %(email)s, %(password)s);
+        VALUES (%(nombre)s, %(apellido)s, %(email)s, %(password)s) RETURNING id_usuario;
         """
-        return connectToMySQL(DATABASE).query_db(query, data)
+        logging.info(f"Datos enviados para guardar usuario: {data}")
+        try:
+            resultado = connectToPostgreSQL(DATABASE).query_db(query, data)
+            logging.info(f"Resultado de la consulta: {resultado}")
+            return resultado
+        except Exception as e:
+            logging.error(f"Error al guardar usuario: {e}")
+            return None
 
     @classmethod
     def get_by_email(cls, email):
         query = "SELECT * FROM usuarios WHERE email = %(email)s;"
-        resultado = connectToMySQL(DATABASE).query_db(query, {'email': email})
-        if len(resultado) < 1:
-            return False
+        resultado = connectToPostgreSQL(DATABASE).query_db(query, {'email': email})
+        if not resultado:  # Verifica si el resultado es None o vacío
+            return None  # Cambiado de False a None
         return cls(resultado[0])
 
     @classmethod
     def get_by_id(cls, id_usuario):
         query = "SELECT * FROM usuarios WHERE id = %(id_usuario)s;"
-        resultado = connectToMySQL(DATABASE).query_db(query, {'id': id})
+        resultado = connectToPostgreSQL(DATABASE).query_db(query, {'id_usuario': id_usuario})
         if not resultado:
-            return False
+            return None  # Cambiado de False a None
         return cls(resultado[0])
 
     @staticmethod
     def validar_usuario(usuario):
         is_valid = True
-        if len(usuario['name']) < 3:
+
+        # Verificar que 'usuario' sea un diccionario válido
+        if not isinstance(usuario, dict):
+            flash("Datos de usuario inválidos.", "error")
+            return False
+
+        if 'name' not in usuario or len(usuario['name']) < 3:
             flash("El nombre debe tener al menos 3 caracteres.", "error")
             is_valid = False
-        if not EMAIL_REGEX.match(usuario['email']):
+        if 'email' not in usuario or not EMAIL_REGEX.match(usuario['email']):
             flash("Email inválido.", "error")
             is_valid = False
-        if len(usuario['password']) < 8:
+        if 'password' not in usuario or len(usuario['password']) < 8:
             flash("La contraseña debe tener al menos 8 caracteres.", "error")
             is_valid = False
+
         return is_valid
+
     @staticmethod
     def validar_login(usuario):
         is_valid = True

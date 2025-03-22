@@ -1,67 +1,64 @@
 {# templates/nuevo.html #}
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nuevo partido</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://bootswatch.com/5/lux/bootstrap.min.css">
+
+    <style>
+        body {
+            background-color: #f8f9fa;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-image: url("{{ url_for('static', filename='img/bg6.webp') }}");
+        }
+    </style>
 </head>
+
 <body>
-    <div class="container">
-        <h1>Nuevo partido</h1>
+    <div class="container py-4">
+        <h1 class="mb-4">Nuevo partido</h1>
 
         {# Mostrar mensajes flash #}
         {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                <div class="flash-messages">
-                    {% for category, message in messages %}
-                        <div class="flash-message {{ category }}">
-                            {{ message }}
-                        </div>
-                    {% endfor %}
-                </div>
-            {% endif %}
+        {% if messages %}
+        <div class="alert-container">
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
         {% endwith %}
 
-        <form id="newEventForm" action="{{ url_for('nuevo_partido') }}" method="POST">
-            <div class="form-group">
-                <label for="lugar">Lugar</label>
-                <input
-                    type="text"
-                    id="lugar"
-                    name="lugar" 
-                    required
-                    value="{{ data.lugar if data else '' }}"
-                >
+        <form id="newEventForm" action="{{ url_for('nuevo_partido') }}" method="POST" class="card p-4">
+            <div class="mb-3">
+                <label for="lugar" class="form-label">Lugar</label>
+                <input type="text" id="lugar" name="lugar" class="form-control" required
+                    value="{{ data.lugar if data else '' }}">
             </div>
 
-            <div class="form-group">
-                <label for="fechaInicio">Fecha y Hora de Inicio</label>
-                <input 
-                    type="datetime-local" 
-                    id="fechaInicio" 
-                    name="fechaInicio" 
-                    required
-                    min="{{ today }}" 
-                    value="{{ data.fecha_inicio if data else '' }}"
-                >
+            <div class="mb-3">
+                <label for="fechaInicio" class="form-label">Fecha y Hora de Inicio</label>
+                <input type="datetime-local" id="fechaInicio" name="fechaInicio" class="form-control" required
+                    min="{{ today }}" value="{{ data.fecha_inicio if data else '' }}">
             </div>
 
-
-            <div class="form-group">
-                <label for="descripcion">Descripcion</label>
-                <textarea 
-                    id="descripcion" 
-                    name="descripcion" 
-                    required
-                >{{ data.descripcion if data else '' }}</textarea>
+            <div class="mb-3">
+                <label for="descripcion" class="form-label">Descripción</label>
+                <textarea id="descripcion" name="descripcion" class="form-control" rows="4"
+                    required>{{ data.descripcion if data else '' }}</textarea>
             </div>
-            
 
-            <div class="buttons">
-                <a href="{{ url_for('dashboard') }}" class="cancel-btn">Cancelar</a>
-                <button type="submit" class="submit-btn">Guardar</button>
+            <div class="d-flex justify-content-between">
+                <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">Cancelar</a>
+                <button type="submit" class="btn btn-primary">Guardar</button>
             </div>
         </form>
     </div>
@@ -70,22 +67,7 @@
         // Establecer la fecha mínima como hoy con hora
         const today = new Date().toISOString().slice(0, 16); // Formato: YYYY-MM-DDTHH:mm
         document.getElementById('fechaInicio').setAttribute('min', today);
-
-        // Actualizar fecha mínima de fin cuando cambia la fecha de inicio
-        document.getElementById('fechaInicio').addEventListener('change', function(e) {
-            document.getElementById('fechaFin').setAttribute('min', e.target.value);
-        });
-
-        // Validación del formulario
-        document.getElementById('newEventForm').addEventListener('submit', function(e) {
-            const fechaInicio = document.getElementById('fechaInicio').value;
-            const fechaFin = document.getElementById('fechaFin').value;
-            
-            if (fechaInicio > fechaFin) {
-                e.preventDefault();
-                alert('La fecha de inicio no puede ser posterior a la fecha de fin');
-            }
-        });
     </script>
 </body>
+
 </html>
