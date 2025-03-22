@@ -20,7 +20,7 @@
 
 <body id="index" class="bg-light">
     <div class="container mt-5">
-        <h1 class="text-center mb-4">¡Bienvenido!</h1>
+        <h1 class="text-center mb-4">¡Bienvenido a NosFalta1!</h1>
 
         {# Mostrar mensajes flash #}
         {% with messages = get_flashed_messages(with_categories=true) %}
@@ -75,8 +75,8 @@
             <!-- Formulario de Acceso -->
             <div class="col-md-6">
                 <div class="card">
-                    <div class="card-header bg-success text-white">
-                        <h2 class="card-title">Iniciar Sesión</h2>
+                    <div class="card-header bg-secondary ">
+                        <h2 class="card-title mt-1">Iniciar Sesión</h2>
                     </div>
                     <div class="card-body">
                         <form id="loginForm" action="{{ url_for('login') }}" method="POST">
