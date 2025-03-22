@@ -61,45 +61,23 @@
                         <li class="nav-item">
                             <a class="nav-link active" href="#"> Bienvenido
                             </a>
+
                         </li>
-                        <!-- 
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">Features</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">Pricing</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">About</a>
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle show" data-bs-toggle="dropdown" href="#" role="button"
-                                aria-haspopup="true" aria-expanded="true">Dropdown</a>
-                            <div class="dropdown-menu show" data-bs-popper="static">
-                                <a class="dropdown-item" href="#">Action</a>
-                                <a class="dropdown-item" href="#">Another action</a>
-                                <a class="dropdown-item" href="#">Something else here</a>
-                                <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="#">Separated link</a>
-                            </div>
-                        </li>
-                        -->
 
                     </ul>
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <div>
+                    <div class="d-flex justify-content-between align-items-center mb-4 mb-lg-0">
+                        <div >
                             <a href="{{ url_for('nuevo_partido') }}" class="btn btn-success btn-sm mr-4">Organizar</a>
-
                         </div>
                         <ul class="navbar-nav me-auto">
                             <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle " data-bs-toggle="dropdown" href="#"
-                                    role="button" aria-haspopup="true" aria-expanded="true">
+                                <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#"
+                                    role="button" aria-haspopup="true" aria-expanded="false">
                                     <span class="material-symbols-outlined">
                                         person
                                         </span>
                                 </a>
-                                <div class="dropdown-menu " data-bs-popper="static">
+                                <div class="dropdown-menu dropdown-menu-end" data-bs-popper="static">
                                     <a class="dropdown-item" href="#">Editar Perfil</a>
                                     <div class="dropdown-divider"></div>
                                     <a class="dropdown-item" href="{{url_for('logout')}}">Cerrar Sesion</a>
@@ -107,7 +85,7 @@
                             </li>
                         </ul>
                     </div>
-
+                    
                 </div>
             </div>
         </nav>
