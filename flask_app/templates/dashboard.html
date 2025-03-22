@@ -23,6 +23,22 @@
             height: 100vh;
             background-image: url("{{ url_for('static', filename='img/bg2.webp') }}");
         }
+
+        /* Ajustar el tamaño de las tablas en pantallas pequeñas */
+        @media (max-width: 576px) {
+            table {
+                font-size: 0.8rem;
+            }
+
+            th, td {
+                padding: 0.3rem;
+            }
+
+            .btn {
+                font-size: 0.7rem;
+                padding: 0.2rem 0.4rem;
+            }
+        }
     </style>
 
 </head>
@@ -116,7 +132,7 @@
             style="color: white; background-color: rgba(46, 46, 46, 0.711); margin-top: 10px; padding: 5px;">Mis
             Partidos:</h3>
         <div class="table-responsive mb-5">
-            <table class="table table-striped table-hover">
+            <table class="table table-striped table-hover table-sm d-none d-md-table">
                 <thead class="table-dark">
                     <tr>
                         <th>Lugar</th>
@@ -154,13 +170,36 @@
                     {% endfor %}
                 </tbody>
             </table>
+            <div class="d-md-none">
+                {% for partido in mis_partidos %}
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ partido.lugar }}</h5>
+                        <p class="card-text">
+                            <strong>Organiza:</strong> {{ partido.organizador }}<br>
+                            <strong>Fecha:</strong> {{ partido.fecha_inicio.strftime('%Y-%m-%d') }}<br>
+                            <strong>Hora:</strong> {{ partido.fecha_inicio.strftime('%H:%M') }}<br>
+                            <strong>Players:</strong> {{ partido.participantes | length }}
+                        </p>
+                        <a href="{{ url_for('ver_partido', id=partido.id_partido) }}" class="btn btn-info btn-sm">Ver</a>
+                        {% if partido.id_organizador == session.usuario_id %}
+                        <a href="{{ url_for('editar_partido', id=partido.id_partido) }}" class="btn btn-warning btn-sm">Editar</a>
+                        <a href="{{ url_for('eliminar_partido', id=partido.id_partido) }}" class="btn btn-danger btn-sm"
+                            onclick="return confirm('¿Estás seguro de querer eliminar este partido?')">Borrar</a>
+                        {% endif %}
+                    </div>
+                </div>
+                {% else %}
+                <p class="text-center">No hay partidos registrados</p>
+                {% endfor %}
+            </div>
         </div>
 
         <h3 class="mb-3"
             style="color: white; background-color: rgba(46, 46, 46, 0.711); margin-top: 10px; padding: 5px;">Partidos
             disponibles:</h3>
-        <div class="table-responsive">
-            <table class="table table-striped table-hover">
+        <div class="table-responsive mb-5">
+            <table class="table table-striped table-hover table-sm d-none d-md-table">
                 <thead class="table-dark">
                     <tr>
                         <th>Lugar</th>
@@ -198,6 +237,29 @@
                     {% endfor %}
                 </tbody>
             </table>
+            <div class="d-md-none">
+                {% for partido in partidos %}
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ partido.lugar }}</h5>
+                        <p class="card-text">
+                            <strong>Organiza:</strong> {{ partido.organizador }}<br>
+                            <strong>Fecha:</strong> {{ partido.fecha_inicio.strftime('%Y-%m-%d') }}<br>
+                            <strong>Hora:</strong> {{ partido.fecha_inicio.strftime('%H:%M') }}<br>
+                            <strong>Players:</strong> {{ partido.participantes | length }}
+                        </p>
+                        <a href="{{ url_for('ver_partido', id=partido.id_partido) }}" class="btn btn-info btn-sm">Ver</a>
+                        {% if partido.id_organizador == session.usuario_id %}
+                        <a href="{{ url_for('editar_partido', id=partido.id_partido) }}" class="btn btn-warning btn-sm">Editar</a>
+                        <a href="{{ url_for('eliminar_partido', id=partido.id_partido) }}" class="btn btn-danger btn-sm"
+                            onclick="return confirm('¿Estás seguro de querer eliminar este partido?')">Borrar</a>
+                        {% endif %}
+                    </div>
+                </div>
+                {% else %}
+                <p class="text-center">No hay partidos registrados</p>
+                {% endfor %}
+            </div>
         </div>
     </div>
 
