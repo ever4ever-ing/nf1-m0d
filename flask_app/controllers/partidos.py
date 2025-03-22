@@ -35,7 +35,7 @@ def nuevo_partido():
         partido_id = Partido.crear(data)
         print("Partido creado con ID:", partido_id)
         if partido_id:
-            flash('partido creado exitosamente', 'success')
+            flash('Partido creado exitosamente', 'success')
             return redirect(url_for('dashboard'))
         
         flash('Error al crear el partido', 'error')
@@ -61,7 +61,7 @@ def ver_partido(id):
 @app.route('/eliminar_partido/<int:id>')
 def eliminar_partido(id):
     if Partido.eliminar(id):
-        flash('partido eliminado exitosamente', 'success')
+        flash('Partido eliminado exitosamente', 'success')
     else:
         flash('Error al eliminar el partido', 'error')
     return redirect(url_for('dashboard'))
@@ -88,15 +88,18 @@ def actualizar_partido():
     datos = {
         "id_partido": request.form['id'],
         "lugar": request.form['lugar'],
-        "fecha_inicio": request.form['fechaInicio'],
+        "fecha_inicio": request.form['fechaInicio'] + " " + request.form['horaInicio'],
         "descripcion": request.form['descripcion'],
         "participantes": Participante.obtener_participantes_por_partido(request.form['id'])
     }
     print("********ACTUALIZANDO********")
+
+    print("Hora inicio", request.form['horaInicio'])
+    print("Fecha inicio", request.form['fechaInicio'] + " " + request.form['horaInicio'])
     print("Lista de participantes", datos['participantes'])
     Partido.actualizar(datos)
     
-    flash("partido actualizado exitosamente", "success")
+    flash("Partido actualizado exitosamente", "success")
     return redirect(url_for('dashboard'))
 
 

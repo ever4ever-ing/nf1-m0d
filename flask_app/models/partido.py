@@ -96,12 +96,12 @@ class Partido:
         query = """
             UPDATE partidos 
             SET lugar = %s,
-                fecha_inicio = %s,
+                fecha_inicio = %s ,
                 descripcion = %s
             WHERE id_partido = %s;
         """
         data_tuple = (data['lugar'], data['fecha_inicio'],
-                      data['descripcion'], data['id_partido'])
+                        data['descripcion'], data['id_partido'])
         return connectToPostgreSQL(DATABASE).query_db(query, data_tuple)
 
     @classmethod
