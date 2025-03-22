@@ -181,12 +181,14 @@
                             <strong>Hora:</strong> {{ partido.fecha_inicio.strftime('%H:%M') }}<br>
                             <strong>Players:</strong> {{ partido.participantes | length }}
                         </p>
-                        <a href="{{ url_for('ver_partido', id=partido.id_partido) }}" class="btn btn-info btn-sm">Ver</a>
-                        {% if partido.id_organizador == session.usuario_id %}
-                        <a href="{{ url_for('editar_partido', id=partido.id_partido) }}" class="btn btn-warning btn-sm">Editar</a>
-                        <a href="{{ url_for('eliminar_partido', id=partido.id_partido) }}" class="btn btn-danger btn-sm"
-                            onclick="return confirm('¿Estás seguro de querer eliminar este partido?')">Borrar</a>
-                        {% endif %}
+                        <div class="d-flex justify-content-end">
+                            <a href="{{ url_for('ver_partido', id=partido.id_partido) }}" class="btn btn-info btn-sm me-2">Ver</a>
+                            {% if partido.id_organizador == session.usuario_id %}
+                            <a href="{{ url_for('editar_partido', id=partido.id_partido) }}" class="btn btn-warning btn-sm me-2">Editar</a>
+                            <a href="{{ url_for('eliminar_partido', id=partido.id_partido) }}" class="btn btn-danger btn-sm"
+                                onclick="return confirm('¿Estás seguro de querer eliminar este partido?')">Borrar</a>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
                 {% else %}
@@ -239,7 +241,7 @@
             </table>
             <div class="d-md-none">
                 {% for partido in partidos %}
-                <div class="card mb-3">
+                <div class="card mb-3 ">
                     <div class="card-body">
                         <h5 class="card-title">{{ partido.lugar }}</h5>
                         <p class="card-text">
@@ -248,12 +250,15 @@
                             <strong>Hora:</strong> {{ partido.fecha_inicio.strftime('%H:%M') }}<br>
                             <strong>Players:</strong> {{ partido.participantes | length }}
                         </p>
-                        <a href="{{ url_for('ver_partido', id=partido.id_partido) }}" class="btn btn-info btn-sm">Ver</a>
-                        {% if partido.id_organizador == session.usuario_id %}
-                        <a href="{{ url_for('editar_partido', id=partido.id_partido) }}" class="btn btn-warning btn-sm">Editar</a>
-                        <a href="{{ url_for('eliminar_partido', id=partido.id_partido) }}" class="btn btn-danger btn-sm"
-                            onclick="return confirm('¿Estás seguro de querer eliminar este partido?')">Borrar</a>
-                        {% endif %}
+                        
+                        <div class="d-flex justify-content-end">
+                            <a href="{{ url_for('ver_partido', id=partido.id_partido) }}" class="btn btn-info btn-sm me-2">Ver</a>
+                            {% if partido.id_organizador == session.usuario_id %}
+                            <a href="{{ url_for('editar_partido', id=partido.id_partido) }}" class="btn btn-warning btn-sm me-2">Editar</a>
+                            <a href="{{ url_for('eliminar_partido', id=partido.id_partido) }}" class="btn btn-danger btn-sm"
+                                onclick="return confirm('¿Estás seguro de querer eliminar este partido?')">Borrar</a>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
                 {% else %}
