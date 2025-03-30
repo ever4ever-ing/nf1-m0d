@@ -20,7 +20,8 @@ def nuevo_partido():
             'id_organizador': session['usuario_id'],
             'lugar': request.form['lugar'],
             'fecha_inicio': request.form['fechaInicio'],
-            'descripcion': request.form['descripcion'],
+            'descripcion': request.form['descripcion']
+
         }
         log = f"Datos del formulario: {data}"
         print(log)
