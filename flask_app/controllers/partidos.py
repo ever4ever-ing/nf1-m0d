@@ -3,22 +3,32 @@ from flask import render_template, redirect, request, flash, session, url_for
 from flask_app.models.participante import Participante
 from flask_app.models.partido import Partido
 from flask_app.models.usuario import Usuario
+from flask_app.models.recinto import Recinto
+from flask_app.models.localidad import Localidad
 from datetime import datetime
 from flask_app import app
 
 
-
-
 @app.route('/nuevo_partido', methods=['GET', 'POST'])
 def nuevo_partido():
+
     if request.method == 'GET':
-        return render_template('nuevo.html')
-    
+        localidades = Localidad.get_all()
+        return render_template('nuevo.html', localidades=localidades)
+
     if request.method == 'POST':
         # Crear diccionario con los datos del formulario
+        lugar = Localidad.obtener_por_id(request.form['id_localidad'])
+        if lugar is None:
+            flash('Error: Localidad no encontrada', 'error')
+            return redirect(url_for('nuevo_partido'))
+        else:
+            lugar = lugar.nombre
+
         data = {
             'id_organizador': session['usuario_id'],
-            'lugar': request.form['lugar'],
+            'lugar': lugar,
+            'id_localidad': request.form['id_localidad'],
             'fecha_inicio': request.form['fechaInicio'],
             'descripcion': request.form['descripcion']
 
@@ -34,30 +44,34 @@ def nuevo_partido():
 
         # Crear el partido
         partido_id = Partido.crear(data)
+
         print("Partido creado con ID:", partido_id)
         if partido_id:
             flash('Partido creado exitosamente', 'success')
-            return redirect(url_for('dashboard'))
-        
-        flash('Error al crear el partido', 'error')
-        return render_template('nuevo.html', data=data)
+            return redirect(url_for('editar_partido', id=partido_id ))
+        else:
+            flash('Error al crear el partido', 'error')
+            return render_template('nuevo.html', recintos=Recinto.obtener_por_id(data['id_recinto']))
+
 
 @app.route('/ver_partido/<int:id>')
 def ver_partido(id):
     partido = Partido.obtener_por_id(id)
     print("Controlador")
-    print("id:",id)
-    print("partido:",partido)
+    print("id:", id)
+    print("partido:", partido)
     participantes = Participante.obtener_participantes_por_partido(id)
-    usuario_en_partido = any(participante['id_usuario'] == session['usuario_id'] for participante in participantes)
+    usuario_en_partido = any(
+        participante['id_usuario'] == session['usuario_id'] for participante in participantes)
     if usuario_en_partido:
         print("Usuario ya esta en el partido")
         ready = True
     else:
         print("Usuario no esta en el partido")
         ready = False
-    
-    return render_template('ver_partido.html', partido=partido, participantes=participantes, usuario_id=session['usuario_id'],ready=ready)
+
+    return render_template('ver_partido.html', partido=partido, participantes=participantes, usuario_id=session['usuario_id'], ready=ready)
+
 
 @app.route('/eliminar_partido/<int:id>')
 def eliminar_partido(id):
@@ -72,20 +86,26 @@ def eliminar_partido(id):
 def editar_partido(id):
     if 'usuario_id' not in session:
         return redirect('/login')
-    
+
     partido = Partido.obtener_por_id(id)
     if partido.id_organizador != session['usuario_id']:
-        flash("No tienes permiso para editar este partido", "error") 
+        flash("No tienes permiso para editar este partido", "error")
         return redirect(url_for('dashboard'))
     else:
-        ##mostrar usuarios que no esten en el partido solamente
-        return render_template("editar_partido.html", partido=partido, usuarios=Usuario.get_all(), participantes=Participante.obtener_participantes_por_partido(id))
-    
+        recintos=Recinto.obtener_por_id_localidad(partido.id_localidad)
+        log = f"Recintos type: {type(recintos)}"
+        print(log)
+        # mostrar usuarios que no esten en el partido solamente
+        return render_template("editar_partido.html", partido=partido, usuarios=Usuario.get_all(),
+                            participantes=Participante.obtener_participantes_por_partido(id),
+                            recintos=Recinto.obtener_por_id_localidad(partido.id_localidad))
+
+
 @app.route("/actualizar_partido", methods=['POST'])
 def actualizar_partido():
     if 'usuario_id' not in session:
         return redirect('/login')
-    
+
     datos = {
         "id_partido": request.form['id'],
         "lugar": request.form['lugar'],
@@ -96,13 +116,13 @@ def actualizar_partido():
     print("********ACTUALIZANDO********")
 
     print("Hora inicio", request.form['horaInicio'])
-    print("Fecha inicio", request.form['fechaInicio'] + " " + request.form['horaInicio'])
+    print("Fecha inicio",
+          request.form['fechaInicio'] + " " + request.form['horaInicio'])
     print("Lista de participantes", datos['participantes'])
     Partido.actualizar(datos)
-    
+
     flash("Partido actualizado exitosamente", "success")
     return redirect(url_for('dashboard'))
-
 
     """
     

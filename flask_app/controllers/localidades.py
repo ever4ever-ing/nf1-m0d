@@ -32,3 +32,4 @@ def get_localidades():
     else:
         logging.info(f"Localidades: {localidades}")
     return localidades
+

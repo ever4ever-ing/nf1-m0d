@@ -16,18 +16,15 @@ DATABASE = os.getenv('DATABASE')
 
 class Recinto:
     def __init__(self, data):
-        self.id_recinto = data['id_recinto']
+        self.id_recinto = data.get('id_recinto')  # Usa get para evitar KeyError
         self.nombre = data['nombre']
         self.direccion = data['direccion']
         self.id_localidad = data['id_localidad']
-        self.localidad = data['localidad'] if 'localidad' in data else None
-        self.provincia = data['provincia'] if 'provincia' in data else None
-        self.pais = data['pais'] if 'pais' in data else None
-        self.descripcion = data['descripcion'] if 'descripcion' in data else None
-        self.imagen = data['imagen'] if 'imagen' in data else None
-        self.fecha_creacion = data['fecha_creacion'] if 'fecha_creacion' in data else None
-        self.fecha_modificacion = data['fecha_modificacion'] if 'fecha_modificacion' in data else None
-
+        self.localidad = data.get('localidad')  # Usa get para evitar KeyError
+        self.descripcion = data.get('descripcion')
+        self.imagen = data.get('imagen')
+        self.fecha_creacion = data.get('fecha_creacion')
+        self.fecha_modificacion = data.get('fecha_modificacion')
 
     @classmethod
     def get_all(cls):
@@ -36,9 +33,12 @@ class Recinto:
         if not resultados:  # Si no hay resultados, devuelve una lista vacía
             return []
         logging.info(f"Resultados de la consulta: {resultados}")
-        recintos  = []
+        recintos = []
         for recinto in resultados:
-            recintos.append(cls(recinto))
+            if isinstance(recinto, dict):  # Asegúrate de que cada elemento sea un diccionario
+                recintos.append(cls(recinto))
+            else:
+                logging.error(f"Elemento inválido en resultados: {recinto}")
         return recintos
 
     @classmethod
@@ -55,5 +55,28 @@ class Recinto:
         except Exception as e:
             logging.error(f"Error al guardar recinto: {e}")
             return None
+        
+    @classmethod
+    def obtener_por_id(cls, id_recinto):
+        query = "SELECT * FROM recintos WHERE id_recinto = %s;"
+        data = (id_recinto,)
+        resultado = connectToPostgreSQL(DATABASE).query_db(query, data)
+        if resultado:
+            return cls(resultado[0])
+        return None
+
+    @classmethod
+    def obtener_por_id_localidad(cls, id_localidad):
+        query = "SELECT * FROM recintos WHERE id_localidad = %s;"
+        data = (id_localidad,)
+        resultado = connectToPostgreSQL(DATABASE).query_db(query, data)
+        logging.info(f"Resultado de la consulta: {resultado}")
+        logging.info(f"type resultado: {type(resultado)}")
+        if resultado:
+            recintos = []
+            for recinto in resultado:
+                recintos.append(cls(recinto))  # Crear un objeto Recinto por cada resultado
+            return recintos  # Devolver una lista de objetos Recinto
+        return []
 
 

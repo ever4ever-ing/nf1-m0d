@@ -20,6 +20,7 @@ class Partido:
         self.fecha_inicio = data['fecha_inicio']
         self.descripcion = data['descripcion']
         self.id_organizador = data['id_organizador']
+        self.id_localidad = data['id_localidad']
         self.fecha_creacion = data['fecha_creacion']
         self.fecha_actualizacion = data['fecha_actualizacion']
         self.organizador = data.get('organizador', None)
@@ -78,8 +79,8 @@ class Partido:
     @classmethod
     def crear(cls, data):
         query = """
-            INSERT INTO partidos (lugar, fecha_inicio, descripcion, id_organizador)
-            VALUES (%(lugar)s, %(fecha_inicio)s, %(descripcion)s, %(id_organizador)s)
+            INSERT INTO partidos (lugar, fecha_inicio, descripcion, id_organizador, id_localidad)
+            VALUES (%(lugar)s, %(fecha_inicio)s, %(descripcion)s, %(id_organizador)s, %(id_localidad)s)
             RETURNING id_partido;
         """
         # Ejecutar la consulta y obtener el resultado
@@ -136,10 +137,6 @@ class Partido:
     @staticmethod
     def validar_partido(data):
         errores = []
-
-        # Validar que los campos no estén vacíos
-        if not data['lugar']:
-            errores.append("El lugar es obligatorio")
 
         if not data['fecha_inicio']:
             errores.append("La fecha de inicio es obligatoria")

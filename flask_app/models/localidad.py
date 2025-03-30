@@ -31,3 +31,15 @@ class Localidad:
             print("No se encontraron localidades.")
 
         return localidades
+    
+    @classmethod
+    def obtener_por_id(cls, id_localidad):
+        query = """
+            SELECT * FROM localidades WHERE id_localidad = %s
+        """
+        data = (id_localidad,)
+        resultado = connectToPostgreSQL(DATABASE).query_db(query, data)
+        if resultado:
+            return cls(resultado[0])
+        else:
+            return None

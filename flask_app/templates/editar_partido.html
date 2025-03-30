@@ -18,79 +18,115 @@
 </style>
 
 <body>
-
-    <div class="container py-4">
+    <div class="container py-2">
         <div style="background-color: rgba(0, 0, 0, 0.499);">
-            <h1 class="mb-4 text-white p-3" >Editar partido</h1>
+            <h1 class="mb-2 text-white p-2">Editar partido</h1>
         </div>
-        
-        <div class="card p-4 mb-4">
-            <form method="POST" action="/actualizar_partido">
-                <input type="hidden" id="id" name="id" value="{{ partido.id_partido }}">
-                <div class="mb-3">
-                    <label for="lugar" class="form-label">Lugar</label>
-                    <input type="text" id="lugar" name="lugar" class="form-control" value="{{ partido.lugar }}" required>
+        <div class="row p-2 d-flex justify-content-around align-items-start">
+            <div class="col-4">
+                <div class="card p-3 mb-3">
+
+                    <form method="POST" action="/actualizar_partido">
+                        <input type="hidden" id="id" name="id" value="{{ partido.id_partido }}">
+                        <div class="mb-2">
+                            <label for="lugar" class="form-label">Lugar</label>
+                            <input type="text" id="lugar" name="lugar" class="form-control" value="{{ partido.lugar }}"
+                                required>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-2">
+                                <label for="fechaInicio" class="form-label">Fecha</label>
+                                <input type="date" id="fechaInicio" name="fechaInicio" class="form-control"
+                                    value="{{ partido.fecha_inicio.strftime('%Y-%m-%d') }}" required>
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                <label for="horaInicio" class="form-label">Hora de Inicio</label>
+                                <input type="time" id="horaInicio" name="horaInicio" class="form-control"
+                                    value="{{ partido.fecha_inicio.strftime('%H:%M') }}" required>
+                            </div>
+                        </div>
+                        <div class="mb-2">
+                            <label for="descripcion" class="form-label">Descripción</label>
+                            <textarea id="descripcion" name="descripcion" class="form-control" rows="3"
+                                required>{{ partido.descripcion }}</textarea>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <a href="/dashboard" class="btn btn-secondary btn-sm">Cancelar</a>
+                            <button type="submit" class="btn btn-primary btn-sm">Guardar Cambios</button>
+                        </div>
+                    </form>
                 </div>
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label for="fechaInicio" class="form-label">Fecha</label>
-                        <input type="date" id="fechaInicio" name="fechaInicio" class="form-control"
-                            value="{{ partido.fecha_inicio.strftime('%Y-%m-%d') }}" required>
+            </div>
+
+
+            <div class="col-4">
+                <div class="card p-3 mb-3">
+                    <h2 class="mb-2">Participantes Actuales</h2>
+                    {% for participante in participantes %}
+                    <div class="d-flex justify-content-between align-items-center border-bottom py-1">
+                        <div>
+                            <p class="mb-0"><strong>ID:</strong> {{ participante.id_usuario }}</p>
+                            <p class="mb-0"><strong>Nombre:</strong> {{ participante.nombre }}</p>
+                        </div>
+                        <form method="POST" action="/eliminar_participante" class="d-inline">
+                            <input type="hidden" name="id_partido_delete" value="{{ partido.id_partido }}">
+                            <input type="hidden" name="id_usuario_delete" value="{{ participante.id_usuario }}">
+                            <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+                        </form>
                     </div>
-                    <div class="col-md-6 mb-3">
-                        <label for="horaInicio" class="form-label">Hora de Inicio</label>
-                        <input type="time" id="horaInicio" name="horaInicio" class="form-control"
-                            value="{{ partido.fecha_inicio.strftime('%H:%M') }}" required>
+                    {% endfor %}
+                </div>
+                <div class="card p-3">
+                    <h2 class="mb-2">Agregar Participantes</h2>
+                    <div class="mb-2">
+                        <input type="text" id="searchUsers" class="form-control form-control-sm"
+                            placeholder="Buscar usuarios por nombre...">
                     </div>
+                    {% for user in usuarios %}
+                    <div class="d-flex justify-content-between align-items-center border-bottom py-1">
+                        <div>
+                            <p class="mb-0"><strong>ID:</strong> {{ user.id_usuario }}</p>
+                            <p class="mb-0"><strong>Nombre:</strong> {{ user.nombre }}</p>
+                        </div>
+                        <form method="POST" action="/agregar_participante" class="d-inline">
+                            <input type="hidden" name="id_partido" value="{{ partido.id_partido }}">
+                            <input type="hidden" name="id_usuario" value="{{ user.id_usuario }}">
+                            <button type="submit" class="btn btn-primary btn-sm">Agregar</button>
+                        </form>
+                    </div>
+                    {% endfor %}
                 </div>
-                <div class="mb-3">
-                    <label for="descripcion" class="form-label">Descripción</label>
-                    <textarea id="descripcion" name="descripcion" class="form-control" rows="4" required>{{ partido.descripcion }}</textarea>
-                </div>
-                <div class="d-flex justify-content-between">
-                    <a href="/dashboard" class="btn btn-secondary">Cancelar</a>
-                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-                </div>
-            </form>
+            </div>
         </div>
 
-        <div class="card p-4 mb-4">
-            <h2 class="mb-3">Participantes Actuales</h2>
-            {% for participante in participantes %}
-            <div class="d-flex justify-content-between align-items-center border-bottom py-2">
-                <div>
-                    <p class="mb-0"><strong>ID:</strong> {{ participante.id_usuario }}</p>
-                    <p class="mb-0"><strong>Nombre:</strong> {{ participante.nombre }}</p>
-                </div>
-                <form method="POST" action="/eliminar_participante" class="d-inline">
-                    <input type="hidden" name="id_partido_delete" value="{{ partido.id_partido }}">
-                    <input type="hidden" name="id_usuario_delete" value="{{ participante.id_usuario }}">
-                    <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
-                </form>
-            </div>
-            {% endfor %}
-        </div>
+        <div class="row p-2 d-flex justify-content-center w-auto">
 
-        <div class="card p-4">
-            <h2 class="mb-3">Agregar Participantes</h2>
-            <div class="mb-3">
-                <input type="text" id="searchUsers" class="form-control" placeholder="Buscar usuarios por nombre...">
-            </div>
-            {% for user in usuarios %}
-            <div class="d-flex justify-content-between align-items-center border-bottom py-2">
-                <div>
-                    <p class="mb-0"><strong>ID:</strong> {{ user.id_usuario }}</p>
-                    <p class="mb-0"><strong>Nombre:</strong> {{ user.nombre }}</p>
+            <div class="card p-3 mb-3 col-12 ">
+                <h2 class="mb-2">Recintos</h2>
+                <div class="row d-flex justify-content-center ">
+                    {% for lugar in recintos %}
+                    <div class="col-2">
+                        <div class="card h-100">
+                            {% if lugar.imagen %}
+                            <img src="{{ url_for('static', filename='img/' + lugar.imagen) }}" class="card-img-top"
+                                alt="{{ lugar.nombre }}">
+                            {% else %}
+                            <img src="{{ url_for('static', filename='img/bg7.webp') }}" class="card-img-top"
+                                alt="Imagen por defecto">
+                            {% endif %}
+                            <div class="card-body">
+                                <h5 class="card-title">{{ lugar.nombre }}</h5>
+                                <!--  <p class="card-text">{{ lugar.descripcion }}</p>-->
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
                 </div>
-                <form method="POST" action="/agregar_participante" class="d-inline">
-                    <input type="hidden" name="id_partido" value="{{ partido.id_partido }}">
-                    <input type="hidden" name="id_usuario" value="{{ user.id_usuario }}">
-                    <button type="submit" class="btn btn-primary btn-sm">Agregar</button>
-                </form>
             </div>
-            {% endfor %}
         </div>
     </div>
+    </div>
+
 
 </body>
 

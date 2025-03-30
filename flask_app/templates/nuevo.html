@@ -40,9 +40,15 @@
 
         <form id="newEventForm" action="{{ url_for('nuevo_partido') }}" method="POST" class="card p-4">
             <div class="mb-3">
-                <label for="lugar" class="form-label">Lugar</label>
-                <input type="text" id="lugar" name="lugar" class="form-control" required
-                    value="{{ data.lugar if data else '' }}">
+                <label for="id_localidad" class="form-label">Lugar</label>
+                <select id="id_localidad" name="id_localidad" required>
+                    <option value="" disabled selected>Seleccione una localidad</option>
+                    {% for localidad in localidades %}
+                    <option value="{{ localidad.id_localidad }}">
+                        {{ localidad.nombre }}
+                    </option>
+                    {% endfor %}
+                </select>
             </div>
 
             <div class="mb-3">
