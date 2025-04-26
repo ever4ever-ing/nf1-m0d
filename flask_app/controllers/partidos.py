@@ -3,6 +3,7 @@ from flask import render_template, redirect, request, flash, session, url_for
 from flask_app.models.localidad import Localidad
 from flask_app.models.participante import Participante
 from flask_app.models.partido import Partido
+from flask_app.models.recinto import Recinto
 from flask_app.models.usuario import Usuario
 from datetime import datetime
 from flask_app import app
@@ -32,15 +33,16 @@ def nuevo_partido():
             for error in errores:
                 flash(error, 'error')
             return render_template('nuevo.html', data=data)
-
         # Crear el partido
         partido_id = Partido.crear(data)
+
+        print("Partido creado con ID:", partido_id)
         if partido_id:
-            flash('partido creado exitosamente', 'success')
-            return redirect(url_for('dashboard'))
-        
-        flash('Error al crear el partido', 'error')
-        return render_template('nuevo.html', data=data)
+            flash('Partido creado exitosamente', 'success')
+            return redirect(url_for('editar_partido', id=partido_id ))
+        else:
+            flash('Error al crear el partido', 'error')
+            return render_template('nuevo.html', data=data)
 
 @app.route('/ver_partido/<int:id>')
 def ver_partido(id):

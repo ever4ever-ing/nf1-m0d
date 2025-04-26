@@ -67,8 +67,8 @@ class Partido:
     @classmethod
     def crear(cls, data):
         query = """
-            INSERT INTO partidos (lugar, fecha_inicio, descripcion, id_organizador)
-            VALUES (%(lugar)s, %(fecha_inicio)s, %(descripcion)s, %(id_organizador)s);
+            INSERT INTO partidos (fecha_inicio, descripcion, id_organizador, id_localidad)
+            VALUES (%(fecha_inicio)s, %(descripcion)s, %(id_organizador)s);
         """
         return connectToMySQL(DATABASE).query_db(query, data)
 

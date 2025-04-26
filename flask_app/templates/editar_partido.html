@@ -106,6 +106,9 @@
         <div class="card p-3 mb-3 col-12 w-75" style="background-color: rgba(0, 0, 0, 0.499);">
         <h2 class="mb-2 text-light">Recintos</h2>
         <div class="row d-flex justify-content-center g-3 w-auto" >
+            {% if not recintos %}
+            <p class="text-light">No hay recintos disponibles.</p>
+            {% else %}
             {% for lugar in recintos %}
             <div class="col-2">
                 <div class="card h-100">
@@ -123,6 +126,7 @@
                 </div>
             </div>
             {% endfor %}
+            {% endif %}
         </div>
         </div>
     </div>
