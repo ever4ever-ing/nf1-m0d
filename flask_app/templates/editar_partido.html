@@ -5,90 +5,130 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NosFalta1</title>
-    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="https://bootswatch.com/5/lux/bootstrap.min.css">
 </head>
+<style>
+    body {
+        background-color: #f8f9fa;
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-image: url("{{ url_for('static', filename='img/bg4.webp') }}");
+    }
+</style>
 
 <body>
+    <div class="container py-2">
+        <div style="background-color: rgba(0, 0, 0, 0.499);">
+            <h1 class="mb-2 text-white p-2">Editar partido</h1>
+        </div>
+        <div class="row p-2 d-flex justify-content-around align-items-start" >
+            <div class="col-4">
+                <div class="card p-3 mb-3" >
 
-    <div class="container-edit">
-        <h1>Editar partido</h1>
-            <div class="container-match">
-                <form method="POST" action="/actualizar_partido" class="form">
-                    <input type="hidden" id="id" name="id" value="{{ partido.id_partido }}">
-                    <div class="form-group">
-                        <label for="lugar">Lugar</label>
-                        <input type="text" id="lugar" name="lugar" value="{{ partido.lugar }}" required>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="fechaInicio">Fecha</label>
-                            <input type="date" id="fechaInicio" name="fechaInicio"
-                                value="{{ partido.fecha_inicio.strftime('%Y-%m-%d') }}" required>
+                    <form method="POST" action="/actualizar_partido">
+                        <input type="hidden" id="id" name="id" value="{{ partido.id_partido }}">
+                        <div class="mb-2">
+                            <label for="lugar" class="form-label">Lugar</label>
+                            <input type="text" id="lugar" name="lugar" class="form-control" value="{{ partido.lugar }}"
+                                required>
                         </div>
-                        <div class="form-group">
-                            <label for="horaInicio">Hora de Inicio</label>
-                            <input type="time" id="horaInicio" name="horaInicio"
-                                value="{{ partido.fecha_inicio.strftime('%H:%M') }}" required>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="descripcion">Descripción</label>
-                        <textarea id="descripcion" name="descripcion" rows="4"
-                            required>{{ partido.descripcion }}</textarea>
-                    </div>
-                    <div class="form-actions">
-                        <a href="/dashboard" class="btn btn-secondary">Cancelar</a>
-                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-                    </div>
-                </form>
-            </div>
-
-            <div class="container-match">
-                <h1>Participantes Actuales</h1>
-                {% for participante in participantes %}
-                <div >
-                    <div >
-                        <div >
-                            <form method="POST" action="/eliminar_participante" class="form-inline">
-                                <div class="user-info">
-                                    <p class="user-id">ID: {{ participante.id_usuario }}</p>
-                                    <input type="hidden" name="id_partido_delete" value="{{ partido.id_partido }}">
-                                    <input type="hidden" name="id_usuario_delete" value="{{ participante.id_usuario }}">
-                                    <p class="user-name">{{ participante.nombre }}</p>
-                                </div>
-                                <button type="submit" class="btn btn-danger">Eliminar</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-
-
-
-            <div class="container-match">
-                <h1>Agregar Participantes</h1>
-    
-                <div class="search-container">
-                    <input type="text" id="searchUsers" placeholder="Buscar usuarios por nombre...">
-                </div>
-                {% for user in usuarios %}
-                            <div>
-                                <form method="POST" action="/agregar_participante" class="form-inline">
-                                    <div class="user-info">
-                                        <p class="user-id">ID: {{ user.id_usuario }}</p>
-                                        <input type="hidden" name="id_partido" value="{{ partido.id_partido }}">
-                                        <input type="hidden" name="id_usuario" value="{{ user.id_usuario }}">
-                                        <p class="user-name">{{ user.nombre }}</p>
-                                    </div>
-                                    <button type="submit" class="btn-primary">Agregar</button>
-                                </form>
+                        <div class="row">
+                            <div class="col-md-6 mb-2">
+                                <label for="fechaInicio" class="form-label">Fecha</label>
+                                <input type="date" id="fechaInicio" name="fechaInicio" class="form-control"
+                                    value="{{ partido.fecha_inicio.strftime('%Y-%m-%d') }}" required>
                             </div>
-
-                    {% endfor %}
+                            <div class="col-md-6 mb-2">
+                                <label for="horaInicio" class="form-label">Hora de Inicio</label>
+                                <input type="time" id="horaInicio" name="horaInicio" class="form-control"
+                                    value="{{ partido.fecha_inicio.strftime('%H:%M') }}" required>
+                            </div>
+                        </div>
+                        <div class="mb-2">
+                            <label for="descripcion" class="form-label">Descripción</label>
+                            <textarea id="descripcion" name="descripcion" class="form-control" rows="3"
+                                required>{{ partido.descripcion }}</textarea>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <a href="/dashboard" class="btn btn-secondary btn-sm">Cancelar</a>
+                            <button type="submit" class="btn btn-primary btn-sm">Guardar Cambios</button>
+                        </div>
+                    </form>
+                </div>
             </div>
+
+
+            <div class="col-4">
+                <div class="card p-3 mb-3">
+                    <h2 class="mb-2">Participantes Actuales</h2>
+                    {% for participante in participantes %}
+                    <div class="d-flex justify-content-between align-items-center border-bottom py-1">
+                        <div>
+                            <p class="mb-0"><strong>ID:</strong> {{ participante.id_usuario }}</p>
+                            <p class="mb-0"><strong>Nombre:</strong> {{ participante.nombre }}</p>
+                        </div>
+                        <form method="POST" action="/eliminar_participante" class="d-inline">
+                            <input type="hidden" name="id_partido_delete" value="{{ partido.id_partido }}">
+                            <input type="hidden" name="id_usuario_delete" value="{{ participante.id_usuario }}">
+                            <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+                        </form>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="card p-3">
+                    <h2 class="mb-2">Agregar Participantes</h2>
+                    <div class="mb-2">
+                        <input type="text" id="searchUsers" class="form-control form-control-sm"
+                            placeholder="Buscar usuarios por nombre...">
+                    </div>
+                    {% for user in usuarios %}
+                    <div class="d-flex justify-content-between align-items-center border-bottom py-1">
+                        <div>
+                            <p class="mb-0"><strong>ID:</strong> {{ user.id_usuario }}</p>
+                            <p class="mb-0"><strong>Nombre:</strong> {{ user.nombre }}</p>
+                        </div>
+                        <form method="POST" action="/agregar_participante" class="d-inline">
+                            <input type="hidden" name="id_partido" value="{{ partido.id_partido }}">
+                            <input type="hidden" name="id_usuario" value="{{ user.id_usuario }}">
+                            <button type="submit" class="btn btn-primary btn-sm">Agregar</button>
+                        </form>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
 
     </div>
+
+    <div class="row p-2 d-flex justify-content-center w-auto g-3" >
+
+        <div class="card p-3 mb-3 col-12 w-75" style="background-color: rgba(0, 0, 0, 0.499);">
+        <h2 class="mb-2 text-light">Recintos</h2>
+        <div class="row d-flex justify-content-center g-3 w-auto" >
+            {% for lugar in recintos %}
+            <div class="col-2">
+                <div class="card h-100">
+                    {% if lugar.imagen %}
+                    <img src="{{ url_for('static', filename='img/' + lugar.imagen) }}" class="card-img-top"
+                    alt="{{ lugar.nombre }}">
+                    {% else %}
+                    <img src="{{ url_for('static', filename='img/bg7.webp') }}" class="card-img-top"
+                    alt="Imagen por defecto">
+                    {% endif %}
+                    <div class="card-body">
+                    <h5 class="card-title">{{ lugar.nombre }}</h5>
+                    <!--  <p class="card-text">{{ lugar.descripcion }}</p>-->
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        </div>
+    </div>
+
+
+
 </body>
 
 </html>
