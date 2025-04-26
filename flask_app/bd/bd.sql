@@ -19,6 +19,8 @@ CREATE TABLE partidos (
     fecha_inicio DATETIME NOT NULL,
     descripcion TEXT,
     id_organizador INT NOT NULL,
+    id_localidad INT NOT NULL,
+    id_recinto INT NOT NULL,
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (id_organizador) REFERENCES usuarios(id_usuario)
