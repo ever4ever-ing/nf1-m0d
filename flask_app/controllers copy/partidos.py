@@ -98,7 +98,6 @@ def actualizar_partido():
     return redirect(url_for('dashboard'))
 
 
-
     """
     
 @app.route('/editar_viaje/<int:id>', methods=['GET', 'POST'])
