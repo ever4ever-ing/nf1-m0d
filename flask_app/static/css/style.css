@@ -1,7 +1,7 @@
 /* General Styles */
 * {
-    margin: 10;
-    padding: 10;
+    margin: 0;
+    padding: 0;
     box-sizing: border-box;
 }
 
@@ -12,12 +12,12 @@ body {
     box-sizing: border-box;
     background-color: whitesmoke;
     background-image: url('/static/img/bg1.webp');
-
     background-size: cover;
     /* Ajusta la imagen al tamaño del contenedor */
     background-position: center;
     /* Centra la imagen */
     background-repeat: no-repeat;
+    height: 100vh;
 
 }
 
@@ -43,7 +43,7 @@ body {
 
 .container {
     width: 100%;
-    margin: 0 auto;
+    margin: 10 auto;
     background: rgba(255, 255, 255, 0.5);
     padding: 20px;
     border-radius: 8px;
@@ -130,6 +130,8 @@ h2 {
     border-radius: 5px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     opacity: 0.9;
+    padding: 20px;
+    border-radius: 5px;
 }
 
 #index-form h2 {
@@ -176,6 +178,7 @@ h2 {
 
 #index-form .form-group {
     margin-bottom: 20px;
+    margin-top: 30px;
     display: flex;
     flex-direction: column;
 

@@ -9,7 +9,7 @@ class Partido:
         self.fecha_inicio = data['fecha_inicio']
         self.descripcion = data['descripcion']
         self.id_organizador = data['id_organizador']
-        self.id_localidad = data['id_localidad']
+        self.id_localidad = data.get('id_localidad', None)  # Usar .get para evitar KeyError
         self.fecha_creacion = data['fecha_creacion']
         self.fecha_actualizacion = data['fecha_actualizacion']
         self.organizador = data.get('organizador', None)
