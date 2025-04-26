@@ -1,3 +1,4 @@
+import logging
 from flask_app.config.mysqlconnection import connectToMySQL
 from flask_app.models import participante
 import os
@@ -36,11 +37,14 @@ class Localidad:
     @classmethod
     def obtener_por_id(cls, id_localidad):
         query = """
-            SELECT * FROM localidades WHERE id_localidad = %s
+            SELECT * FROM localidades WHERE id_localidad = %(id_localidad)s
         """
-        data = (id_localidad,)
-        resultado = connectToPostgreSQL(DATABASE).query_db(query, data)
+        data = {'id_localidad': id_localidad}  # Cambiar a un diccionario para evitar errores
+        resultado = connectToMySQL(DATABASE).query_db(query, data)
         if resultado:
+            logging.info(f"Resultado de la consulta en obtener localidad por id: {resultado}")
             return cls(resultado[0])
         else:
+
+            logging.error(f"No se encontró localidad con id {id_localidad}.")
             return None

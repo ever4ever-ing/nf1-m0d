@@ -1,11 +1,13 @@
 # modelos/viaje.py
+import logging
 from flask_app.config.mysqlconnection import connectToMySQL
 from flask_app.models import participante
+from flask_app.models.localidad import Localidad
 DATABASE = 'nosfalta1'
 class Partido:
     def __init__(self, data):
         self.id_partido = data['id_partido']
-        self.lugar = data['lugar']
+        self.lugar = data.get('lugar', None)  # Usar .get para evitar KeyError
         self.fecha_inicio = data['fecha_inicio']
         self.descripcion = data['descripcion']
         self.id_organizador = data['id_organizador']
@@ -66,11 +68,23 @@ class Partido:
 
     @classmethod
     def crear(cls, data):
+        lugar = Localidad.obtener_por_id(data['id_localidad'])
+        if lugar:
+            logging.info(f"Localidad encontrada: {lugar.nombre}")
+            data['lugar'] = lugar.nombre
+        else:
+            logging.error(f"partido.py En crear: No se encontró localidad con id {data['id_localidad']}")
+            data['lugar'] = None
         query = """
-            INSERT INTO partidos (fecha_inicio, descripcion, id_organizador, id_localidad)
-            VALUES (%(fecha_inicio)s, %(descripcion)s, %(id_organizador)s);
+            INSERT INTO partidos (lugar, fecha_inicio, descripcion, id_organizador, id_localidad)
+            VALUES (%(lugar)s, %(fecha_inicio)s, %(descripcion)s, %(id_organizador)s, %(id_localidad)s);
         """
-        return connectToMySQL(DATABASE).query_db(query, data)
+        # Ejecutar la consulta y obtener el resultado
+        resultado = connectToMySQL(DATABASE).query_db(query, data)
+        logging.info(f"Resultado de la consulta al crear: {resultado}")
+        print("Resultado:", resultado)
+        # Verificar si se obtuvo un resultado y devolver el id_partido
+        return resultado  # Devuelve el id_partido generado o None si no hay resultado
 
     @classmethod
     def actualizar(cls, data):
