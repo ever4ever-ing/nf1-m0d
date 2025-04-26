@@ -11,6 +11,7 @@ DB_HOST = os.getenv('DB_HOST')
 DB_USER = os.getenv('DB_USER')
 DB_PASSWORD = os.getenv('DB_PASSWORD')
 DATABASE = os.getenv('DATABASE')
+DATABASE= 'nosfalta1'
 
 class Localidad:
     def __init__(self, data):

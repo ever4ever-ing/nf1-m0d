@@ -116,10 +116,6 @@ class Partido:
     def validar_partido(data):
         errores = []
         
-        # Validar que los campos no estén vacíos
-        if not data['lugar']:
-            errores.append("El lugar es obligatorio")
-        
         if not data['fecha_inicio']:
             errores.append("La fecha de inicio es obligatoria")
             

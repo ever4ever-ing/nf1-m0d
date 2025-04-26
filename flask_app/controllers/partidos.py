@@ -1,5 +1,6 @@
 # controladores/viajes.py
 from flask import render_template, redirect, request, flash, session, url_for
+from flask_app.models.localidad import Localidad
 from flask_app.models.participante import Participante
 from flask_app.models.partido import Partido
 from flask_app.models.usuario import Usuario
@@ -12,13 +13,15 @@ from flask_app import app
 @app.route('/nuevo_partido', methods=['GET', 'POST'])
 def nuevo_partido():
     if request.method == 'GET':
-        return render_template('nuevo.html')
+        # Verificar si el usuario está logueado
+        localidades = Localidad.get_all()
+        return render_template('nuevo.html', localidades=localidades)
     
     if request.method == 'POST':
         # Crear diccionario con los datos del formulario
         data = {
             'id_organizador': session['usuario_id'],
-            'lugar': request.form['lugar'],
+            'id_localidad': request.form['id_localidad'],
             'fecha_inicio': request.form['fechaInicio'],
             'descripcion': request.form['descripcion'],
         }
@@ -85,7 +88,7 @@ def actualizar_partido():
     
     datos = {
         "id_partido": request.form['id'],
-        "lugar": request.form['lugar'],
+        'id_localidad': request.form['id_localidad'],
         "fecha_inicio": request.form['fechaInicio'],
         "descripcion": request.form['descripcion'],
         "participantes": Participante.obtener_participantes_por_partido(request.form['id'])
@@ -96,7 +99,6 @@ def actualizar_partido():
     
     flash("partido actualizado exitosamente", "success")
     return redirect(url_for('dashboard'))
-
 
 
     """
