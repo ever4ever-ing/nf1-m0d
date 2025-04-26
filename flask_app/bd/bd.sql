@@ -91,7 +91,7 @@ CREATE TABLE recintos (
     id_recinto SERIAL PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL,
     direccion TEXT NOT NULL,
-    id_localidad INT NOT NULL,
+    id_localidad BIGINT UNSIGNED NOT NULL, -- Cambiado a BIGINT UNSIGNED
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (id_localidad) REFERENCES localidades(id_localidad)
@@ -100,7 +100,7 @@ CREATE TABLE recintos (
 CREATE TABLE canchas (
     id_cancha SERIAL PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL,
-    id_recinto INT NOT NULL,
+    id_recinto BIGINT UNSIGNED NOT NULL,
     tipo VARCHAR(50),
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -109,8 +109,8 @@ CREATE TABLE canchas (
 
 CREATE TABLE reservas (
     id_reserva SERIAL PRIMARY KEY,
-    id_cancha INT NOT NULL,
-    id_usuario INT NOT NULL,
+    id_cancha BIGINT UNSIGNED NOT NULL,
+    id_usuario INT NOT NULL, -- Cambiado a INT para ser compatible con la tabla usuarios
     fecha_reserva TIMESTAMP NOT NULL,
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
