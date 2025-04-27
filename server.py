@@ -1,5 +1,5 @@
 from flask_app import app
-from flask_app.controllers import usuarios, partidos, participantes, recintos, localidades
+from flask_app.controllers import usuarios, partidos, participantes, recintos, localidades,reservas, canchas
 
 if __name__ == "__main__":
     

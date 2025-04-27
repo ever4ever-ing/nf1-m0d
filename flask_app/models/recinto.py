@@ -86,3 +86,20 @@ class Recinto:
         return []
 
 
+    @classmethod
+    def obtener_canchas_por_recinto(cls, id_recinto):
+        query = "SELECT * FROM canchas WHERE id_recinto = %(id_recinto)s;"
+        data = {'id_recinto': id_recinto}
+        try:
+            resultado = connectToMySQL(DATABASE).query_db(query, data)
+            logging.info(f"Datos enviados para obtener canchas por id_recinto: {data}")
+            logging.info(f"Resultado de la consulta: {resultado}")
+            if resultado:
+                canchas = []
+                for cancha in resultado:
+                    canchas.append(cancha)  # Agregar cada cancha al resultado
+                return canchas  # Devolver una lista de canchas
+        except Exception as e:
+            logging.error(f"Error al obtener canchas por id_recinto: {e}")
+        return []
+

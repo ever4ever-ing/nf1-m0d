@@ -65,5 +65,11 @@ def registrar_recinto():
 @login_required
 def agendar_recinto(id_recinto):
         recinto = Recinto.obtener_por_id(id_recinto)
+        canchas = Recinto.obtener_canchas_por_recinto(id_recinto)
         if recinto:
-            return render_template("agenda.html")
+            return render_template("agenda.html", recinto=recinto, canchas=canchas)
+        else:
+            flash("Recinto no encontrado.", "error")
+            return redirect("/dashboard")  
+
+# Redirigir a una página de error o dashboard

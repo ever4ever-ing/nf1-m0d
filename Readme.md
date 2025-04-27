@@ -77,3 +77,6 @@ Friendship-Flask/
 - `requirements.txt`: Lista de dependencias de Python necesarias para el proyecto.
 - `server.py`: Archivo principal para ejecutar la aplicación Flask.
 - `Readme.md`: Documentación del proyecto.
+
+
+gunicorn --bind 0.0.0.0:5000 wsgi:application

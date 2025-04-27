@@ -63,6 +63,26 @@
                         <button type="submit" class="btn btn-primary btn-sm w-100">Registrar</button>
                     </form>
                 </div>
+
+                <div class="card p-3 shadow mt-4">
+                    <h2 class="text-center mb-3">Registrar Canchas</h2>
+                    <form action="{{ url_for('registrar_cancha') }}" method="post">
+                        <div class="mb-2">
+                            <label for="nombre_cancha" class="form-label">Nombre de la cancha:</label>
+                            <input type="text" id="nombre_cancha" name="nombre_cancha" class="form-control form-control-sm" required>
+                        </div>
+                        <div class="mb-2">
+                            <label for="id_recinto" class="form-label">Recinto:</label>
+                            <select id="id_recinto" name="id_recinto" class="form-select form-select-sm" required>
+                                <option value="" disabled selected>Seleccione un recinto</option>
+                                {% for recinto in recintos %}
+                                <option value="{{ recinto.id_recinto }}">{{ recinto.nombre }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-success btn-sm w-100">Registrar Cancha</button>
+                    </form>
+                </div>
             </div>
             <div class="col-md-4 col-30">
                 <h2 class="text-center">Recintos disponibles</h2>
