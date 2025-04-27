@@ -114,6 +114,8 @@ CREATE TABLE reservas (
     id_cancha BIGINT UNSIGNED NOT NULL,
     id_usuario INT NOT NULL, -- Cambiado a INT para ser compatible con la tabla usuarios
     fecha_reserva TIMESTAMP NOT NULL,
+    hora_inicio TIME NOT NULL, -- Nueva columna para la hora de inicio
+    hora_fin TIME NOT NULL, -- Nueva columna para la hora de fin
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (id_cancha) REFERENCES canchas(id_cancha),

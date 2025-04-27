@@ -33,3 +33,9 @@ class Cancha:
         for cancha in resultados:
             canchas.append(cls(cancha))
         return canchas
+    
+    @classmethod
+    def delete(cls, id_cancha):
+        query = "DELETE FROM canchas WHERE id_cancha = %(id_cancha)s;"
+        data = {'id_cancha': id_cancha}
+        return connectToMySQL(DATABASE).query_db(query, data)

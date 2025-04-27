@@ -4,91 +4,134 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agenda</title>
+    <title>Reserva de Canchas</title>
     <link rel="stylesheet" href="https://bootswatch.com/5/lux/bootstrap.min.css">
 </head>
 
 <body>
-    <!-- Google Calendar Appointment Scheduling begin -->
-    <h1>Nos FALTA 1</h1>
-    <h2>Esta es una prueba de agenda usando google calendar</h2>
-
     <div class="container mt-4">
-        <h3>Canchas:</h3>
-        <ul class="list-group">
-            {% for cancha in canchas %}
-            <li class="list-group-item">{{ cancha.nombre }}</li>
-            {% endfor %}
-        </ul>
-    </div>
+        <h1 class="text-center mb-4">Sistema de Reservas</h1>
 
-    <!-- Google Calendar Appointment Scheduling begin 
-<iframe src="https://calendar.google.com/calendar/appointments/schedules/AcZssZ0Yga0Dq1JYeVR3ozhQRxJ8TZvNJZeZiVu7_GdGT5_L9Zh9ea_sn7PZK9TM4-Rvt4Cg5H8nTOZo?gv=true" style="border: 0" width="100%" height="800" frameborder="0"></iframe>
- end Google Calendar Appointment Scheduling -->
+        <!-- Mensajes Flash para retroalimentación del usuario -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
 
-    <div class="container mt-4" style="max-width: 800px;"> <!-- Reducir el ancho del contenedor -->
-        <form id="date-form">
-            <label for="selected_date">Seleccionar Fecha:</label>
-            <input type="date" id="selected_date" name="selected_date" value="{{ selected_date }}">
-            <button type="button" id="check-availability" class="btn btn-primary btn-sm">Mostrar Disponibilidad</button>
-        </form>
-        <br>
-        <div id="availability-container" class="container md-4" style="max-width: 800px;"> <!-- Reducir el ancho del contenedor -->
-            {% for cancha in canchas %}
-            <h2>{{ cancha.nombre }}</h2>
-            <table class="table table-secondary table-hover table-bordered table-sm" style="font-size: 0.85rem;">
-                <thead>
-                    <tr>
-                        <th style="width: 10%;" scope="row">Hora</th>
-                        <th style="width: 15%;" scope="row">{{ selected_date.strftime('%A %d') }}</th>
-                        <th style="width: 10%;" scope="row">Acción</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for hora in range(8, 23) %}
-                    <tr>
-                        <td>{{ '%02d:00' % hora }}</td>
-                        {% set reservas_fecha = reservas.get(selected_date.strftime('%Y-%m-%d'), {}).get(cancha.id_cancha, {}) %}
-                        {% set reserva = reservas_fecha.get(hora, None) %}
-                        <td>
-                            {% if reserva %}
-                            <div>
-                                <p style="margin: 0;">Reservado por {{ reserva.usuario_nombre }}</p>
-                            </div>
-                            <form action="{{ url_for('delete_reservation', reservation_id=reserva.id_reserva) }}" method="post" style="display:inline;">
-                                <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
-                            </form>
-                            {% else %}
-                            <a href="{{ url_for('reserve', cancha_id=cancha.id_cancha, date=selected_date.strftime('%Y-%m-%d'), time=hora) }}" class="btn btn-primary btn-sm">Reservar</a>
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            {% endfor %}
+        <!-- Enlaces de navegación -->
+        <div class="mb-4 text-center">
         </div>
 
-        <script>
-            document.getElementById('check-availability').addEventListener('click', function () {
-                const selectedDate = document.getElementById('selected_date').value;
-                if (!selectedDate) {
-                    alert('Por favor, selecciona una fecha.');
-                    return;
-                }
+        <!-- Selector de fecha simplificado -->
+        <div class="row justify-content-center mb-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Selecciona una fecha</h5>
+                        <form id="date-form" method="GET" action="/reservas">
+                            <div class="mb-3">
+                                <input type="date" id="selected_date" name="selected_date" class="form-control"
+                                    value="{{ selected_date.strftime('%Y-%m-%d') if selected_date else '' }}">
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">Mostrar Disponibilidad</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                fetch(`/api/availability?selected_date=${selectedDate}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        const container = document.getElementById('availability-container');
-                        container.innerHTML = data.html; // Actualizar el contenido dinámicamente
-                    })
-                    .catch(error => console.error('Error al obtener la disponibilidad:', error));
+        <!-- Tabla de disponibilidad simplificada -->
+        {% if selected_date is defined and selected_date %}
+        <div class="row">
+            {% for cancha in canchas %}
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">{{ cancha.nombre }}</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <table class="table table-striped mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Hora</th>
+                                    <th>Estado</th>
+                                    <th>Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for hora in range(8, 23) %}
+                                {% set reservas_fecha = reservas.get(selected_date.strftime('%Y-%m-%d'),
+                                {}).get(cancha.id_cancha, {}) %}
+                                {% set reserva = reservas_fecha.get(hora, None) %}
+                                <tr class="{{ 'table-danger' if reserva else 'table-success' }}">
+                                    <td>{{ '%02d:00' % hora }}</td>
+                                    <td>
+                                        {% if reserva %}
+                                        <span class="badge bg-danger">Reservado</span>
+                                        <br><small>por: {{ reserva.usuario_nombre }}</small>
+                                        {% else %}
+                                        <span class="badge bg-success">Disponible</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if reserva %}
+                                            {% if session.usuario_id == reserva.id_usuario %}
+                                            <form
+                                                action="{{ url_for('delete_reservation', reservation_id=reserva.id_reserva) }}"
+                                                method="post" class="d-inline">
+                                                <button type="submit" class="btn btn-danger btn-sm">Cancelar</button>
+                                            </form>
+                                            {% else %}
+                                            <span class="text-muted small">No disponible</span>
+                                            {% endif %}
+                                        {% else %}
+                                        <form action="{{ url_for('crear_reserva_simple') }}" method="post"
+                                            class="d-inline">
+                                            <input type="hidden" name="cancha_id" value="{{ cancha.id_cancha }}">
+                                            <input type="hidden" name="fecha_reserva"
+                                                value="{{ selected_date.strftime('%Y-%m-%d') }}">
+                                            <input type="hidden" name="hora_inicio" value="{{ hora }}">
+                                            <button type="submit" class="btn btn-primary btn-sm">Reservar</button>
+                                        </form>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="alert alert-info text-center">
+            Por favor, selecciona una fecha para ver la disponibilidad de las canchas.
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Script para auto-cerrar mensajes flash después de 5 segundos -->
+    <script>
+        // Cerrar automáticamente los mensajes de alerta después de 5 segundos
+        window.setTimeout(function() {
+            document.querySelectorAll('.alert').forEach(function(alert) {
+                alert.classList.add('fade');
+                setTimeout(function() {
+                    alert.remove();
+                }, 500);
             });
-        </script>
-    </div>
-    </div>
+        }, 5000);
+    </script>
 
+    <!-- Bootstrap JS para posibles funcionalidades futuras -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>
