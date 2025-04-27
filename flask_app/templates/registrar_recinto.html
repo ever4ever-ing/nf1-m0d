@@ -5,51 +5,100 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registrar recinto</title>
+    <link rel="stylesheet" href="https://bootswatch.com/5/lux/bootstrap.min.css">
+
 </head>
 
 <body>
-    <h1>
-        Registrar recinto
-    </h1>
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-8 col-70">
+                <h1 class="text-center mb-4">Registrar recinto</h1>
+                {# Mostrar mensajes flash #}
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                <div class="alert alert-info">
+                    {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                {% endwith %}
 
-    <form action="{{ url_for('registrar_recinto') }}" method="post">
-        <label for="nombre">Nombre del recinto:</label>
-        <input type="text" id="nombre" name="nombre" required>
-        <br><br>
-        <label for="direccion">Dirección:</label>
-        <input type="text" id="direccion" name="direccion" required>
-        <br><br>
-        <label for="telefono">Teléfono:</label>
-        <input type="text" id="telefono" name="telefono" required>
-        <br><br>
-        <label for="canchas">Cantidad de canchas:</label>
-        <input type="number" id="canchas" name="canchas" required>
-        <br><br>
-
-        <label for="id_localidad">Localidad:</label>
-        <select id="id_localidad" name="id_localidad" required>
-            <option value="" disabled selected>Seleccione una localidad</option>
-            {% for localidad in localidades %}
-            <option value="{{ localidad.id_localidad }}">{{ localidad.nombre }}</option>
-            {% endfor %}
-        </select>
-        <br><br>
-
-        <label for="precio">Precio por hora:</label>
-        <input type="number" id="precio" name="precio" required>
-        <br><br>
-        <label for="horario">Horario de atención:</label>
-        <button type="submit">Registrar</button>
-
-        <div>
-    </form>
-    <h2>Recintos disponibles</h2>
-    <ul>
-        {% for recinto in recintos %}
-        <li>{{ recinto.nombre }} - {{ recinto.localidad }}</li>
-        {% endfor %}
-    </ul>
+                <div class="card p-3 shadow">
+                    <form action="{{ url_for('registrar_recinto') }}" method="post">
+                        <div class="mb-2">
+                            <label for="nombre" class="form-label">Nombre del recinto:</label>
+                            <input type="text" id="nombre" name="nombre" class="form-control form-control-sm" required>
+                        </div>
+                        <div class="mb-2">
+                            <label for="direccion" class="form-label">Dirección:</label>
+                            <input type="text" id="direccion" name="direccion" class="form-control form-control-sm" required>
+                        </div>
+                        <div class="mb-2">
+                            <label for="telefono" class="form-label">Teléfono:</label>
+                            <input type="text" id="telefono" name="telefono" class="form-control form-control-sm" required>
+                        </div>
+                        <div class="mb-2">
+                            <label for="canchas" class="form-label">Cantidad de canchas:</label>
+                            <input type="number" id="canchas" name="canchas" class="form-control form-control-sm" required>
+                        </div>
+                        <div class="mb-2">
+                            <label for="id_localidad" class="form-label">Localidad:</label>
+                            <select id="id_localidad" name="id_localidad" class="form-select form-select-sm" required>
+                                <option value="" disabled selected>Seleccione una localidad</option>
+                                {% for localidad in localidades %}
+                                <option value="{{ localidad.id_localidad }}">{{ localidad.nombre }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-2">
+                            <label for="precio" class="form-label">Precio por hora:</label>
+                            <input type="number" id="precio" name="precio" class="form-control form-control-sm" required>
+                        </div>
+                        <div class="mb-2">
+                            <label for="horario" class="form-label">Horario de atención:</label>
+                            <input type="text" id="horario" name="horario" class="form-control form-control-sm" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-sm w-100">Registrar</button>
+                    </form>
+                </div>
+            </div>
+            <div class="col-md-4 col-30">
+                <h2 class="text-center">Recintos disponibles</h2>
+                <div class="mb-2">
+                    <label for="filtro_localidad" class="form-label">Filtrar por localidad:</label>
+                    <select id="filtro_localidad" name="filtro_localidad" class="form-select form-select-sm" onchange="filtrarRecintos()">
+                        <option value="">Todas las localidades</option>
+                        {% for localidad in localidades %}
+                        <option value="{{ localidad.id_localidad }}">{{ localidad.nombre }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <ul id="lista_recintos" class="list-group list-group-sm">
+                    {% for recinto in recintos %}
+                    <li class="list-group-item" data-localidad="{{ recinto.id_localidad }}">{{ recinto.nombre }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
     </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        function filtrarRecintos() {
+            const filtro = document.getElementById('filtro_localidad').value;
+            const recintos = document.querySelectorAll('#lista_recintos li');
+
+            recintos.forEach(recinto => {
+                if (!filtro || recinto.getAttribute('data-localidad') === filtro) {
+                    recinto.style.display = '';
+                } else {
+                    recinto.style.display = 'none';
+                }
+            });
+        }
+    </script>
 </body>
 
 </html>

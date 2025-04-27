@@ -13,7 +13,7 @@ DB_HOST = os.getenv('DB_HOST')
 DB_USER = os.getenv('DB_USER')
 DB_PASSWORD = os.getenv('DB_PASSWORD')
 DATABASE = os.getenv('DATABASE')
-
+DATABASE = 'nosfalta1'
 class Recinto:
     def __init__(self, data):
         self.id_recinto = data.get('id_recinto')  # Usa get para evitar KeyError
@@ -45,7 +45,7 @@ class Recinto:
     def registrar_recinto(cls, data):
         query = """
         INSERT INTO recintos (nombre, direccion, id_localidad) 
-        VALUES (%(nombre)s, %(direccion)s, %(id_localidad)s) RETURNING id_recinto;
+        VALUES (%(nombre)s, %(direccion)s, %(id_localidad)s);
         """
         logging.info(f"Datos enviados para guardar recinto: {data}")
         try:
@@ -58,20 +58,26 @@ class Recinto:
         
     @classmethod
     def obtener_por_id(cls, id_recinto):
-        query = "SELECT * FROM recintos WHERE id_recinto = %s;"
-        data = (id_recinto,)
-        resultado = connectToMySQL(DATABASE).query_db(query, data)
-        if resultado:
-            return cls(resultado[0])
+        query = "SELECT * FROM recintos WHERE id_recinto = %(id_recinto)s;"
+        data = {'id_recinto': id_recinto}
+        try:
+            resultado = connectToMySQL(DATABASE).query_db(query, data)
+            logging.info(f"Datos enviados para obtener recinto por id_recinto: {data}")
+            logging.info(f"Resultado de la consulta: {resultado}")
+            if resultado:
+                return cls(resultado[0])  # Crear un objeto Recinto con el primer resultado
+        except Exception as e:
+            logging.error(f"Error al obtener recinto por id_recinto: {e}")
         return None
 
     @classmethod
     def obtener_por_id_localidad(cls, id_localidad):
-        query = "SELECT * FROM recintos WHERE id_localidad = %s;"
-        data = (id_localidad,)
+        query = "SELECT * FROM recintos WHERE id_localidad = %(id_localidad)s;"
+        data = {'id_localidad': id_localidad}
         resultado = connectToMySQL(DATABASE).query_db(query, data)
-        logging.info(f"Resultado de la consulta: {resultado}")
-        logging.info(f"type resultado: {type(resultado)}")
+        logging.debug(f"Datos enviados para obtener recinto por id_localidad: {data}")
+        logging.debug(f"Resultado de la consulta: {resultado}")
+        logging.debug(f"type resultado: {type(resultado)}")
         if resultado:
             recintos = []
             for recinto in resultado:

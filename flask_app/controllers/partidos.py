@@ -80,8 +80,9 @@ def editar_partido(id):
         flash("No tienes permiso para editar este partido", "error") 
         return redirect(url_for('dashboard'))
     else:
+        recintos = Recinto.obtener_por_id_localidad(partido.id_localidad)
         ##mostrar usuarios que no esten en el partido solamente
-        return render_template("editar_partido.html", partido=partido, usuarios=Usuario.get_all(), participantes=Participante.obtener_participantes_por_partido(id))
+        return render_template("editar_partido.html", partido=partido, usuarios=Usuario.get_all(), participantes=Participante.obtener_participantes_por_partido(id),recintos=recintos)
     
 @app.route("/actualizar_partido", methods=['POST'])
 def actualizar_partido():

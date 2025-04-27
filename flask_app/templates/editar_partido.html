@@ -22,9 +22,9 @@
         <div style="background-color: rgba(0, 0, 0, 0.499);">
             <h1 class="mb-2 text-white p-2">Editar partido</h1>
         </div>
-        <div class="row p-2 d-flex justify-content-around align-items-start" >
+        <div class="row p-2 d-flex justify-content-around align-items-start">
             <div class="col-4">
-                <div class="card p-3 mb-3" >
+                <div class="card p-3 mb-3">
 
                     <form method="POST" action="/actualizar_partido">
                         <input type="hidden" id="id" name="id" value="{{ partido.id_partido }}">
@@ -101,34 +101,40 @@
 
     </div>
 
-    <div class="row p-2 d-flex justify-content-center w-auto g-3" >
+    <div class="row p-2 d-flex justify-content-center w-auto g-3">
 
         <div class="card p-3 mb-3 col-12 w-75" style="background-color: rgba(0, 0, 0, 0.499);">
-        <h2 class="mb-2 text-light">Recintos</h2>
-        <div class="row d-flex justify-content-center g-3 w-auto" >
-            {% if not recintos %}
-            <p class="text-light">No hay recintos disponibles.</p>
-            {% else %}
-            {% for lugar in recintos %}
-            <div class="col-2">
-                <div class="card h-100">
-                    {% if lugar.imagen %}
-                    <img src="{{ url_for('static', filename='img/' + lugar.imagen) }}" class="card-img-top"
-                    alt="{{ lugar.nombre }}">
-                    {% else %}
-                    <img src="{{ url_for('static', filename='img/bg7.webp') }}" class="card-img-top"
-                    alt="Imagen por defecto">
-                    {% endif %}
-                    <div class="card-body">
-                    <h5 class="card-title">{{ lugar.nombre }}</h5>
-                    <!--  <p class="card-text">{{ lugar.descripcion }}</p>-->
+            <h2 class="mb-2 text-light">Recintos</h2>
+            <div class="row d-flex justify-content-center g-3 w-auto">
+                {% if not recintos %}
+                <p class="text-light">No hay recintos disponibles.</p>
+                {% else %}
+                {% for lugar in recintos %}
+                <div class="col-2">
+                    <a href="{{ url_for('agendar_recinto', id_recinto=lugar.id_recinto) }}"
+                        class="text-decoration-none">
+                    <div class="card h-100">
+                        {% if lugar.imagen %}
+                        <img src="{{ url_for('static', filename='img/' + lugar.imagen) }}" class="card-img-top"
+                            alt="{{ lugar.nombre }}">
+                        {% else %}
+                        <img src="{{ url_for('static', filename='img/bg7.webp') }}" class="card-img-top"
+                            alt="Imagen por defecto">
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ lugar.nombre }}</h5>
+                            <!--  <p class="card-text">{{ lugar.descripcion }}</p>-->
+                        </div>
                     </div>
+                    </a>
                 </div>
+                {% endfor %}
+                {% endif %}
             </div>
-            {% endfor %}
-            {% endif %}
         </div>
-        </div>
+    </div>
+
+    </div>
     </div>
 
 

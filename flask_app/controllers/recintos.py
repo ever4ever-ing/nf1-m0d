@@ -30,11 +30,11 @@ def login_required(f):
 def recintos():
     Recintos = Recinto.get_all()
     Localidades = Localidad.get_all()
-    logging.info(f"Recintos: {Recintos}")
+    logging.debug(f"Recintos: {Recintos}")
     if not Recintos:  # Verifica si la lista está vacía
-        logging.info("No hay recintos registrados.")
+        logging.debug("No hay recintos registrados.")
     else:
-        logging.info(f"Recintos: {Recinto}")
+        logging.debug(f"Recintos: {Recinto}")
     return render_template("registrar_recinto.html", recintos=Recintos, localidades=Localidades)
 
 @app.route("/recintos/registrar", methods=["POST"])
@@ -46,7 +46,6 @@ def registrar_recinto():
     if missing_fields:
         flash(f"Faltan los siguientes campos obligatorios: {', '.join(missing_fields)}", "error")
         return redirect("/recintos")
-
     data = {
         'nombre': request.form['nombre'],
         'direccion': request.form['direccion'],
@@ -60,3 +59,11 @@ def registrar_recinto():
     else:
         flash("Error al registrar el recinto. Por favor, inténtelo de nuevo.", "error")
         return redirect("/recintos")
+    
+
+@app.route('/agendar_recinto/<int:id_recinto>', methods=['GET'])
+@login_required
+def agendar_recinto(id_recinto):
+        recinto = Recinto.obtener_por_id(id_recinto)
+        if recinto:
+            return render_template("agenda.html")
