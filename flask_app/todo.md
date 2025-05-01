@@ -5,4 +5,5 @@
 [] Diferenciar entre invitados y confirmados
     - se podria crear una tabla con estado del participante(invitado, solicitante, confirmado)
 [] Modo team - modo match
+[] Que la reserva se asocie al evento
 

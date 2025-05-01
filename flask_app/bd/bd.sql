@@ -12,18 +12,19 @@ CREATE TABLE usuarios (
     fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
--- Tabla de partidos
 CREATE TABLE partidos (
     id_partido INT PRIMARY KEY AUTO_INCREMENT,
     lugar VARCHAR(100) NOT NULL,
     fecha_inicio DATETIME NOT NULL,
     descripcion TEXT,
     id_organizador INT NOT NULL,
-    id_localidad INT NOT NULL,
-    id_recinto INT NOT NULL,
+    id_localidad BIGINT UNSIGNED NOT NULL,
+    id_reserva BIGINT UNSIGNED,
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (id_organizador) REFERENCES usuarios(id_usuario)
+    FOREIGN KEY (id_organizador) REFERENCES usuarios(id_usuario),
+    FOREIGN KEY (id_localidad) REFERENCES localidades(id_localidad),
+    FOREIGN KEY (id_reserva) REFERENCES reservas(id_reserva)
 );
 
 -- Tabla de participantes
@@ -112,6 +113,7 @@ CREATE TABLE canchas (
 CREATE TABLE reservas (
     id_reserva SERIAL PRIMARY KEY,
     id_cancha BIGINT UNSIGNED NOT NULL,
+    id_recinto BIGINT UNSIGNED NOT NULL,
     id_usuario INT NOT NULL, -- Cambiado a INT para ser compatible con la tabla usuarios
     fecha_reserva TIMESTAMP NOT NULL,
     hora_inicio TIME NOT NULL, -- Nueva columna para la hora de inicio
@@ -119,5 +121,6 @@ CREATE TABLE reservas (
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (id_cancha) REFERENCES canchas(id_cancha),
+    FOREIGN KEY (id_recinto) REFERENCES recintos(id_recinto),
     FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario)
 );

@@ -14,128 +14,188 @@
 
         <!-- Mensajes Flash para retroalimentación del usuario -->
         {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-                    {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-                {% endfor %}
-            {% endif %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+        {% endif %}
         {% endwith %}
 
-        <!-- Enlaces de navegación -->
-        <div class="mb-4 text-center">
-        </div>
+  
+        <p>Recinto: {{id_recinto}}</p>
+        <p>Fecha seleccionada: {{ fecha_seleccionada }}</p>
+        Canchas disponibles:
+        <ul>
 
-        <!-- Selector de fecha simplificado -->
+            {% for cancha in canchas %}
+            <li>nombre: {{ cancha.nombre}} - id_cancha: {{ cancha.id_cancha}} - id_recinto: {{cancha.id_recinto}}</li>
+            {% endfor %}
+        </ul>
+
+        <h1>AGENDA:</h1>
+
         <div class="row justify-content-center mb-4">
             <div class="col-md-6">
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">Selecciona una fecha</h5>
-                        <form id="date-form" method="GET" action="/reservas">
+                        <form id="date-form" method="GET"
+                            action="{{ url_for('agendar_recinto', id_recinto=id_recinto) }}">
                             <div class="mb-3">
-                                <input type="date" id="selected_date" name="selected_date" class="form-control"
-                                    value="{{ selected_date.strftime('%Y-%m-%d') if selected_date else '' }}">
+                                <label for="fecha" class="form-label">Fecha:</label>
+                                <input type="date" id="fecha" name="fecha" class="form-control"
+                                    value="{{ fecha_seleccionada }}" min="{{ today }}" required>
                             </div>
-                            <button type="submit" class="btn btn-primary w-100">Mostrar Disponibilidad</button>
+                            <button type="submit" class="btn btn-primary">Ver disponibilidad</button>
                         </form>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Tabla de disponibilidad simplificada -->
-        {% if selected_date is defined and selected_date %}
-        <div class="row">
-            {% for cancha in canchas %}
-            <div class="col-md-6 mb-4">
-                <div class="card">
-                    <div class="card-header bg-primary text-white">
-                        <h5 class="mb-0">{{ cancha.nombre }}</h5>
+        <!-- Dentro de agenda.html -->
+        {% for cancha in canchas %}
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h3 class="mb-0">{{ cancha.nombre }}</h3>
+            </div>
+            <div class="card-body">
+                <!-- 1. Sección de Reservas Existentes -->
+                <h4>Reservas programadas:</h4>
+                {% if reservas[cancha.id_cancha]|length > 0 %}
+                    <ul class="list-group mb-4">
+                        {% for reserva in reservas[cancha.id_cancha] %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <h5>
+                                    {% if reserva.hora_inicio is string %}
+                                        {{ reserva.hora_inicio }}
+                                    {% elif reserva.hora_inicio is number %}
+                                        {{ "%02d:00"|format(reserva.hora_inicio) }}
+                                    {% else %}
+                                        {{ "%02d:00"|format((reserva.hora_inicio.total_seconds() // 3600)|int) }}
+                                    {% endif %}
+                                    -
+                                    {% if reserva.hora_fin is string %}
+                                        {{ reserva.hora_fin }}
+                                    {% elif reserva.hora_fin is number %}
+                                        {{ "%02d:00"|format(reserva.hora_fin) }}
+                                    {% else %}
+                                        {{ "%02d:00"|format((reserva.hora_fin.total_seconds() // 3600)|int) }}
+                                    {% endif %}
+                                </h5>
+                                <span class="badge bg-danger">Reservado</span>
+                            </div>
+                            {% if reserva.id_usuario == session.usuario_id %}
+                                <div>
+                                    <span class="badge bg-primary">Tu reserva</span>
+                                    <form method="POST" action="{{ url_for('eliminar_reserva', id_reserva=reserva.id_reserva) }}"
+                                        class="d-inline">
+                                        <button type="submit" class="btn btn-sm btn-danger"
+                                            onclick="return confirm('¿Estás seguro de cancelar esta reserva?')">Cancelar</button>
+                                    </form>
+                                </div>
+                            {% endif %}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <div class="alert alert-info mb-4">
+                        No hay reservas para esta cancha en la fecha seleccionada.
                     </div>
+                {% endif %}
+                
+                <!-- 2. Sección de Horarios Disponibles (lista scrolleable) -->
+                <h4 class="mt-4">Todos los horarios:</h4>
+                <div class="card">
                     <div class="card-body p-0">
-                        <table class="table table-striped mb-0">
-                            <thead>
-                                <tr>
-                                    <th>Hora</th>
-                                    <th>Estado</th>
-                                    <th>Acción</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for hora in range(8, 23) %}
-                                {% set reservas_fecha = reservas.get(selected_date.strftime('%Y-%m-%d'),
-                                {}).get(cancha.id_cancha, {}) %}
-                                {% set reserva = reservas_fecha.get(hora, None) %}
-                                <tr class="{{ 'table-danger' if reserva else 'table-success' }}">
-                                    <td>{{ '%02d:00' % hora }}</td>
-                                    <td>
-                                        {% if reserva %}
-                                        <span class="badge bg-danger">Reservado</span>
-                                        <br><small>por: {{ reserva.usuario_nombre }}</small>
-                                        {% else %}
-                                        <span class="badge bg-success">Disponible</span>
-                                        {% endif %}
-                                    </td>
-                                    <td>
-                                        {% if reserva %}
-                                            {% if session.usuario_id == reserva.id_usuario %}
-                                            <form
-                                                action="{{ url_for('delete_reservation', reservation_id=reserva.id_reserva) }}"
-                                                method="post" class="d-inline">
-                                                <button type="submit" class="btn btn-danger btn-sm">Cancelar</button>
-                                            </form>
-                                            {% else %}
-                                            <span class="text-muted small">No disponible</span>
-                                            {% endif %}
-                                        {% else %}
-                                        <form action="{{ url_for('crear_reserva_simple') }}" method="post"
-                                            class="d-inline">
-                                            <input type="hidden" name="cancha_id" value="{{ cancha.id_cancha }}">
-                                            <input type="hidden" name="fecha_reserva"
-                                                value="{{ selected_date.strftime('%Y-%m-%d') }}">
-                                            <input type="hidden" name="hora_inicio" value="{{ hora }}">
-                                            <button type="submit" class="btn btn-primary btn-sm">Reservar</button>
-                                        </form>
-                                        {% endif %}
-                                    </td>
-                                </tr>
+                        <div class="list-group list-group-flush" style="max-height: 400px; overflow-y: auto;">
+                            {% for hora in range(8, 23) %}
+                                {% set hora_reservada = false %}
+                                {% set reserva_actual = None %}
+                                
+                                {# Verificar si esta hora ya está reservada #}
+                                {% for reserva in reservas[cancha.id_cancha] %}
+                                    {% if reserva.hora_inicio is string %}
+                                        {% set inicio = reserva.hora_inicio.split(':')[0]|int %}
+                                    {% elif reserva.hora_inicio is number %}
+                                        {% set inicio = reserva.hora_inicio %}
+                                    {% else %}
+                                        {% set inicio = (reserva.hora_inicio.total_seconds() // 3600)|int %}
+                                    {% endif %}
+                                    
+                                    {% if inicio == hora %}
+                                        {% set hora_reservada = true %}
+                                        {% set reserva_actual = reserva %}
+                                    {% endif %}
                                 {% endfor %}
-                            </tbody>
-                        </table>
+                                
+                                <div class="list-group-item list-group-item-action {% if hora_reservada %}list-group-item-danger{% endif %}">
+                                    <div class="d-flex w-100 justify-content-between align-items-center">
+                                        <div>
+                                            <h5 class="mb-1">{{ "%02d:00"|format(hora) }} - {{ "%02d:00"|format(hora + 1) }}</h5>
+                                            
+                                            {% if hora_reservada %}
+                                                <span class="badge bg-danger">Reservado</span>
+                                                {% if reserva_actual and reserva_actual.id_usuario == session.usuario_id %}
+                                                    <span class="badge bg-primary ms-2">Tu reserva</span>
+                                                {% endif %}
+                                            {% else %}
+                                                <span class="badge bg-success">Disponible</span>
+                                            {% endif %}
+                                        </div>
+                                        
+                                        <div>
+                                            {% if hora_reservada %}
+                                                {% if reserva_actual and reserva_actual.id_usuario == session.usuario_id %}
+                                                    <form method="POST" action="{{ url_for('eliminar_reserva', id_reserva=reserva_actual.id_reserva) }}" class="d-inline">
+                                                        <button type="submit" class="btn btn-sm btn-danger" 
+                                                                onclick="return confirm('¿Estás seguro de cancelar esta reserva?')">Cancelar</button>
+                                                    </form>
+                                                {% endif %}
+                                            {% else %}
+                                                <form method="POST" action="{{ url_for('reservar', id_cancha=cancha.id_cancha) }}" class="d-inline">
+                                                    <input type="hidden" name="fecha_reserva" value="{{ fecha_seleccionada }}">
+                                                    <input type="hidden" name="hora_inicio" value="{{ hora }}:00">
+                                                    <input type="hidden" name="hora_fin" value="{{ hora + 1 }}:00">
+                                                    <button type="submit" class="btn btn-sm btn-primary">Reservar</button>
+                                                </form>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
                     </div>
                 </div>
             </div>
-            {% endfor %}
         </div>
-        {% else %}
-        <div class="alert alert-info text-center">
-            Por favor, selecciona una fecha para ver la disponibilidad de las canchas.
-        </div>
-        {% endif %}
-    </div>
+        {% endfor %}
 
-    <!-- Google Calendar Appointment Scheduling begin -->
-<iframe src="https://calendar.google.com/calendar/appointments/schedules/AcZssZ1J8rx7XDw9zkQgfWx2DVrrMl6bwlN3JZ3k0Pm_hc025S-wVd2HF64LcCWlVL-K_HrX_ishBHUs?gv=true" style="border: 0" width="100%" height="600" frameborder="0"></iframe>
-<!-- end Google Calendar Appointment Scheduling -->
+        <!-- Google Calendar Appointment Scheduling begin 
+    <iframe
+        src="https://calendar.google.com/calendar/appointments/schedules/AcZssZ1J8rx7XDw9zkQgfWx2DVrrMl6bwlN3JZ3k0Pm_hc025S-wVd2HF64LcCWlVL-K_HrX_ishBHUs?gv=true"
+        style="border: 0" width="100%" height="600" frameborder="0"></iframe>
+    end Google Calendar Appointment Scheduling -->
 
-    <!-- Script para auto-cerrar mensajes flash después de 5 segundos -->
-    <script>
-        // Cerrar automáticamente los mensajes de alerta después de 5 segundos
-        window.setTimeout(function() {
-            document.querySelectorAll('.alert').forEach(function(alert) {
-                alert.classList.add('fade');
-                setTimeout(function() {
-                    alert.remove();
-                }, 500);
-            });
-        }, 5000);
-    </script>
+        <!-- Script para auto-cerrar mensajes flash después de 5 segundos -->
+        <script>
+            // Cerrar automáticamente los mensajes de alerta después de 5 segundos
+            window.setTimeout(function () {
+                document.querySelectorAll('.alert').forEach(function (alert) {
+                    alert.classList.add('fade');
+                    setTimeout(function () {
+                        alert.remove();
+                    }, 500);
+                });
+            }, 5000);
+        </script>
 
-    <!-- Bootstrap JS para posibles funcionalidades futuras -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Bootstrap JS para posibles funcionalidades futuras -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>

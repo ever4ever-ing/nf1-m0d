@@ -1,0 +1,54 @@
+   <!-- Tabla de horarios disponibles por cancha 
+        <div class="row">
+            {% for cancha in canchas %}
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Cancha: {{ cancha.nombre }}</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <table class="table table-striped mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Hora</th>
+                                    <th>Estado</th>
+                                    <th>Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for hora in range(8, 23) %}
+                                {% set reserva = reservas_por_cancha[cancha.id_cancha].get(hora, None) %}
+                                <tr class="{{ 'table-danger' if reserva else 'table-success' }}">
+                                    <td>{{ '%02d:00' % hora }}</td>
+                                    <td>
+                                        {% if reserva %}
+                                        <span class="badge bg-danger">Reservado</span>
+                                        <br><small>por: {{ reserva.usuario_nombre }}</small>
+                                        {% else %}
+                                        <span class="badge bg-success">Disponible</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if reserva %}
+                                        <span class="text-muted small">No disponible</span>
+                                        {% else %}
+                                        <form action="{{ url_for('crear_reserva') }}" method="post" class="d-inline">
+                                            <input type="hidden" name="id_recinto" value="{{ id_recinto }}">
+                                            <input type="hidden" name="id_cancha" value="{{ cancha.id_cancha }}">
+                                            <input type="hidden" name="fecha_reserva" value="{{ fecha_seleccionada }}">
+                                            <input type="hidden" name="hora_inicio" value="{{ hora }}">
+                                            <button type="submit" class="btn btn-primary btn-sm">Reservar</button>
+                                        </form>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+-->

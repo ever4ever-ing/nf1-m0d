@@ -3,6 +3,7 @@ from flask_app.models.participante import Participante
 from flask_app.models.partido import Partido
 from flask_app.models.usuario import Usuario
 from flask_app.models.recinto import Recinto
+from flask_app.models.reserva import Reserva
 from datetime import datetime
 from flask_app import app
 from flask_app.models.recinto import Recinto
@@ -60,16 +61,34 @@ def registrar_recinto():
         flash("Error al registrar el recinto. Por favor, inténtelo de nuevo.", "error")
         return redirect("/recintos")
     
-
 @app.route('/agendar_recinto/<int:id_recinto>', methods=['GET'])
 @login_required
 def agendar_recinto(id_recinto):
-        recinto = Recinto.obtener_por_id(id_recinto)
-        canchas = Recinto.obtener_canchas_por_recinto(id_recinto)
-        if recinto:
-            return render_template("agenda.html", recinto=recinto, canchas=canchas)
-        else:
-            flash("Recinto no encontrado.", "error")
-            return redirect("/dashboard")  
-
-# Redirigir a una página de error o dashboard
+    # Obtener la fecha seleccionada desde los parámetros de la URL o usar la fecha actual
+    fecha_seleccionada = request.args.get('fecha', datetime.now().strftime('%Y-%m-%d'))
+    try:
+        fecha_obj = datetime.strptime(fecha_seleccionada, '%Y-%m-%d').date()
+    except ValueError:
+        fecha_seleccionada = datetime.now().strftime('%Y-%m-%d')
+        fecha_obj = datetime.now().date()
+    
+    recinto = Recinto.obtener_por_id(id_recinto)
+    if not recinto:
+        logging.error(f"Recinto con ID {id_recinto} no encontrado.")
+        flash("Recinto no encontrado.", "error")
+        return redirect("/dashboard")
+    
+    canchas = Recinto.obtener_canchas_por_recinto(id_recinto)
+    logging.info(f"Recinto encontrado: {recinto.nombre}, ID: {id_recinto}")
+    
+    # Extraer los IDs de las canchas
+    ids_canchas = [cancha['id_cancha'] for cancha in canchas]
+    
+    # Obtener todas las reservas en una sola consulta
+    reservas = Reserva.obtener_por_canchas(ids_canchas, fecha_obj)
+    
+    return render_template("agenda.html", 
+                           canchas=canchas, 
+                           id_recinto=id_recinto, 
+                           reservas=reservas, 
+                           fecha_seleccionada=fecha_seleccionada)

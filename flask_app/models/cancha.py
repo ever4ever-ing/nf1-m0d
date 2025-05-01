@@ -39,3 +39,11 @@ class Cancha:
         query = "DELETE FROM canchas WHERE id_cancha = %(id_cancha)s;"
         data = {'id_cancha': id_cancha}
         return connectToMySQL(DATABASE).query_db(query, data)
+    @classmethod
+    def get_by_id(cls, id_cancha):
+        query = "SELECT * FROM canchas WHERE id_cancha = %(id_cancha)s;"
+        data = {'id_cancha': id_cancha}
+        resultado = connectToMySQL(DATABASE).query_db(query, data)
+        if resultado:
+            return cls(resultado[0])
+        return None
