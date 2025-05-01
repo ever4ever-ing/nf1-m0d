@@ -67,7 +67,7 @@ def login():
             session['usuario_id'] = usuario.id_usuario
             return redirect('/dashboard')
         flash("Email/Contraseña inválidos", "error")
-    return render_template("index.html")
+    return render_template("login.html")
 
 @app.route('/logout')
 def logout():
