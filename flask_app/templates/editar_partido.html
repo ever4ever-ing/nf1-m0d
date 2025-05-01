@@ -111,7 +111,7 @@
                 {% else %}
                 {% for lugar in recintos %}
                 <div class="col-2">
-                    <a href="{{ url_for('agendar_recinto', id_recinto=lugar.id_recinto) }}"
+                    <a href="{{ url_for('agendar_recinto', id_recinto=lugar.id_recinto, id_partido=partido.id_partido) }}"
                         class="text-decoration-none">
                     <div class="card h-100">
                         {% if lugar.imagen %}

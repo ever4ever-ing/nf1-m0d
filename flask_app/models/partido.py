@@ -4,6 +4,8 @@ from flask_app.config.mysqlconnection import connectToMySQL
 from flask_app.models import participante
 from flask_app.models.localidad import Localidad
 DATABASE = 'nosfalta1'
+
+
 class Partido:
     def __init__(self, data):
         self.id_partido = data['id_partido']
@@ -11,7 +13,10 @@ class Partido:
         self.fecha_inicio = data['fecha_inicio']
         self.descripcion = data['descripcion']
         self.id_organizador = data['id_organizador']
-        self.id_localidad = data.get('id_localidad', None)  # Usar .get para evitar KeyError
+        # Usar .get para evitar KeyError
+        self.id_localidad = data.get('id_localidad', None)
+        # Usar .get para evitar KeyError
+        self.id_reserva = data.get('id_reserva', None)
         self.fecha_creacion = data['fecha_creacion']
         self.fecha_actualizacion = data['fecha_actualizacion']
         self.organizador = data.get('organizador', None)
@@ -29,12 +34,13 @@ class Partido:
         partidos = []
         if resultado:
             for partido in resultado:
-                #cls.get_participantes_partidos({'id_partido': partido['id_partido']})
-                #print("Participantes:************ \n",type(participante.Participante.obtener_participantes_por_partido(partido['id_partido'])))
-                cls(partido).participantes = participante.Participante.obtener_participantes_por_partido(partido['id_partido'])
+                # cls.get_participantes_partidos({'id_partido': partido['id_partido']})
+                # print("Participantes:************ \n",type(participante.Participante.obtener_participantes_por_partido(partido['id_partido'])))
+                cls(partido).participantes = participante.Participante.obtener_participantes_por_partido(
+                    partido['id_partido'])
                 partidos.append(cls(partido))
         return partidos
-    
+
     @classmethod
     def get_match_disponibles(cls, id_usuario):
         query = """
@@ -73,7 +79,8 @@ class Partido:
             logging.info(f"Localidad encontrada: {lugar.nombre}")
             data['lugar'] = lugar.nombre
         else:
-            logging.error(f"partido.py En crear: No se encontró localidad con id {data['id_localidad']}")
+            logging.error(
+                f"partido.py En crear: No se encontró localidad con id {data['id_localidad']}")
             data['lugar'] = None
         query = """
             INSERT INTO partidos (lugar, fecha_inicio, descripcion, id_organizador, id_localidad)
@@ -86,18 +93,26 @@ class Partido:
         # Verificar si se obtuvo un resultado y devolver el id_partido
         return resultado  # Devuelve el id_partido generado o None si no hay resultado
 
+
     @classmethod
     def actualizar(cls, data):
         query = """
             UPDATE partidos 
-            SET lugar = %(lugar)s,
+            SET
                 fecha_inicio = %(fecha_inicio)s,
-                descripcion = %(descripcion)s
-            WHERE id = %(id)s;
+                descripcion = %(descripcion)s,
+                id_reserva = %(id_reserva)s
+            WHERE id_partido = %(id_partido)s;
         """
-        query2 = """ UPDATE participantes SET id_participante = %(id_participante)s WHERE id_partido = %(id_partido)s;"""
-        
-        return connectToMySQL(DATABASE).query_db(query, data)
+
+        try:
+            resultado = connectToMySQL(DATABASE).query_db(query, data)
+            # Para operaciones UPDATE, normalmente solo necesitamos saber si se ejecutó sin errores
+            # Un resultado None usualmente significa "éxito sin datos para devolver"
+            return True
+        except Exception as e:
+            print(f"Error al actualizar partido: {e}")
+            return False
 
     @classmethod
     def eliminar(cls, id_partido):
@@ -129,24 +144,24 @@ class Partido:
     @staticmethod
     def validar_partido(data):
         errores = []
-        
+
         if not data['fecha_inicio']:
             errores.append("La fecha de inicio es obligatoria")
-            
+
         if not data['descripcion']:
             errores.append("La descripcion es obligatorio")
 
         return errores
-    
+
     @classmethod
     def last_insert_id(cls):
         return connectToMySQL(DATABASE).query_db("SELECT LAST_INSERT_ID() as id;")[0]['id']
-    
 
     @classmethod
     def get_participantes_partidos(cls, datos):
         query = "SELECT * FROM partidos LEFT JOIN participantes ON participantes.partido_id = partidos.id WHERE partidos.id = %(id_partido)s;"
-        resultados = connectToMySQL(DATABASE).query_db(query, datos) #Consulta a la base de datos
+        resultados = connectToMySQL(DATABASE).query_db(
+            query, datos)  # Consulta a la base de datos
         partido = cls(resultados[0])  # Creamos una instancia de Partido
         for fila_en_db in resultados:
             if fila_en_db['participantes.id_participante'] is not None:
@@ -159,9 +174,10 @@ class Partido:
                     "partido_id": fila_en_db['id_partido']
                 }
                 # Agregando un nuevo participante a la lista de participantes del partido
-                partido.participantes.append(participante.Participante(datos_participante)) 
+                partido.participantes.append(
+                    participante.Participante(datos_participante))
         return partido
-    
+
     @classmethod
     def obtener_participantes(cls, id_partido):
         query = """
@@ -178,7 +194,7 @@ class Partido:
             for row in results:
                 print(row)
                 participantes.append(row)
-        
+
         for participante in participantes:
             # Acceder a los atributos de cada participante
             print("Datos del participante:", participante)

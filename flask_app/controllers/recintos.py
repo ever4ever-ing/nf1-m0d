@@ -61,9 +61,9 @@ def registrar_recinto():
         flash("Error al registrar el recinto. Por favor, inténtelo de nuevo.", "error")
         return redirect("/recintos")
     
-@app.route('/agendar_recinto/<int:id_recinto>', methods=['GET'])
+@app.route('/agendar_recinto/<int:id_recinto>/<int:id_partido>', methods=['GET'])
 @login_required
-def agendar_recinto(id_recinto):
+def agendar_recinto(id_recinto,id_partido):
     # Obtener la fecha seleccionada desde los parámetros de la URL o usar la fecha actual
     fecha_seleccionada = request.args.get('fecha', datetime.now().strftime('%Y-%m-%d'))
     try:
@@ -86,9 +86,10 @@ def agendar_recinto(id_recinto):
     
     # Obtener todas las reservas en una sola consulta
     reservas = Reserva.obtener_por_canchas(ids_canchas, fecha_obj)
+    partido = Partido.obtener_por_id(id_partido)
     
     return render_template("agenda.html", 
-                           canchas=canchas, 
-                           id_recinto=id_recinto, 
-                           reservas=reservas, 
-                           fecha_seleccionada=fecha_seleccionada)
+                        canchas=canchas, 
+                        id_recinto=id_recinto,
+                        reservas=reservas, 
+                        fecha_seleccionada=fecha_seleccionada,partido=partido)

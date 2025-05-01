@@ -1,13 +1,14 @@
 from flask import render_template, redirect, url_for, flash, jsonify, request, session
 from flask_app.models.cancha import Cancha
 from flask_app.models.reserva import Reserva
+from flask_app.models.partido import Partido
 from flask_app import app
 from datetime import datetime, date
 import logging
 
 
-@app.route('/reservar/<int:id_cancha>', methods=['GET', 'POST'])
-def reservar(id_cancha):
+@app.route('/reservar/<int:id_cancha>/<int:id_partido>', methods=['GET', 'POST'])
+def reservar(id_cancha,id_partido):
     if 'usuario_id' not in session:
         flash('Debe iniciar sesión para realizar una reserva', 'warning')
         return redirect('/login')
@@ -26,11 +27,47 @@ def reservar(id_cancha):
             'hora_inicio': hora_inicio,
             'hora_fin': hora_fin
         }
-
+        print("ID PARTIDO:", id_partido)
+        partido_obj = Partido.obtener_por_id(id_partido)  # Cambiado "partido" a "partido_obj"
+        
+        # Verifica si el partido existe
+        if not partido_obj:
+            flash('El partido no existe', 'danger')
+            return redirect('/dashboard')
+            
+        # Preparar datos para actualizar el partido
+        data_partido = {
+            'id_partido': partido_obj.id_partido,
+            'fecha_inicio': fecha_reserva + ' ' + hora_inicio,
+            'descripcion': 'Reserva de cancha',
+            'id_organizador': session['usuario_id'],
+            'id_localidad': partido_obj.id_localidad,  # Usar el objeto partido_obj, no la clase
+            'fecha_creacion': datetime.now(),
+            'fecha_actualizacion': datetime.now()
+        }
+        
+        # Validar y guardar reserva
         if Reserva.validar_reserva(datos_reserva):
-            Reserva.guardar(datos_reserva)
-            flash('Reserva realizada con éxito', 'success')
-            return redirect(url_for('dashboard'))
+            # Guardar la reserva y obtener el ID
+            id_reserva = Reserva.guardar(datos_reserva)
+            
+            if id_reserva:
+                # Actualizar el ID de reserva en los datos del partido
+                data_partido['id_reserva'] = id_reserva  # Corregir: usar el ID de reserva real
+                print("ID RESERVA:", id_reserva)
+                # Actualizar el partido y guardar el resultado en una variable diferente
+
+                resultado_actualizacion = Partido.actualizar(data_partido)
+                if resultado_actualizacion :
+                    flash('Partido actualizado exitosamente', 'success')
+                else:
+                    flash('Error al actualizar el partido', 'danger')
+                
+                return redirect(url_for('dashboard'))
+            else:
+                flash('Error al crear la reserva', 'danger')
+        else:
+            flash('Error en la validación de la reserva', 'danger')
 
     return render_template('dashboard.html', id_cancha=id_cancha)
 

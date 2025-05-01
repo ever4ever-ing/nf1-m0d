@@ -24,156 +24,167 @@
         {% endif %}
         {% endwith %}
 
-  
-        <p>Recinto: {{id_recinto}}</p>
-        <p>Fecha seleccionada: {{ fecha_seleccionada }}</p>
-        Canchas disponibles:
-        <ul>
-
+        <!-- Información del recinto y partido -->
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h2 class="mb-0">Información del partido</h2>
+            </div>
+            <div class="card-body">
             {% for cancha in canchas %}
             <li>nombre: {{ cancha.nombre}} - id_cancha: {{ cancha.id_cancha}} - id_recinto: {{cancha.id_recinto}}</li>
             {% endfor %}
         </ul>
+        <p>Partido estado: 
+            {% if partido.id_reserva == none %}
+                <span class="badge bg-success">Sin reserva</span>
+                <span>{{partido.id_reserva}}</span>
+                </span>
+                <h1>AGENDA:</h1>
 
-        <h1>AGENDA:</h1>
-
-        <div class="row justify-content-center mb-4">
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Selecciona una fecha</h5>
-                        <form id="date-form" method="GET"
-                            action="{{ url_for('agendar_recinto', id_recinto=id_recinto) }}">
-                            <div class="mb-3">
-                                <label for="fecha" class="form-label">Fecha:</label>
-                                <input type="date" id="fecha" name="fecha" class="form-control"
-                                    value="{{ fecha_seleccionada }}" min="{{ today }}" required>
-                            </div>
-                            <button type="submit" class="btn btn-primary">Ver disponibilidad</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Dentro de agenda.html -->
-        {% for cancha in canchas %}
-        <div class="card mb-4">
-            <div class="card-header bg-primary text-white">
-                <h3 class="mb-0">{{ cancha.nombre }}</h3>
-            </div>
-            <div class="card-body">
-                <!-- 1. Sección de Reservas Existentes -->
-                <h4>Reservas programadas:</h4>
-                {% if reservas[cancha.id_cancha]|length > 0 %}
-                    <ul class="list-group mb-4">
-                        {% for reserva in reservas[cancha.id_cancha] %}
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            <div>
-                                <h5>
-                                    {% if reserva.hora_inicio is string %}
-                                        {{ reserva.hora_inicio }}
-                                    {% elif reserva.hora_inicio is number %}
-                                        {{ "%02d:00"|format(reserva.hora_inicio) }}
-                                    {% else %}
-                                        {{ "%02d:00"|format((reserva.hora_inicio.total_seconds() // 3600)|int) }}
-                                    {% endif %}
-                                    -
-                                    {% if reserva.hora_fin is string %}
-                                        {{ reserva.hora_fin }}
-                                    {% elif reserva.hora_fin is number %}
-                                        {{ "%02d:00"|format(reserva.hora_fin) }}
-                                    {% else %}
-                                        {{ "%02d:00"|format((reserva.hora_fin.total_seconds() // 3600)|int) }}
-                                    {% endif %}
-                                </h5>
-                                <span class="badge bg-danger">Reservado</span>
-                            </div>
-                            {% if reserva.id_usuario == session.usuario_id %}
-                                <div>
-                                    <span class="badge bg-primary">Tu reserva</span>
-                                    <form method="POST" action="{{ url_for('eliminar_reserva', id_reserva=reserva.id_reserva) }}"
-                                        class="d-inline">
-                                        <button type="submit" class="btn btn-sm btn-danger"
-                                            onclick="return confirm('¿Estás seguro de cancelar esta reserva?')">Cancelar</button>
-                                    </form>
-                                </div>
-                            {% endif %}
-                        </li>
-                        {% endfor %}
-                    </ul>
-                {% else %}
-                    <div class="alert alert-info mb-4">
-                        No hay reservas para esta cancha en la fecha seleccionada.
-                    </div>
-                {% endif %}
-                
-                <!-- 2. Sección de Horarios Disponibles (lista scrolleable) -->
-                <h4 class="mt-4">Todos los horarios:</h4>
-                <div class="card">
-                    <div class="card-body p-0">
-                        <div class="list-group list-group-flush" style="max-height: 400px; overflow-y: auto;">
-                            {% for hora in range(8, 23) %}
-                                {% set hora_reservada = false %}
-                                {% set reserva_actual = None %}
-                                
-                                {# Verificar si esta hora ya está reservada #}
-                                {% for reserva in reservas[cancha.id_cancha] %}
-                                    {% if reserva.hora_inicio is string %}
-                                        {% set inicio = reserva.hora_inicio.split(':')[0]|int %}
-                                    {% elif reserva.hora_inicio is number %}
-                                        {% set inicio = reserva.hora_inicio %}
-                                    {% else %}
-                                        {% set inicio = (reserva.hora_inicio.total_seconds() // 3600)|int %}
-                                    {% endif %}
-                                    
-                                    {% if inicio == hora %}
-                                        {% set hora_reservada = true %}
-                                        {% set reserva_actual = reserva %}
-                                    {% endif %}
-                                {% endfor %}
-                                
-                                <div class="list-group-item list-group-item-action {% if hora_reservada %}list-group-item-danger{% endif %}">
-                                    <div class="d-flex w-100 justify-content-between align-items-center">
-                                        <div>
-                                            <h5 class="mb-1">{{ "%02d:00"|format(hora) }} - {{ "%02d:00"|format(hora + 1) }}</h5>
-                                            
-                                            {% if hora_reservada %}
-                                                <span class="badge bg-danger">Reservado</span>
-                                                {% if reserva_actual and reserva_actual.id_usuario == session.usuario_id %}
-                                                    <span class="badge bg-primary ms-2">Tu reserva</span>
-                                                {% endif %}
-                                            {% else %}
-                                                <span class="badge bg-success">Disponible</span>
-                                            {% endif %}
-                                        </div>
-                                        
-                                        <div>
-                                            {% if hora_reservada %}
-                                                {% if reserva_actual and reserva_actual.id_usuario == session.usuario_id %}
-                                                    <form method="POST" action="{{ url_for('eliminar_reserva', id_reserva=reserva_actual.id_reserva) }}" class="d-inline">
-                                                        <button type="submit" class="btn btn-sm btn-danger" 
-                                                                onclick="return confirm('¿Estás seguro de cancelar esta reserva?')">Cancelar</button>
-                                                    </form>
-                                                {% endif %}
-                                            {% else %}
-                                                <form method="POST" action="{{ url_for('reservar', id_cancha=cancha.id_cancha) }}" class="d-inline">
-                                                    <input type="hidden" name="fecha_reserva" value="{{ fecha_seleccionada }}">
-                                                    <input type="hidden" name="hora_inicio" value="{{ hora }}:00">
-                                                    <input type="hidden" name="hora_fin" value="{{ hora + 1 }}:00">
-                                                    <button type="submit" class="btn btn-sm btn-primary">Reservar</button>
-                                                </form>
-                                            {% endif %}
-                                        </div>
+                <div class="row justify-content-center mb-4">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Selecciona una fecha</h5>
+                                <form id="date-form" method="GET"
+                                    action="{{ url_for('agendar_recinto', id_recinto=id_recinto, id_partido=partido.id_partido)  }}">
+                                    <div class="mb-3">
+                                        <label for="fecha" class="form-label">Fecha:</label>
+                                        <input type="date" id="fecha" name="fecha" class="form-control"
+                                            value="{{ fecha_seleccionada }}" min="{{ today }}" required>
                                     </div>
-                                </div>
-                            {% endfor %}
+                                    <button type="submit" class="btn btn-primary">Ver disponibilidad</button>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-        {% endfor %}
+        
+                <!-- Dentro de agenda.html -->
+                {% for cancha in canchas %}
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h3 class="mb-0">{{ cancha.nombre }}</h3>
+                    </div>
+                    <div class="card-body">
+                        <!-- 1. Sección de Reservas Existentes -->
+                        <h4>Reservas programadas:</h4>
+                        {% if reservas[cancha.id_cancha]|length > 0 %}
+                            <ul class="list-group mb-4">
+                                {% for reserva in reservas[cancha.id_cancha] %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h5>
+                                            {% if reserva.hora_inicio is string %}
+                                                {{ reserva.hora_inicio }}
+                                            {% elif reserva.hora_inicio is number %}
+                                                {{ "%02d:00"|format(reserva.hora_inicio) }}
+                                            {% else %}
+                                                {{ "%02d:00"|format((reserva.hora_inicio.total_seconds() // 3600)|int) }}
+                                            {% endif %}
+                                            -
+                                            {% if reserva.hora_fin is string %}
+                                                {{ reserva.hora_fin }}
+                                            {% elif reserva.hora_fin is number %}
+                                                {{ "%02d:00"|format(reserva.hora_fin) }}
+                                            {% else %}
+                                                {{ "%02d:00"|format((reserva.hora_fin.total_seconds() // 3600)|int) }}
+                                            {% endif %}
+                                        </h5>
+                                        <span class="badge bg-danger">Reservado</span>
+                                    </div>
+                                    {% if reserva.id_usuario == session.usuario_id %}
+                                        <div>
+                                            <span class="badge bg-primary">Tu reserva</span>
+                                            <form method="POST" action="{{ url_for('eliminar_reserva', id_reserva=reserva.id_reserva) }}"
+                                                class="d-inline">
+                                                <button type="submit" class="btn btn-sm btn-danger"
+                                                    onclick="return confirm('¿Estás seguro de cancelar esta reserva?')">Cancelar</button>
+                                            </form>
+                                        </div>
+                                    {% endif %}
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <div class="alert alert-info mb-4">
+                                No hay reservas para esta cancha en la fecha seleccionada.
+                            </div>
+                        {% endif %}
+                        
+                        <!-- 2. Sección de Horarios Disponibles (lista scrolleable) -->
+                        <h4 class="mt-4">Todos los horarios:</h4>
+                        <div class="card">
+                            <div class="card-body p-0">
+                                <div class="list-group list-group-flush" style="max-height: 400px; overflow-y: auto;">
+                                    {% for hora in range(8, 23) %}
+                                        {% set hora_reservada = false %}
+                                        {% set reserva_actual = None %}
+                                        
+                                        {# Verificar si esta hora ya está reservada #}
+                                        {% for reserva in reservas[cancha.id_cancha] %}
+                                            {% if reserva.hora_inicio is string %}
+                                                {% set inicio = reserva.hora_inicio.split(':')[0]|int %}
+                                            {% elif reserva.hora_inicio is number %}
+                                                {% set inicio = reserva.hora_inicio %}
+                                            {% else %}
+                                                {% set inicio = (reserva.hora_inicio.total_seconds() // 3600)|int %}
+                                            {% endif %}
+                                            
+                                            {% if inicio == hora %}
+                                                {% set hora_reservada = true %}
+                                                {% set reserva_actual = reserva %}
+                                            {% endif %}
+                                        {% endfor %}
+                                        
+                                        <div class="list-group-item list-group-item-action {% if hora_reservada %}list-group-item-danger{% endif %}">
+                                            <div class="d-flex w-100 justify-content-between align-items-center">
+                                                <div>
+                                                    <h5 class="mb-1">{{ "%02d:00"|format(hora) }} - {{ "%02d:00"|format(hora + 1) }}</h5>
+                                                    
+                                                    {% if hora_reservada %}
+                                                        <span class="badge bg-danger">Reservado</span>
+                                                        {% if reserva_actual and reserva_actual.id_usuario == session.usuario_id %}
+                                                            <span class="badge bg-primary ms-2">Tu reserva</span>
+                                                        {% endif %}
+                                                    {% else %}
+                                                        <span class="badge bg-success">Disponible</span>
+                                                    {% endif %}
+                                                </div>
+                                                
+                                                <div>
+                                                    {% if hora_reservada %}
+                                                        {% if reserva_actual and reserva_actual.id_usuario == session.usuario_id %}
+                                                            <form method="POST" action="{{ url_for('eliminar_reserva', id_reserva=reserva_actual.id_reserva) }}" class="d-inline">
+                                                                <button type="submit" class="btn btn-sm btn-danger" 
+                                                                        onclick="return confirm('¿Estás seguro de cancelar esta reserva?')">Cancelar</button>
+                                                            </form>
+                                                        {% endif %}
+                                                    {% else %}
+                                                        <form method="POST" action="{{ url_for('reservar', id_cancha=cancha.id_cancha, id_partido=partido.id_partido) }}" class="d-inline">
+                                                            <input type="hidden" name="fecha_reserva" value="{{ fecha_seleccionada }}">
+                                                            <input type="hidden" name="hora_inicio" value="{{ hora }}:00">
+                                                            <input type="hidden" name="hora_fin" value="{{ hora + 1 }}:00">
+                                                            <button type="submit" class="btn btn-sm btn-primary">Reservar</button>
+                                                        </form>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <span class="badge bg-danger">Reservado</span>
+                <span>{{partido.id_reserva}}</span>
+            {% endif %}
+        </p>
+
+       
 
         <!-- Google Calendar Appointment Scheduling begin 
     <iframe
