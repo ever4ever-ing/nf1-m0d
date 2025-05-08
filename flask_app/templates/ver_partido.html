@@ -1,91 +1,182 @@
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Partido</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <title>Detalles del Partido - {{ partido.lugar }}</title>
+    <link rel="stylesheet" href="https://bootswatch.com/5/lux/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 
-<body id="ver">
+<body>
     {% block content %}
     <div class="container">
-        <h2>Detalles del partido</h2>
-
+        
+        <!-- Mensajes Flash -->
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
-                <div class="flash-messages">
-                    {% for category, message in messages %}
-                        <div class="flash-message {{ category }}">
-                            {{ message }}
-                        </div>
-                    {% endfor %}
-                </div>
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
             {% endif %}
         {% endwith %}
 
-        <div class="form-group">
-            <label for="lugar">Lugar</label>
-            <input type="text" id="lugar" value="{{ partido.lugar }}" readonly disabled>
-        </div>
+        <div class="card">
+            <div class="card-header">
+                <h2 class="mb-0"><i class="fas fa-futbol icon-text"></i>Detalles del Partido</h2>
+            </div>
+            <div class="card-body p-4">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="lugar" class="form-label fw-bold">Lugar:</label>
+                        <input type="text" id="lugar" class="form-control" value="{{ partido.lugar }}" readonly>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="organizador" class="form-label fw-bold">Organizador:</label>
+                        <input type="text" id="organizador" class="form-control" value="{{ partido.organizador_nombre | default(partido.organizador) }}" readonly>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="fecha_inicio" class="form-label fw-bold">Fecha:</label>
+                        <input type="text" id="fecha_inicio" class="form-control" value="{{ partido.fecha_inicio.strftime('%d/%m/%Y') if partido.fecha_inicio else 'N/A' }}" readonly>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="hora" class="form-label fw-bold">Hora:</label>
+                        <input type="text" id="hora" class="form-control" value="{{ partido.fecha_inicio.strftime('%H:%M') if partido.fecha_inicio else 'N/A' }}" readonly>
+                    </div>
+                    <div class="col-12">
+                        <label for="descripcion" class="form-label fw-bold">Descripción:</label>
+                        <textarea id="descripcion" class="form-control" rows="3" readonly>{{ partido.descripcion }}</textarea>
+                    </div>
+                </div>
 
-        <div class="form-group">
-            <label for="organizador">Organizador</label>
-            <input type="text" id="organizador" value="{{ partido.organizador }}" readonly disabled>
-        </div>
-
-        <div class="form-group">
-            <label for="fecha_inicio">Fecha de Inicio</label>
-            <input type="datetime" id="fecha_inicio" value="{{ partido.fecha_inicio.strftime('%d/%m/%Y') }}" readonly disabled>
-        </div>
-
-        <div class="form-grop">
-            <label for="hora">Hora</label>
-            <input type="time" id="hora" value="{{ partido.fecha_inicio.strftime('%H:%M') }}" readonly disabled>
-        </div>
-        <br>
-        <div class="form-group">
-            <label for="detalles">Descripcion</label>
-            <textarea id="detalles" readonly disabled>{{ partido.descripcion }}</textarea>
-        </div>
-
-        <div class="form-group">
-            <form action="{{ url_for('unirse') }}" method="post">
-                {% if ready == true %}
-                    <button type="submit" class="submit-btn" disabled style="background-color: rgb(26, 26, 26);">Ya te uniste</button>
+                <!-- Sección de Reserva -->
+                <hr class="my-4">
+                <h4 class="mb-3"><i class="fas fa-calendar-check icon-text"></i>Estado de la Reserva</h4>
+                {% if partido.id_reserva %}
+                    <div class="alert alert-success">
+                        <p class="mb-1"><strong><i class="fas fa-check-circle icon-text"></i>Cancha Reservada</strong></p>
+                        {% if partido.reserva_info %}
+                            <p class="mb-1">Recinto: {{ partido.reserva_info.recinto_nombre }}</p>
+                            <p class="mb-1">Cancha: {{ partido.reserva_info.cancha_nombre }}</p>
+                            <p class="mb-0">Horario: {{ partido.reserva_info.hora_inicio_str }} - {{ partido.reserva_info.hora_fin_str }} el {{ partido.reserva_info.fecha_reserva.strftime('%d/%m/%Y') }}</p>
+                        {% else %}
+                            <p class="mb-0">ID Reserva: {{ partido.id_reserva }}. Detalles completos no disponibles.</p>
+                        {% endif %}
+                    </div>
                 {% else %}
-                    <button type="submit" class="submit-btn">Unirse al Partido</button>
+                    <div class="alert alert-warning">
+                        <p class="mb-0"><strong><i class="fas fa-exclamation-triangle icon-text"></i>Este partido aún no tiene una cancha reservada.</strong></p>
+                    </div>
                 {% endif %}
-                <input type="hidden" name="id_partido" value="{{ partido.id_partido }}">
-                <input type="hidden" name="id_usuario" value="{{ usuario_id }}">
-            </form>
+                
+                <!-- Acciones del Partido -->
+                <hr class="my-4">
+                <div class="d-flex flex-wrap gap-2 justify-content-center">
+                    {% if session.usuario_id %} {# Solo mostrar si el usuario está logueado #}
+                        {% if not ya_unido %}
+                            <!-- Forma corregida para usar la ruta de unirse que ya existe -->
+                            <form action="{{ url_for('unirse') }}" method="post" class="d-inline">
+                                <input type="hidden" name="id_partido" value="{{ partido.id_partido }}">
+                                <input type="hidden" name="id_usuario" value="{{ session.usuario_id }}">
+                                <button type="submit" class="btn btn-success btn-lg">
+                                    <i class="fas fa-user-plus icon-text"></i>Unirse al Partido
+                                </button>
+                            </form>
+                        {% else %}
+                            <button type="button" class="btn btn-secondary btn-lg" disabled><i class="fas fa-check icon-text"></i>Ya estás unido</button>
+                            <!-- Forma corregida para usar la ruta de eliminar_participante que ya existe -->
+                            <form action="{{ url_for('eliminar_participante') }}" method="post" class="d-inline">
+                                <input type="hidden" name="id_partido_delete" value="{{ partido.id_partido }}">
+                                <input type="hidden" name="id_usuario_delete" value="{{ session.usuario_id }}">
+                                <button type="submit" class="btn btn-warning btn-lg" 
+                                        onclick="return confirm('¿Estás seguro de que quieres salir de este partido?')">
+                                    <i class="fas fa-user-minus icon-text"></i>Salir del Partido
+                                </button>
+                            </form>
+                        {% endif %}
+                    {% endif %}
+
+                    {% if session.usuario_id == partido.id_organizador %}
+                        <a href="{{ url_for('editar_partido', id=partido.id_partido) }}" class="btn btn-info btn-lg">
+                            <i class="fas fa-edit icon-text"></i>Editar Partido
+                        </a>
+                        <a href="{{ url_for('agendar_recinto', id_recinto=(partido.reserva_info.id_recinto if partido.reserva_info else 1), id_partido=partido.id_partido) }}" class="btn btn-primary btn-lg">
+                            <i class="fas fa-calendar-alt icon-text"></i>
+                            {% if partido.id_reserva %}Ver/Modificar Reserva{% else %}Reservar Cancha{% endif %}
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
         </div>
 
-        <div class="form-group">
-            <label>Confirmados</label>
-            <ul class="list-group">
-                {% for participante in participantes %}
-                    <li class="list-group-item">{{ participante.nombre }}</li>
-                {% endfor %}
-            </ul>
+        <div class="row mt-4 g-3">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="mb-0"><i class="fas fa-users icon-text"></i>Confirmados ({{ participantes|length }})</h4>
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        {% if participantes %}
+                            {% for participante in participantes %}
+                                <li class="list-group-item">
+                                    {{ participante.nombre_usuario if participante.nombre_usuario else participante.nombre }}
+                                    {% if session.usuario_id == partido.id_organizador and participante.id_usuario != partido.id_organizador %}
+                                        <form action="{{ url_for('eliminar_participante') }}" method="post" class="float-end">
+                                            <input type="hidden" name="id_partido_delete" value="{{ partido.id_partido }}">
+                                            <input type="hidden" name="id_usuario_delete" value="{{ participante.id_usuario }}">
+                                            <button type="submit" class="btn btn-sm btn-danger" 
+                                                    onclick="return confirm('¿Eliminar a este participante?')">
+                                                <i class="fas fa-user-times"></i>
+                                            </button>
+                                        </form>
+                                    {% endif %}
+                                </li>
+                            {% endfor %}
+                        {% else %}
+                            <li class="list-group-item text-muted">Aún no hay participantes confirmados.</li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card">
+                     <div class="card-header">
+                        <h4 class="mb-0"><i class="fas fa-user-friends icon-text"></i>Invitados ({{ invitados|length }})</h4>
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        {% if invitados %}
+                            {% for invitado in invitados %}
+                                <li class="list-group-item">
+                                    {{ invitado.nombre }}
+                                    {% if session.usuario_id == partido.id_organizador %}
+                                        <form action="{{ url_for('agregar_participante') }}" method="post" class="float-end">
+                                            <input type="hidden" name="id_partido" value="{{ partido.id_partido }}">
+                                            <input type="hidden" name="id_usuario" value="{{ invitado.id_usuario }}">
+                                            <button type="submit" class="btn btn-sm btn-success">
+                                                <i class="fas fa-user-plus"></i>
+                                            </button>
+                                        </form>
+                                    {% endif %}
+                                </li>
+                            {% endfor %}
+                        {% else %}
+                            <li class="list-group-item text-muted">No hay invitados pendientes.</li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
         </div>
 
-        <div class="form-group">
-            <label>Invitados</label>
-            <ul class="list-group">
-                {% for invitado in invitados %}
-                    <li class="list-group-item">{{ invitado.nombre }}</li>
-                {% endfor %}
-            </ul>
-        </div>
-
-        <div class="buttons">
-            <a href="{{ url_for('dashboard') }}" class="cancel-btn">Volver</a>
+        <div class="text-center mt-4">
+            <a href="{{ url_for('dashboard') }}" class="btn btn-outline-light btn-lg"><i class="fas fa-arrow-left icon-text"></i>Volver al Dashboard</a>
         </div>
     </div>
     {% endblock %}
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

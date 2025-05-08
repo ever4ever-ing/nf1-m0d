@@ -26,8 +26,9 @@
             <div class="col-4">
                 <div class="card p-3 mb-3">
 
-                    <form method="POST" action="/actualizar_partido">
+                    <form method="POST" action="{{ url_for('actualizar_partido') }}">
                         <input type="hidden" id="id" name="id" value="{{ partido.id_partido }}">
+                        <input type="hidden" name="id_localidad" value="{{ partido.id_localidad }}">
                         <div class="mb-2">
                             <label for="lugar" class="form-label">Lugar</label>
                             <input type="text" id="lugar" name="lugar" class="form-control" value="{{ partido.lugar }}"

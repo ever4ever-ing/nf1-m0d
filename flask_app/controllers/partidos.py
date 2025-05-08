@@ -47,19 +47,39 @@ def nuevo_partido():
 @app.route('/ver_partido/<int:id>')
 def ver_partido(id):
     partido = Partido.obtener_por_id(id)
-    print("Controlador")
-    print("id:",id)
-    print("partido:",partido)
+    if not partido:
+        flash("Partido no encontrado.", "error")
+        return redirect(url_for('dashboard'))
+        
     participantes = Participante.obtener_participantes_por_partido(id)
-    usuario_en_partido = any(participante['id_usuario'] == session['usuario_id'] for participante in participantes)
-    if usuario_en_partido:
-        print("Usuario ya esta en el partido")
-        ready = True
-    else:
-        print("Usuario no esta en el partido")
-        ready = False
     
-    return render_template('ver_partido.html', partido=partido, participantes=participantes, usuario_id=session['usuario_id'],ready=ready)
+    ya_unido = False
+    if 'usuario_id' in session:
+        ya_unido = any(p['id_usuario'] == session['usuario_id'] for p in participantes)
+    
+    # Obtener nombre del organizador
+    organizador = Usuario.get_by_id(partido.id_organizador)
+    partido.organizador_nombre = organizador.nombre if organizador else "Desconocido"
+
+    # Obtener información de la reserva si existe
+    if partido.id_reserva:
+        # Aquí deberías tener lógica para obtener los detalles de la reserva
+        # y asignarlos a partido.reserva_info como se discutió anteriormente.
+        # Por ejemplo:
+        # reserva_obj = Reserva.obtener_detalles_completos(partido.id_reserva)
+        # partido.reserva_info = reserva_obj 
+        pass # Placeholder para la lógica de reserva_info
+
+    # Lógica para invitados (si la tienes)
+    invitados = [] # Reemplaza con tu lógica para obtener invitados
+
+    return render_template(
+        'ver_partido.html', 
+        partido=partido, 
+        participantes=participantes,
+        invitados=invitados, # Pasa la lista de invitados
+        ya_unido=ya_unido   # Pasa el estado de si el usuario ya está unido
+    )
 
 @app.route('/eliminar_partido/<int:id>')
 def eliminar_partido(id):
@@ -103,7 +123,64 @@ def actualizar_partido():
     flash("partido actualizado exitosamente", "success")
     return redirect(url_for('dashboard'))
 
+@app.route('/partido/<int:id_partido>/unirse', methods=['POST'])
+def unirse_partido(id_partido):
+    if 'usuario_id' not in session:
+        flash("Debes iniciar sesión para unirte a un partido.", "warning")
+        return redirect(url_for('login')) # O a donde quieras redirigir si no está logueado
 
+    # Verificar que el partido exista
+    partido_existente = Partido.obtener_por_id(id_partido)
+    if not partido_existente:
+        flash("El partido al que intentas unirte no existe.", "error")
+        return redirect(url_for('dashboard'))
+
+    # Datos para crear el participante
+    datos_participante = {
+        'id_partido': id_partido,
+        'id_usuario': session['usuario_id']
+        # Puedes añadir más campos si tu tabla 'participantes_partido' los requiere,
+        # como 'estado_confirmacion', 'fecha_union', etc.
+    }
+
+    # Verificar si el usuario ya está unido (opcional, pero buena práctica)
+    # Esto dependerá de cómo tengas implementado Participante.obtener_participantes_por_partido
+    # o si tienes un método específico como Participante.ya_es_participante(datos_participante)
+    
+    # Ejemplo de verificación (necesitarás adaptar esto a tus modelos):
+    participantes_actuales = Participante.obtener_participantes_por_partido(id_partido)
+    if any(p['id_usuario'] == session['usuario_id'] for p in participantes_actuales):
+        flash("Ya estás unido a este partido.", "info")
+        return redirect(url_for('ver_partido', id=id_partido))
+
+    # Intentar agregar al participante
+    # Asumiendo que tienes un método Participante.agregar(datos) o similar
+    if Participante.agregar(datos_participante): # Necesitarás crear este método en tu modelo Participante
+        flash("¡Te has unido al partido exitosamente!", "success")
+    else:
+        flash("Hubo un error al intentar unirte al partido.", "error")
+
+    return redirect(url_for('ver_partido', id=id_partido))
+
+@app.route('/partido/<int:id_partido>/salir', methods=['POST'])
+def salir_partido(id_partido):
+    if 'usuario_id' not in session:
+        flash("Debes iniciar sesión.", "warning")
+        return redirect(url_for('login'))
+
+    datos_eliminar = {
+        'id_partido': id_partido,
+        'id_usuario': session['usuario_id']
+    }
+
+    # Asumiendo que tienes un método Participante.eliminar_participacion(datos)
+    if Participante.eliminar_participacion(datos_eliminar): # Necesitarás crear este método
+        flash("Has salido del partido.", "success")
+    else:
+        flash("Error al intentar salir del partido.", "error")
+    
+    return redirect(url_for('ver_partido', id=id_partido))
+    
     """
     
 @app.route('/editar_viaje/<int:id>', methods=['GET', 'POST'])
