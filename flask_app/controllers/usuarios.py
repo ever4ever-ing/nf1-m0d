@@ -2,6 +2,8 @@ from flask import render_template, request, redirect, session, flash
 from flask_app import app, bcrypt
 from flask_app.models.usuario import Usuario
 from flask_app.models.partido import Partido
+from flask_app.models.localidad import Localidad
+from flask_app.models.partido import Partido
 from datetime import date
 from functools import wraps
 
@@ -27,20 +29,38 @@ def index():
 @app.route("/dashboard")
 @login_required
 def dashboard():
-    mis_partidos = Partido.obtener_por_organizador(session['usuario_id'])
-    for partido in mis_partidos:
-        partido.participantes = Partido.obtener_participantes(partido.id_partido)
+    def agregar_participantes(lista_partidos):
+        """Agrega los participantes a una lista de partidos"""
+        if not lista_partidos:
+            return []
+        for partido in lista_partidos:
+            partido.participantes = Partido.obtener_participantes(partido.id_partido)
+        return lista_partidos
     
-    partidos = Partido.get_match_disponibles(session['usuario_id'])
-    for partido in partidos:
-        partido.participantes = Partido.obtener_participantes(partido.id_partido)
-
+    # Obtener partidos organizados por el usuario actual
+    mis_partidos = agregar_participantes(
+        Partido.obtener_por_organizador(session['usuario_id'])
+    )
+    # Cargar las localidades para el renderizado
+    localidades = Localidad.get_all()
+      # Obtener partidos según filtro o disponibilidad
+    id_localidad = request.args.get('id_localidad', type=int, default=0)
+    
+    # Utilizamos get_partidos_by_localidad tanto para todos como para un filtro específico
+    # Este método ya maneja correctamente el caso de id_localidad = 0
+    print(f"Filtrando partidos por localidad ID: {id_localidad}")
+    partidos_filtrados = Partido.get_partidos_by_localidad(id_localidad)
+    partidos = agregar_participantes(partidos_filtrados)
+        
     return render_template(
         "dashboard.html",
         mis_partidos=mis_partidos,
         partidos=partidos,
+        localidades=localidades,
+        id_localidad=id_localidad,
         usuario_id=session['usuario_id']
     )
+
 
 
 @app.route('/register', methods=['POST'])

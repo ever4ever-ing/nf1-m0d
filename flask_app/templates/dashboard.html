@@ -1,3 +1,4 @@
+<!-- dashboard.html -->
 <!DOCTYPE html>
 <html lang="es">
 
@@ -7,169 +8,29 @@
     <title>NosFalta1 - Dashboard</title>
     <link rel="stylesheet" href="https://bootswatch.com/5/lux/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;500;600;700&display=swap">
     <style>
-        :root {
-            --primary-color: #6f42c1;
-            --secondary-color: #4582EC;
-            --dark-overlay: rgba(46, 46, 46, 0.8);
-            --card-bg-opacity: 0.92;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-        }
-
         body {
-            background-color: #f8f9fa;
+            background-image: url('{{ url_for('static', filename='img/bg2.webp') }}');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
             background-attachment: fixed;
-            background-image: url("{{ url_for('static', filename='img/bg2.webp') }}");
-        }
-
-        .navbar {
-            background-color: rgba(64, 64, 64, 0.85) !important;
-            backdrop-filter: blur(5px);
-            -webkit-backdrop-filter: blur(5px);
-        }
-
-        .section-header {
-            color: white;
-            background-color: var(--dark-overlay);
-            padding: 10px 15px;
-            border-radius: 5px;
-            margin-top: 20px;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .section-title {
-            margin-bottom: 0;
-        }
-
-        .card {
-            background-color: rgba(255, 255, 255, var(--card-bg-opacity));
-            border: none;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            margin-bottom: 20px;
-        }
-
-        .card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .card-body {
-            padding: 1.5rem;
-        }
-
-        .table-header {
-            background-color: var(--dark-overlay);
-            color: white;
-        }
-
-        .badge-reserva {
-            font-size: 0.8em;
-            padding: 0.35em 0.65em;
-        }
-
-        .btn-action {
-            padding: 0.25rem 0.5rem;
-            font-size: 0.875rem;
-        }
-
-        .filter-container {
-            background-color: rgba(255, 255, 255, 0.9);
-            border-radius: 5px;
-            padding: 15px;
-            margin-bottom: 20px;
-        }
-
-        .partido-card {
-            height: 100%;
-        }
-
-        .partido-card .info-row {
-            margin-bottom: 0.5rem;
-        }
-
-        .card-icon {
-            margin-right: 8px;
-            opacity: 0.8;
-        }
-
-        .reserva-indicator {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-        }
-
-        .reserva-confirmada {
-            background-color: #2ecc71;
-            border: 2px solid #27ae60;
-        }
-
-        .reserva-pendiente {
-            background-color: #f39c12;
-            border: 2px solid #e67e22;
-        }
-
-        .reserva-sin-cancha {
-            background-color: #e74c3c;
-            border: 2px solid #c0392b;
-        }
-
-        .card-img-top {
-            height: 160px;
-            object-fit: cover;
-        }
-
-        /* Ajustes responsivos */
-        @media (max-width: 767px) {
-            .section-header {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            
-            .filter-container {
-                margin-top: 10px;
-                width: 100%;
-            }
-
-            .btn-sm {
-                padding: 0.2rem 0.4rem;
-                font-size: 0.7rem;
-            }
-            
-            .card-title {
-                font-size: 1.1rem;
-            }
-            
-            .card-body {
-                padding: 1rem;
-            }
         }
     </style>
 </head>
 
 <body id="dashboard">
-    <div class="container py-4">
-        <!-- Navbar -->
-        <nav class="navbar navbar-expand-lg bg-primary rounded" data-bs-theme="dark">
-            <div class="container-fluid">
-                <div class="d-flex align-items-center">
-                    <img src="{{ url_for('static', filename='img/futbol.png') }}" alt="NosFalta1" width="30" 
-                        class="me-2">
-                    <a class="navbar-brand fw-bold" href="#">NosFalta1</a>
-                </div>
+    <div class="container-fluid py-3 d-flex flex-column align-items-center ">
+        <!-- Navbar actualizado según la estructura proporcionada -->
+        <nav class="navbar navbar-expand-lg bg-primary  w-100 justify-content-center" data-bs-theme="dark">
+            <div class="container-fluid justify-content-center">
+                <img src="{{ url_for('static', filename='img/futbol.png') }}" alt="NosFalta1" width="30"
+                    class="me-2">
+
+                <a class="navbar-brand mx-auto" href="#">NosFalta1</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor01"
                     aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -178,31 +39,29 @@
                     <ul class="navbar-nav me-auto">
                         <li class="nav-item">
                             <a class="nav-link active" href="#">
-                                <i class="fas fa-home card-icon"></i> Dashboard
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">
-                                <i class="fas fa-calendar-alt card-icon"></i> Mis Reservas
+                                Bienvenido
                             </a>
                         </li>
                     </ul>
-                    <div class="d-flex align-items-center">
-                        <a href="{{ url_for('nuevo_partido') }}" class="btn btn-success me-3">
-                            <i class="fas fa-plus-circle"></i> Organizar Partido
-                        </a>
-                        <div class="dropdown">
-                            <button class="btn btn-secondary dropdown-toggle" type="button" id="profileDropdown" 
-                                    data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fas fa-user"></i>
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
-                                <li><span class="dropdown-item-text">Hola, {{ session.nombre }}</span></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="#"><i class="fas fa-user-edit card-icon"></i> Editar Perfil</a></li>
-                                <li><a class="dropdown-item" href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt card-icon"></i> Cerrar Sesión</a></li>
-                            </ul>
+                    <div class="d-flex justify-content-between align-items-center mb-2 mb-lg-0">
+                        <div>
+                            <a href="{{ url_for('nuevo_partido') }}" class="btn btn-success btn-sm mr-4">Organizar</a>
                         </div>
+                        <ul class="navbar-nav me-auto">
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button"
+                                    aria-haspopup="true" aria-expanded="false">
+                                    <span class="material-symbols-outlined">
+                                        person
+                                    </span>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-end" data-bs-popper="static">
+                                    <a class="dropdown-item" href="#">Editar Perfil</a>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item" href="{{ url_for('logout') }}">Cerrar Sesión</a>
+                                </div>
+                            </li>
+                        </ul>
                     </div>
                 </div>
             </div>
@@ -211,7 +70,7 @@
         <!-- Mensajes Flash -->
         {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
-        <div class="mt-4">
+        <div class="mt-2">
             {% for category, message in messages %}
             <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
                 {{ message }}
@@ -220,125 +79,94 @@
             {% endfor %}
         </div>
         {% endif %}
-        {% endwith %}
-
-        <!-- Sección de filtros -->
-        <div class="section-header">
-            <h3 class="section-title">
-                <i class="fas fa-filter card-icon"></i> Filtrar Partidos
+        {% endwith %} <!-- Sección de filtros -->
+        <div class="section-header py-1 mb-2 w-75 justify-content-center bg-primary bg-opacity-25"> ">
+            <h3 class="section-title mb-0 text-white text-center w-100  " style="font-size:1.01rem; font-weight:500;">
+                <i class="fas fa-filter card-icon text-white mb-2 "></i> Filtrar Partidos
             </h3>
-        </div>
-        
-        <div class="filter-container mb-4">
-            <form id="filterForm" method="GET" action="{{ url_for('dashboard') }}" class="row g-3 align-items-end">
-                <div class="col-md-4">
-                    <label for="localidad" class="form-label">Localidad:</label>
-                    <select class="form-select" id="localidad" name="localidad">
-                        <option value="">Todas las localidades</option>
-                        {% for localidad in localidades %}
-                        <option value="{{ localidad.id_localidad }}" {% if request.args.get('localidad')|int == localidad.id_localidad %}selected{% endif %}>
-                            {{ localidad.nombre }}
-                        </option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="col-md-4">
-                    <label for="fecha" class="form-label">Fecha:</label>
-                    <input type="date" class="form-control" id="fecha" name="fecha" 
-                           value="{{ request.args.get('fecha', '') }}">
-                </div>
-                <div class="col-md-4">
-                    <label for="estado" class="form-label">Estado de reserva:</label>
-                    <select class="form-select" id="estado" name="estado">
-                        <option value="">Todos los estados</option>
-                        <option value="reservado" {% if request.args.get('estado') == 'reservado' %}selected{% endif %}>Con cancha reservada</option>
-                        <option value="pendiente" {% if request.args.get('estado') == 'pendiente' %}selected{% endif %}>Sin cancha reservada</option>
-                    </select>
-                </div>
-                <div class="col-12 d-flex justify-content-end">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-search card-icon"></i> Filtrar
-                    </button>
-                    <a href="{{ url_for('dashboard') }}" class="btn btn-secondary ms-2">
-                        <i class="fas fa-undo card-icon"></i> Limpiar
-                    </a>
-                </div>
-            </form>
-        </div>
-
-        <!-- Mis Partidos -->
-        <div class="section-header">
-            <h3 class="section-title">
-                <i class="fas fa-futbol card-icon"></i> Mis Partidos
-            </h3>
-            <div class="d-flex align-items-center">
-                <div class="d-flex me-3">
-                    <div class="reserva-indicator reserva-confirmada me-1"></div>
-                    <small class="text-white">Con cancha</small>
-                </div>
-                <div class="d-flex me-3">
-                    <div class="reserva-indicator reserva-sin-cancha me-1"></div>
-                    <small class="text-white">Sin cancha</small>
-                </div>
+            <div class="filter-container p-2 mb-0 w-100 bg-primary bg-opacity-75  text-white shadow-sm border ">
+                <form id="filterForm" method="GET" action="{{ url_for('dashboard') }}" class="row justify-content-center align-items-center g-2">
+                    <div class="col-auto d-flex align-items-center">
+                        <label for="id_localidad" class="form-label mb-0 me-2">Localidad:</label>
+                        <select class="form-select form-select-sm" id="id_localidad" name="id_localidad">
+                            <option value="0">Todas las localidades</option>
+                            {% if localidades %}
+                            {% for localidad in localidades %}
+                            <option value="{{ localidad.id_localidad }}" {% if id_localidad==localidad.id_localidad %}selected{% endif %}>{{ localidad.nombre }}</option>
+                            {% endfor %}
+                            {% endif %}
+                        </select>
+                    </div>
+                    <div class="col-auto">
+                        <button type="submit" class="btn btn-primary btn-sm">
+                            <i class="fas fa-search"></i> Filtrar
+                        </button>
+                        <a href="{{ url_for('dashboard') }}" class="btn btn-secondary btn-sm ms-1" id="limpiarFiltros">
+                            <i class="fas fa-undo"></i> Limpiar
+                        </a>
+                    </div>
+                </form>
             </div>
-        </div>
-
-        <!-- Partidos en tarjetas (vista principal) -->
-        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-5">
+        </div>        <!-- Mis Partidos -->
+        <div class="section-header py-1 mb-2 w-75 justify-content-center bg-primary bg-opacity-75">
+            <h3 class="section-title mb-0 text-white text-center w-100" style="font-size:1.1rem; font-weight:500;">
+                <i class="fas fa-futbol card-icon text-white"></i> Mis Partidos
+            </h3>
+        </div><!-- Partidos en tarjetas (vista principal) -->
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 row-cols-xl-5 row-cols-xxl-6 g-2 mb-3 w-75 justify-content-center w-75 bg-opacity-50 bg-primary">
             {% for partido in mis_partidos %}
-            <div class="col">
-                <div class="card h-100 partido-card position-relative">
+            <div class="col d-flex justify-content-center">
+                <div class="card h-100 partido-card position-relative text-center">
                     <!-- Indicador visual del estado de la reserva -->
-                    <div class="reserva-indicator {% if partido.id_reserva %}reserva-confirmada{% else %}reserva-sin-cancha{% endif %}"></div>
-                    
-                    <!-- Imagen según el estado de reserva -->
-                    {% if partido.id_reserva and partido.reserva_imagen %}
-                        <img src="{{ url_for('static', filename='img/' + partido.reserva_imagen) }}" class="card-img-top" alt="Imagen del recinto">
-                    {% else %}
-                        <img src="{{ url_for('static', filename='img/no-reserva.webp') }}" class="card-img-top" alt="Sin reserva">
-                    {% endif %}
-                    
-                    <div class="card-body">
-                        <h5 class="card-title mb-3">{{ partido.lugar }}</h5>
-                        
+                    <div
+                        class="reserva-indicator {% if partido.id_reserva %}reserva-confirmada{% else %}reserva-sin-cancha{% endif %}">
+                    </div>                    <div class="card-body p-2">
+                        <h5 class="card-title mb-1" style="font-size:0.9rem; font-weight:600;">{{ partido.lugar }}</h5>
+
                         <!-- Estado de la reserva -->
                         {% if partido.id_reserva %}
-                            <div class="badge bg-success mb-2 w-100 text-start">
-                                <i class="fas fa-check-circle card-icon"></i> Cancha reservada
-                            </div>
-                            {% if partido.reserva_info %}
-                            <div class="mb-3 border-start border-success border-3 ps-2">
-                                <small class="d-block text-muted">{{ partido.reserva_info.recinto_nombre }}</small>
-                                <small class="d-block text-muted">{{ partido.reserva_info.cancha_nombre }}</small>
-                            </div>
-                            {% endif %}
-                        {% else %}
-                            <div class="badge bg-danger mb-2 w-100 text-start">
-                                <i class="fas fa-exclamation-circle card-icon"></i> Sin cancha reservada
-                            </div>
+                        <div class="badge bg-success mb-1 w-100 text-start p-1" style="font-size:0.7rem;">
+                            <i class="fas fa-check-circle"></i> Cancha reservada
+                        </div>
+                        {% if partido.reserva_info %}
+                        <div class="mb-1 border-start border-success border-2 ps-1">
+                            <span class="d-block text-muted" style="font-size:0.75rem; line-height:1.1;">{{
+                                partido.reserva_info.recinto_nombre }}</span>
+                            <span class="d-block text-muted" style="font-size:0.75rem; line-height:1.1;">{{
+                                partido.reserva_info.cancha_nombre }}</span>
+                        </div>
                         {% endif %}
-                        
-                        <div class="info-row"><i class="fas fa-user card-icon"></i> {{ partido.organizador }}</div>
-                        <div class="info-row"><i class="fas fa-map-marker-alt card-icon"></i> {{ partido.localidad_nombre | default('Sin localidad') }}</div>
-                        <div class="info-row"><i class="fas fa-calendar card-icon"></i> {{ partido.fecha_inicio.strftime('%d/%m/%Y') }}</div>
-                        <div class="info-row"><i class="fas fa-clock card-icon"></i> {{ partido.fecha_inicio.strftime('%H:%M') }}</div>
-                        <div class="info-row"><i class="fas fa-users card-icon"></i> {{ partido.participantes | length }} jugadores</div>
-                        
-                        <hr>
-                        <div class="d-flex justify-content-between">
-                            <a href="{{ url_for('ver_partido', id=partido.id_partido) }}" 
-                               class="btn btn-info btn-sm">
-                                <i class="fas fa-eye"></i> Ver
+                        {% else %}
+                        <div class="badge bg-danger mb-1 w-100 text-start p-1" style="font-size:0.7rem;">
+                            <i class="fas fa-exclamation-circle"></i> Sin cancha
+                        </div>
+                        {% endif %}
+
+                        <div class="d-flex flex-wrap mb-1" style="gap:5px;">
+                            <span class="badge bg-light text-dark" style="font-size:0.75rem;">
+                                <i class="fas fa-calendar" style="margin-right:3px;"></i>{{ partido.fecha_inicio.strftime('%d/%m/%Y') }}
+                            </span>
+                            <span class="badge bg-light text-dark" style="font-size:0.75rem;">
+                                <i class="fas fa-clock" style="margin-right:3px;"></i>{{ partido.fecha_inicio.strftime('%H:%M') }}
+                            </span>
+                        </div>
+
+                        <div class="info-row" style="font-size:0.8rem;"><i class="fas fa-user" style="margin-right:3px;"></i> <b>{{partido.organizador}}</b></div>
+                        <div class="info-row" style="font-size:0.8rem;"><i class="fas fa-users" style="margin-right:3px;"></i> {{ partido.participantes | length }} jugadores</div>
+
+                        <div class="d-flex justify-content-between mt-1 pt-1 border-top">
+                            <a href="{{ url_for('ver_partido', id=partido.id_partido) }}" class="btn btn-info btn-sm py-0" style="font-size:0.75rem;">
+                                <i class="fas fa-eye"></i>
                             </a>
                             <div>
                                 {% if partido.id_organizador == session.usuario_id %}
-                                <a href="{{ url_for('editar_partido', id=partido.id_partido) }}" 
-                                   class="btn btn-warning btn-sm">
-                                    <i class="fas fa-edit"></i> Editar
+                                <a href="{{ url_for('editar_partido', id=partido.id_partido) }}"
+                                    class="btn btn-warning btn-sm py-0" style="font-size:0.75rem;">
+                                    <i class="fas fa-edit"></i>
                                 </a>
-                                <a href="{{ url_for('eliminar_partido', id=partido.id_partido) }}" 
-                                   class="btn btn-danger btn-sm"
-                                   onclick="return confirm('¿Estás seguro de querer eliminar este partido?')">
+                                <a href="{{ url_for('eliminar_partido', id=partido.id_partido) }}"
+                                    class="btn btn-danger btn-sm py-0" style="font-size:0.75rem;"
+                                    onclick="return confirm('¿Estás seguro de querer eliminar este partido?')">
                                     <i class="fas fa-trash"></i>
                                 </a>
                                 {% endif %}
@@ -348,36 +176,128 @@
                 </div>
             </div>
             {% else %}
-            <div class="col-12">
-                <div class="alert alert-info">
+            <div class="col-12 text-center">
+                <div class="alert alert-info d-inline-block">
                     <i class="fas fa-info-circle me-2"></i> No tienes partidos registrados.
                     <a href="{{ url_for('nuevo_partido') }}" class="alert-link">¡Organiza uno nuevo!</a>
                 </div>
             </div>
             {% endfor %}
-        </div>
-
-        <!-- Partidos disponibles -->
-        <div class="section-header">
-            <h3 class="section-title">
+        </div>        <!-- Partidos disponibles -->
+        <div class="section-header py-1 mb-2 w-75 justify-content-center  bg-primary bg-opacity-75 ">
+            <h3 class="section-title mb-0 text-white text-center w-100" style="font-size:1.1rem; font-weight:500;">
                 <i class="fas fa-search card-icon"></i> Partidos Disponibles
             </h3>
         </div>
 
-        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 row-cols-xl-5 row-cols-xxl-6 g-2 justify-content-center w-75 bg-opacity-50 bg-primary">
             {% for partido in partidos %}
-                <div class="col">
-                    <!-- Contenido de la tarjeta -->
-                </div>
-            {% else %}
-                <div class="col-12">
-                    <div class="alert alert-info">
-                        <i class="fas fa-info-circle me-2"></i> No hay partidos disponibles con los filtros seleccionados.
+            <div class="col d-flex justify-content-center">
+                <div class="card h-100 partido-card position-relative text-center">
+                    <!-- Indicador visual del estado de la reserva -->
+                    <div
+                        class="reserva-indicator {% if partido.id_reserva %}reserva-confirmada{% else %}reserva-sin-cancha{% endif %}">
+                    </div>                    <div class="card-body p-2">
+                        <h5 class="card-title mb-1" style="font-size:0.9rem; font-weight:600;">{{ partido.lugar }}</h5>
+
+                        <!-- Estado de la reserva -->
+                        {% if partido.id_reserva %}
+                        <div class="badge bg-success mb-1 w-100 text-start p-1" style="font-size:0.7rem;">
+                            <i class="fas fa-check-circle"></i> Cancha reservada
+                        </div>
+                        {% if partido.reserva_info %}
+                        <div class="mb-1 border-start border-success border-2 ps-1">
+                            <span class="d-block text-muted" style="font-size:0.75rem; line-height:1.1;">{{
+                                partido.reserva_info.recinto_nombre }}</span>
+                            <span class="d-block text-muted" style="font-size:0.75rem; line-height:1.1;">{{
+                                partido.reserva_info.cancha_nombre }}</span>
+                        </div>
+                        {% endif %}
+                        {% else %}
+                        <div class="badge bg-danger mb-1 w-100 text-start p-1" style="font-size:0.7rem;">
+                            <i class="fas fa-exclamation-circle"></i> Sin cancha
+                        </div>
+                        {% endif %}
+
+                        <div class="d-flex flex-wrap mb-1" style="gap:5px;">
+                            <span class="badge bg-light text-dark" style="font-size:0.75rem;">
+                                <i class="fas fa-calendar" style="margin-right:3px;"></i>{{ partido.fecha_inicio.strftime('%d/%m/%Y') }}
+                            </span>
+                            <span class="badge bg-light text-dark" style="font-size:0.75rem;">
+                                <i class="fas fa-clock" style="margin-right:3px;"></i>{{ partido.fecha_inicio.strftime('%H:%M') }}
+                            </span>
+                        </div>
+
+                        <div class="d-flex flex-wrap gap-2 mb-1">
+                            <div class="info-row" style="font-size:0.8rem;"><i class="fas fa-user" style="margin-right:3px;"></i>{{
+                                partido.organizador }}</div>
+                            {% if partido.localidad_nombre %}
+                            <div class="info-row" style="font-size:0.8rem;"><i class="fas fa-map-marker-alt" style="margin-right:3px;"></i>
+                                {{ partido.localidad_nombre }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="info-row" style="font-size:0.8rem;"><i class="fas fa-users" style="margin-right:3px;"></i> {{ partido.participantes | length
+                            }} jugadores</div>
+
+                        <div class="d-flex justify-content-between mt-1 pt-1 border-top">
+                            <a href="{{ url_for('ver_partido', id=partido.id_partido) }}" class="btn btn-info btn-sm py-0" style="font-size:0.75rem;">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            <div>
+                                {% set ya_unido = false %}
+                                {% for p in partido.participantes %}
+                                {% if p.id_usuario == session.usuario_id %}
+                                {% set ya_unido = true %}
+                                {% endif %}
+                                {% endfor %}
+
+                                {% if not ya_unido %}
+                                <form action="{{ url_for('unirse') }}" method="POST" class="d-inline">
+                                    <input type="hidden" name="id_partido" value="{{ partido.id_partido }}">
+                                    <input type="hidden" name="id_usuario" value="{{ session.usuario_id }}">
+                                    <button type="submit" class="btn btn-success btn-sm py-0" style="font-size:0.75rem;">
+                                        <i class="fas fa-user-plus"></i>
+                                    </button>
+                                </form>
+                                {% else %}
+                                <span class="badge bg-secondary" style="font-size:0.7rem;">Ya unido</span>
+                                {% endif %}
+                            </div>
+                        </div>
                     </div>
                 </div>
+            </div> {% else %}
+            <div class="col-12 text-center">
+                <div class="alert alert-info d-inline-block">
+                    {% if id_localidad != 0 %}
+                    <i class="fas fa-info-circle me-2"></i> No hay partidos disponibles en la localidad seleccionada.
+                    <a href="{{ url_for('dashboard') }}" class="alert-link">Ver todos los partidos</a>
+                    {% else %}
+                    <i class="fas fa-info-circle me-2"></i> No hay partidos disponibles actualmente.
+                    {% endif %}
+                </div>
+            </div>
             {% endfor %}
         </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Este script permite que se envíe el formulario cuando cambian los filtros
+        document.querySelectorAll('#filterForm select, #filterForm input[type="date"]').forEach(element => {
+            element.addEventListener('change', function () {
+                document.getElementById('filterForm').submit();
+            });
+        });
+
+        // Script para manejar el botón de limpiar
+        document.getElementById('limpiarFiltros').addEventListener('click', function (e) {
+            e.preventDefault();
+            // Resetear el formulario y enviarlo
+            document.getElementById('filterForm').reset();
+            window.location.href = this.getAttribute('href');
+        });
+    </script>
 </body>
 
 </html>

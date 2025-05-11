@@ -38,15 +38,16 @@ class Partido:
                 # print("Participantes:************ \n",type(participante.Participante.obtener_participantes_por_partido(partido['id_partido'])))
                 cls(partido).participantes = participante.Participante.obtener_participantes_por_partido(
                     partido['id_partido'])
-                partidos.append(cls(partido))
+        partidos.append(cls(partido))
         return partidos
-
+        
     @classmethod
     def get_match_disponibles(cls, id_usuario):
         query = """
-            SELECT p.*, u.nombre as organizador
+            SELECT p.*, u.nombre as organizador, l.nombre as localidad_nombre
             FROM partidos p
             JOIN usuarios u ON p.id_organizador = u.id_usuario
+            LEFT JOIN localidades l ON p.id_localidad = l.id_localidad
             WHERE p.id_organizador != %(id_usuario)s
             ORDER BY p.fecha_inicio;
         """
@@ -55,7 +56,10 @@ class Partido:
         partidos = []
         if results:
             for row in results:
-                partidos.append(cls(row))
+                partido = cls(row)
+                # Añadimos los participantes a cada partido
+                partido.participantes = cls.obtener_participantes(partido.id_partido)
+                partidos.append(partido)
         return partidos
 
     @classmethod
@@ -177,26 +181,65 @@ class Partido:
                 partido.participantes.append(
                     participante.Participante(datos_participante))
         return partido
-
     @classmethod
     def obtener_participantes(cls, id_partido):
-        query = """
-            SELECT p.*, u.nombre 
-            FROM participantes_partido p
-            JOIN usuarios u ON p.id_usuario = u.id_usuario
-            WHERE p.id_partido = %(id_partido)s;
-        """
-        data = {'id_partido': id_partido}
+            query = """
+                SELECT p.*, u.nombre 
+                FROM participantes_partido p
+                JOIN usuarios u ON p.id_usuario = u.id_usuario
+                WHERE p.id_partido = %(id_partido)s;
+            """
+            data = {'id_partido': id_partido}
+            results = connectToMySQL(DATABASE).query_db(query, data)
+            print(type(results))
+            participantes = []
+            if results:
+                for row in results:
+                    print(row)
+                    participantes.append(row)
+
+            for participante in participantes:
+                # Acceder a los atributos de cada participante
+                print("Datos del participante:", participante)
+            return participantes    
+    @classmethod
+    def get_partidos_by_localidad(cls, id_localidad):
+        # Si id_localidad es 0 o None, mostrar todos los partidos de todas las localidades
+        if id_localidad == 0 or id_localidad is None:
+            query = """
+                SELECT p.*, u.nombre as organizador, l.nombre as localidad_nombre
+                FROM partidos p
+                JOIN usuarios u ON p.id_organizador = u.id_usuario
+                LEFT JOIN localidades l ON p.id_localidad = l.id_localidad
+                ORDER BY p.fecha_inicio;
+            """
+            data = {}
+            logging.info("Mostrando TODOS los partidos de TODAS las localidades")
+        else:
+            query = """
+                SELECT p.*, u.nombre as organizador, l.nombre as localidad_nombre
+                FROM partidos p
+                JOIN usuarios u ON p.id_organizador = u.id_usuario
+                LEFT JOIN localidades l ON p.id_localidad = l.id_localidad
+                WHERE p.id_localidad = %(id_localidad)s
+                ORDER BY p.fecha_inicio;
+            """
+            data = {'id_localidad': id_localidad}
+            logging.info(f"Filtrando partidos por localidad ID: {id_localidad}")
+        
+        logging.info(f"Consulta: {query}")
+        logging.info(f"Datos: {data}")
+        
         results = connectToMySQL(DATABASE).query_db(query, data)
-        print(type(results))
-        participantes = []
+        partidos = []
         if results:
+            logging.info(f"Se encontraron {len(results)} partidos")
             for row in results:
-                print(row)
-                participantes.append(row)
-
-        for participante in participantes:
-            # Acceder a los atributos de cada participante
-            print("Datos del participante:", participante)
-
-        return participantes
+                partido = cls(row)
+                # Añadimos los participantes a cada partido
+                partido.participantes = cls.obtener_participantes(partido.id_partido)
+                partidos.append(partido)
+        else:
+            logging.info("No se encontraron partidos con los criterios de búsqueda")
+            
+        return partidos
