@@ -1,10 +1,8 @@
 # modelos/viaje.py
 import logging
-from flask_app.config.mysqlconnection import connectToMySQL
 from flask_app.models import participante
 from flask_app.models.localidad import Localidad
-DATABASE = 'nosfalta1'
-
+from flask_app.config.mysqlconnection import connectToMySQL, DB_HOST, DB_USER, DB_PASSWORD, DATABASE
 
 class Partido:
     def __init__(self, data):

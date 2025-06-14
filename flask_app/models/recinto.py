@@ -1,19 +1,9 @@
 import logging
-from flask_app.config.mysqlconnection import connectToMySQL
 from flask import flash
 import re
 import os
+from flask_app.config.mysqlconnection import connectToMySQL, DB_HOST, DB_USER, DB_PASSWORD, DATABASE
 
-from dotenv import load_dotenv
-env_file = os.getenv('ENV_FILE', '.env')  # Por defecto, carga .env
-load_dotenv(dotenv_path=env_file)
-
-# Asegurarse de que las variables de entorno estén configuradas
-DB_HOST = os.getenv('DB_HOST')
-DB_USER = os.getenv('DB_USER')
-DB_PASSWORD = os.getenv('DB_PASSWORD')
-DATABASE = os.getenv('DATABASE')
-DATABASE = 'nosfalta1'
 class Recinto:
     def __init__(self, data):
         self.id_recinto = data.get('id_recinto')  # Usa get para evitar KeyError

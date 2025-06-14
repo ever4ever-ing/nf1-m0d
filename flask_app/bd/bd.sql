@@ -12,31 +12,6 @@ CREATE TABLE usuarios (
     fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
-CREATE TABLE partidos (
-    id_partido INT PRIMARY KEY AUTO_INCREMENT,
-    lugar VARCHAR(100) NOT NULL,
-    fecha_inicio DATETIME NOT NULL,
-    descripcion TEXT,
-    id_organizador INT NOT NULL,
-    id_localidad BIGINT UNSIGNED NOT NULL,
-    id_reserva BIGINT UNSIGNED,
-    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (id_organizador) REFERENCES usuarios(id_usuario),
-    FOREIGN KEY (id_localidad) REFERENCES localidades(id_localidad),
-    FOREIGN KEY (id_reserva) REFERENCES reservas(id_reserva)
-);
-
--- Tabla de participantes
-CREATE TABLE participantes_partido (
-    id_participante INT PRIMARY KEY AUTO_INCREMENT,
-    id_partido INT NOT NULL,
-    id_usuario INT NOT NULL,
-    fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (id_partido) REFERENCES partidos(id_partido),
-    FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario)
-);
-
 CREATE TABLE localidades (
     id_localidad SERIAL PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL,
@@ -122,5 +97,31 @@ CREATE TABLE reservas (
     fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (id_cancha) REFERENCES canchas(id_cancha),
     FOREIGN KEY (id_recinto) REFERENCES recintos(id_recinto),
+    FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario)
+);
+
+
+CREATE TABLE partidos (
+    id_partido INT PRIMARY KEY AUTO_INCREMENT,
+    lugar VARCHAR(100) NOT NULL,
+    fecha_inicio DATETIME NOT NULL,
+    descripcion TEXT,
+    id_organizador INT NOT NULL,
+    id_localidad BIGINT UNSIGNED NOT NULL,
+    id_reserva BIGINT UNSIGNED,
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_organizador) REFERENCES usuarios(id_usuario),
+    FOREIGN KEY (id_localidad) REFERENCES localidades(id_localidad),
+    FOREIGN KEY (id_reserva) REFERENCES reservas(id_reserva)
+);
+
+-- Tabla de participantes
+CREATE TABLE participantes_partido (
+    id_participante INT PRIMARY KEY AUTO_INCREMENT,
+    id_partido INT NOT NULL,
+    id_usuario INT NOT NULL,
+    fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_partido) REFERENCES partidos(id_partido),
     FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario)
 );

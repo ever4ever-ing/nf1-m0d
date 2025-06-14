@@ -1,6 +1,6 @@
-from flask_app.config.mysqlconnection import connectToMySQL
 
-DATABASE = 'nosfalta1'
+
+from flask_app.config.mysqlconnection import connectToMySQL, DB_HOST, DB_USER, DB_PASSWORD, DATABASE
 
 class Participante:
     def __init__(self, data):
