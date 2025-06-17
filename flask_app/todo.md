@@ -1,9 +1,6 @@
 ## TO DO
-[X] Diferenciar entre mis partidos y partidos disponibles
-[x] Unirse a partido
-[] Agregar hora de partido
-[] Diferenciar entre invitados y confirmados
-    - se podria crear una tabla con estado del participante(invitado, solicitante, confirmado)
+[ ] Ver recinto del partido y cancha
 [] Modo team - modo match
-[] Que la reserva se asocie al evento
+
+
 
