@@ -1,6 +1,5 @@
-
-
 from flask_app.config.mysqlconnection import connectToMySQL, DB_HOST, DB_USER, DB_PASSWORD, DATABASE
+import logging
 
 class Participante:
     def __init__(self, data):
@@ -14,16 +13,16 @@ class Participante:
             INSERT INTO participantes_partido(id_partido, id_usuario)
             VALUES (%(id_partido)s, %(id_usuario)s);
         """
-        print("Agregando participante:")
-        print(query)
+        logging.debug("Agregando participante:")
+        logging.debug(query)
         return connectToMySQL(DATABASE).query_db(query, data)
     @classmethod
     def eliminar_participante(cls, data):
         query = """
             DELETE FROM participantes_partido WHERE id_usuario = %(id_usuario)s and id_partido = %(id_partido)s;
         """
-        print("Eliminando participante:")
-        print(query)
+        logging.debug("Eliminando participante:")
+        logging.debug(query)
         return connectToMySQL(DATABASE).query_db(query, data)
     @classmethod
     def verificar_participante(cls, id_partido, id_usuario):
@@ -48,16 +47,16 @@ class Participante:
         """
         data = {'id_partido': id_partido}
         results = connectToMySQL(DATABASE).query_db(query, data)
-        print(type(results))
+        logging.debug(type(results))
         participantes = []
         if results:
             for row in results:
-                print(row)
+                logging.debug(row)
                 participantes.append(row)
         
-        for participante in participantes:
+        #for participante in participantes:
             # Acceder a los atributos de cada participante
-            print("Datos del participante:", participante)
+        #    logging.e(f"Datos del participante: {participante}")
 
         return participantes
 

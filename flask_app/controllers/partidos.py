@@ -36,7 +36,7 @@ def nuevo_partido():
         # Crear el partido
         partido_id = Partido.crear(data)
 
-        print("Partido creado con ID:", partido_id)
+        #print("Partido creado con ID:", partido_id)
         if partido_id:
             flash('Partido creado exitosamente', 'success')
             return redirect(url_for('editar_partido', id=partido_id ))
@@ -116,8 +116,8 @@ def actualizar_partido():
         "descripcion": request.form['descripcion'],
         "participantes": Participante.obtener_participantes_por_partido(request.form['id'])
     }
-    print("********ACTUALIZANDO********")
-    print("Lista de participantes", datos['participantes'])
+    #print("********ACTUALIZANDO********")
+    #print("Lista de participantes", datos['participantes'])
     Partido.actualizar(datos)
     
     flash("partido actualizado exitosamente", "success")

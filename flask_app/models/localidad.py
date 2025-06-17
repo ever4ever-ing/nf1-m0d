@@ -3,6 +3,10 @@ from flask_app.models import participante
 import os
 from flask_app.config.mysqlconnection import connectToMySQL, DB_HOST, DB_USER, DB_PASSWORD, DATABASE
 
+
+log_level = os.getenv("LOG_LEVEL", "INFO").upper()
+logging.basicConfig(level=getattr(logging, log_level, logging.INFO))
+
 class Localidad:
     def __init__(self, data):
         self.id_localidad = data['id_localidad']
@@ -31,7 +35,7 @@ class Localidad:
         data = {'id_localidad': id_localidad}  # Cambiar a un diccionario para evitar errores
         resultado = connectToMySQL(DATABASE).query_db(query, data)
         if resultado:
-            logging.info(f"Resultado de la consulta en obtener localidad por id: {resultado}")
+            logging.debug(f"Resultado de la consulta en obtener localidad por id: {resultado}")
             return cls(resultado[0])
         else:
 

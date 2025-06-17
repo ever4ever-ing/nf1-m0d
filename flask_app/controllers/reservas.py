@@ -5,10 +5,17 @@ from flask_app.models.partido import Partido
 from flask_app import app
 from datetime import datetime, date
 import logging
+logging.basicConfig(level=logging.DEBUG)
 
 
 @app.route('/reservar/<int:id_cancha>/<int:id_partido>', methods=['GET', 'POST'])
-def reservar(id_cancha,id_partido):
+def reservar(id_cancha, id_partido):
+
+    # Configure logging for debug data
+
+    logging.info(f"Reserva solicitada para cancha ID: {id_cancha}, partido ID: {id_partido}")
+    logging.info(f"Método de solicitud: {request.method}")
+    logging.info(f"Datos de sesión: {session}")
     if 'usuario_id' not in session:
         flash('Debe iniciar sesión para realizar una reserva', 'warning')
         return redirect('/login')
@@ -18,51 +25,56 @@ def reservar(id_cancha,id_partido):
         fecha_reserva = request.form.get('fecha_reserva')
         hora_inicio = request.form.get('hora_inicio')
         hora_fin = request.form.get('hora_fin')
+        
 
         # Validar los datos de la reserva
         datos_reserva = {
             'id_cancha': id_cancha,
+            'id_recinto': request.args.get('id_recinto'),
             'id_usuario': session['usuario_id'],
             'fecha_reserva': fecha_reserva,
             'hora_inicio': hora_inicio,
             'hora_fin': hora_fin
         }
-        print("ID PARTIDO:", id_partido)
-        partido_obj = Partido.obtener_por_id(id_partido)  # Cambiado "partido" a "partido_obj"
-        
+        logging.info(f"Datos de reserva en controller/reservas.py desde agenda.html: {datos_reserva}")
+        # Cambiado "partido" a "partido_obj"
+        partido_obj = Partido.obtener_por_id(id_partido)
+
         # Verifica si el partido existe
         if not partido_obj:
             flash('El partido no existe', 'danger')
             return redirect('/dashboard')
-            
+
         # Preparar datos para actualizar el partido
         data_partido = {
             'id_partido': partido_obj.id_partido,
             'fecha_inicio': fecha_reserva + ' ' + hora_inicio,
             'descripcion': 'Reserva de cancha',
             'id_organizador': session['usuario_id'],
-            'id_localidad': partido_obj.id_localidad,  # Usar el objeto partido_obj, no la clase
+            # Usar el objeto partido_obj, no la clase
+            'id_localidad': partido_obj.id_localidad,
             'fecha_creacion': datetime.now(),
             'fecha_actualizacion': datetime.now()
         }
-        
+
         # Validar y guardar reserva
         if Reserva.validar_reserva(datos_reserva):
             # Guardar la reserva y obtener el ID
             id_reserva = Reserva.guardar(datos_reserva)
-            
+
             if id_reserva:
                 # Actualizar el ID de reserva en los datos del partido
-                data_partido['id_reserva'] = id_reserva  # Corregir: usar el ID de reserva real
-                print("ID RESERVA:", id_reserva)
+                # Corregir: usar el ID de reserva real
+                data_partido['id_reserva'] = id_reserva
+                #print("ID RESERVA:", id_reserva)
                 # Actualizar el partido y guardar el resultado en una variable diferente
 
                 resultado_actualizacion = Partido.actualizar(data_partido)
-                if resultado_actualizacion :
+                if resultado_actualizacion:
                     flash('Partido actualizado exitosamente', 'success')
                 else:
                     flash('Error al actualizar el partido', 'danger')
-                
+
                 return redirect(url_for('dashboard'))
             else:
                 flash('Error al crear la reserva', 'danger')
@@ -94,7 +106,7 @@ def mostrar_disponibilidad():
         return redirect('/')
 
     # Llamar al método para obtener las reservas por fecha y recinto
-    reservas = Reserva.obtener_por_recinto( id_recinto)
+    reservas = Reserva.obtener_por_recinto(id_recinto)
 
     # Generar disponibilidad por hora si no hay reservas
 
@@ -190,5 +202,3 @@ def api_disponibilidad(fecha, id_cancha):
     except Exception as e:
         logging.error(f"Error en api_disponibilidad: {str(e)}")
         return jsonify({'error': 'Error interno del servidor'}), 500
-
-

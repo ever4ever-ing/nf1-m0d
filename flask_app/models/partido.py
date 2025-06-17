@@ -70,15 +70,15 @@ class Partido:
         """
         data = {'id_partido': id_partido}
         results = connectToMySQL(DATABASE).query_db(query, data)
-        print("Obtener por id")
-        print(results)
+        #print("Obtener por id")
+        #print(results)
         return cls(results[0]) if results else None
 
     @classmethod
     def crear(cls, data):
         lugar = Localidad.obtener_por_id(data['id_localidad'])
         if lugar:
-            logging.info(f"Localidad encontrada: {lugar.nombre}")
+            logging.debug(f"Localidad encontrada: {lugar.nombre}")
             data['lugar'] = lugar.nombre
         else:
             logging.error(
@@ -90,8 +90,8 @@ class Partido:
         """
         # Ejecutar la consulta y obtener el resultado
         resultado = connectToMySQL(DATABASE).query_db(query, data)
-        logging.info(f"Resultado de la consulta al crear: {resultado}")
-        print("Resultado:", resultado)
+        logging.debug(f"Resultado de la consulta al crear: {resultado}")
+        #print("Resultado:", resultado)
         # Verificar si se obtuvo un resultado y devolver el id_partido
         return resultado  # Devuelve el id_partido generado o None si no hay resultado
 
@@ -113,7 +113,7 @@ class Partido:
             # Un resultado None usualmente significa "éxito sin datos para devolver"
             return True
         except Exception as e:
-            print(f"Error al actualizar partido: {e}")
+            #print(f"Error al actualizar partido: {e}")
             return False
 
     @classmethod
@@ -189,16 +189,16 @@ class Partido:
             """
             data = {'id_partido': id_partido}
             results = connectToMySQL(DATABASE).query_db(query, data)
-            print(type(results))
+            #print(type(results))
             participantes = []
             if results:
                 for row in results:
-                    print(row)
+                    #print(row)
                     participantes.append(row)
 
-            for participante in participantes:
+            #for participante in participantes:
                 # Acceder a los atributos de cada participante
-                print("Datos del participante:", participante)
+                #print("Datos del participante:", participante)
             return participantes    
     @classmethod
     def get_partidos_by_localidad(cls, id_localidad):
@@ -212,7 +212,7 @@ class Partido:
                 ORDER BY p.fecha_inicio;
             """
             data = {}
-            logging.info("Mostrando TODOS los partidos de TODAS las localidades")
+            logging.debug("Mostrando TODOS los partidos de TODAS las localidades")
         else:
             query = """
                 SELECT p.*, u.nombre as organizador, l.nombre as localidad_nombre
@@ -223,21 +223,21 @@ class Partido:
                 ORDER BY p.fecha_inicio;
             """
             data = {'id_localidad': id_localidad}
-            logging.info(f"Filtrando partidos por localidad ID: {id_localidad}")
+            logging.debug(f"Filtrando partidos por localidad ID: {id_localidad}")
         
-        logging.info(f"Consulta: {query}")
-        logging.info(f"Datos: {data}")
+        logging.debug(f"Consulta: {query}")
+        logging.debug(f"Datos: {data}")
         
         results = connectToMySQL(DATABASE).query_db(query, data)
         partidos = []
         if results:
-            logging.info(f"Se encontraron {len(results)} partidos")
+            logging.debug(f"Se encontraron {len(results)} partidos")
             for row in results:
                 partido = cls(row)
                 # Añadimos los participantes a cada partido
                 partido.participantes = cls.obtener_participantes(partido.id_partido)
                 partidos.append(partido)
         else:
-            logging.info("No se encontraron partidos con los criterios de búsqueda")
+            logging.debug("No se encontraron partidos con los criterios de búsqueda")
             
         return partidos

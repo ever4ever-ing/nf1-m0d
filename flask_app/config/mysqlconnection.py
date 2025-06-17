@@ -1,6 +1,8 @@
 import pymysql.cursors
 import os
 from dotenv import load_dotenv
+import logging
+
 env_file = os.getenv('.env')  # Por defecto, carga .env
 load_dotenv(dotenv_path=env_file)
 
@@ -10,6 +12,10 @@ DB_USER = os.getenv('MYSQLUSER')
 DB_PASSWORD = os.getenv('MYSQL_ROOT_PASSWORD')
 DATABASE = os.getenv('MYSQL_DATABASE')
 DB_PORT = os.getenv('MYSQLPORT')
+
+# Configuración de logging según variable de entorno
+log_level = os.getenv("LOG_LEVEL", "INFO").upper()
+logging.basicConfig(level=getattr(logging, log_level, logging.INFO))
 
 
 class MySQLConnection:
@@ -21,7 +27,9 @@ class MySQLConnection:
         with self.connection.cursor() as cursor:
             try:
                 query = cursor.mogrify(query, data)
-                print("Running Query:", query)
+                logging.debug(f"Running Query: {query}")
+
+                
                 executable = cursor.execute(query, data)
                 if query.lower().find("insert") >= 0:
                     self.connection.commit()

@@ -80,30 +80,30 @@
             .container {
                 padding: 0.5rem;
             }
-            
+
             h1 {
                 font-size: 1.8rem;
             }
-            
+
             h2 {
                 font-size: 1.4rem;
             }
         }
-        
+
         @media (min-width: 768px) {
             .card-container {
                 display: flex;
                 flex-wrap: wrap;
                 gap: 1rem;
             }
-            
+
             .recintos-grid {
                 display: grid;
                 grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
                 gap: 1rem;
             }
         }
-        
+
         @media (min-width: 992px) {
             .recintos-grid {
                 grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -117,19 +117,20 @@
         <div class="page-header">
             <h1 class="text-white mb-0">Editar partido</h1>
         </div>
-        
+
         <!-- Formulario de edición -->
         <div class="content-card p-3 mb-4">
             <h2 class="mb-3">Información del partido</h2>
             <form method="POST" action="{{ url_for('actualizar_partido') }}">
                 <input type="hidden" id="id" name="id" value="{{ partido.id_partido }}">
                 <input type="hidden" name="id_localidad" value="{{ partido.id_localidad }}">
-                
+
                 <div class="mb-3">
                     <label for="lugar" class="form-label">Lugar</label>
-                    <input type="text" id="lugar" name="lugar" class="form-control" value="{{ partido.lugar }}" required>
+                    <input type="text" id="lugar" name="lugar" class="form-control" value="{{ partido.lugar }}"
+                        required>
                 </div>
-                
+
                 <div class="row mb-3">
                     <div class="col-md-6 mb-2 mb-md-0">
                         <label for="fechaInicio" class="form-label">Fecha</label>
@@ -142,13 +143,13 @@
                             value="{{ partido.fecha_inicio.strftime('%H:%M') }}" required>
                     </div>
                 </div>
-                
+
                 <div class="mb-3">
                     <label for="descripcion" class="form-label">Descripción</label>
                     <textarea id="descripcion" name="descripcion" class="form-control" rows="3"
                         required>{{ partido.descripcion }}</textarea>
                 </div>
-                
+
                 <div class="d-flex justify-content-between">
                     <a href="/dashboard" class="btn btn-secondary">Cancelar</a>
                     <button type="submit" class="btn btn-primary">Guardar Cambios</button>
@@ -160,21 +161,20 @@
         <div class="content-card p-3 mb-4">
             <h2 class="mb-3">Participantes Actuales</h2>
             {% if participantes %}
-                {% for participante in participantes %}
-                <div class="participant-item d-flex justify-content-between align-items-center">
-                    <div>
-                        <p class="mb-1"><strong>{{ participante.nombre }}</strong></p>
-                        <small class="text-muted">ID: {{ participante.id_usuario }}</small>
-                    </div>
-                    <form method="POST" action="/eliminar_participante" class="d-inline">
-                        <input type="hidden" name="id_partido_delete" value="{{ partido.id_partido }}">
-                        <input type="hidden" name="id_usuario_delete" value="{{ participante.id_usuario }}">
-                        <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
-                    </form>
+            {% for participante in participantes %}
+            <div class="participant-item d-flex justify-content-between align-items-center">
+                <div>
+                    <p class="mb-1"><strong>{{ participante.nombre }}</strong></p>
                 </div>
-                {% endfor %}
+                <form method="POST" action="/eliminar_participante" class="d-inline">
+                    <input type="hidden" name="id_partido_delete" value="{{ partido.id_partido }}">
+                    <input type="hidden" name="id_usuario_delete" value="{{ participante.id_usuario }}">
+                    <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+                </form>
+            </div>
+            {% endfor %}
             {% else %}
-                <p class="text-muted">No hay participantes registrados.</p>
+            <p class="text-muted">No hay participantes registrados.</p>
             {% endif %}
         </div>
 
@@ -182,15 +182,13 @@
         <div class="content-card p-3 mb-4">
             <h2 class="mb-3">Agregar Participantes</h2>
             <div class="mb-3">
-                <input type="text" id="searchUsers" class="form-control"
-                    placeholder="Buscar usuarios por nombre...">
+                <input type="text" id="searchUsers" class="form-control" placeholder="Buscar usuarios por nombre...">
             </div>
             <div class="users-list">
                 {% for user in usuarios %}
                 <div class="participant-item d-flex justify-content-between align-items-center">
                     <div>
                         <p class="mb-1"><strong>{{ user.nombre }}</strong></p>
-                        <small class="text-muted">ID: {{ user.id_usuario }}</small>
                     </div>
                     <form method="POST" action="/agregar_participante" class="d-inline">
                         <input type="hidden" name="id_partido" value="{{ partido.id_partido }}">
@@ -206,41 +204,41 @@
         <div class="dark-section">
             <h2 class="mb-3 text-light">Recintos Disponibles</h2>
             {% if not recintos %}
-                <p class="text-light">No hay recintos disponibles.</p>
+            <p class="text-light">No hay recintos disponibles.</p>
             {% else %}
-                <div class="recintos-grid">
-                    {% for lugar in recintos %}
-                    <a href="{{ url_for('agendar_recinto', id_recinto=lugar.id_recinto, id_partido=partido.id_partido) }}"
-                        class="text-decoration-none">
-                        <div class="card venue-card">
-                            {% if lugar.imagen %}
-                            <img src="{{ url_for('static', filename='img/' + lugar.imagen) }}" class="card-img-top"
-                                alt="{{ lugar.nombre }}" loading="lazy">
-                            {% else %}
-                            <img src="{{ url_for('static', filename='img/bg7.webp') }}" class="card-img-top"
-                                alt="Imagen por defecto" loading="lazy">
-                            {% endif %}
-                            <div class="card-body">
-                                <h5 class="card-title">{{ lugar.nombre }}</h5>
-                            </div>
+            <div class="recintos-grid">
+                {% for lugar in recintos %}
+                <a href="{{ url_for('agendar_recinto', id_recinto=lugar.id_recinto, id_partido=partido.id_partido) }}"
+                    class="text-decoration-none">
+                    <div class="card venue-card">
+                        {% if lugar.imagen %}
+                        <img src="{{ url_for('static', filename='img/' + lugar.imagen) }}" class="card-img-top"
+                            alt="{{ lugar.nombre }}" loading="lazy">
+                        {% else %}
+                        <img src="{{ url_for('static', filename='img/bg7.webp') }}" class="card-img-top"
+                            alt="Imagen por defecto" loading="lazy">
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ lugar.nombre }}</h5>
                         </div>
-                    </a>
-                    {% endfor %}
-                </div>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
             {% endif %}
         </div>
     </div>
 
     <!-- Scripts -->
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             // Filtrado de usuarios
             const searchInput = document.getElementById('searchUsers');
             const userItems = document.querySelectorAll('.users-list .participant-item');
-            
-            searchInput.addEventListener('input', function() {
+
+            searchInput.addEventListener('input', function () {
                 const searchTerm = this.value.toLowerCase();
-                
+
                 userItems.forEach(item => {
                     const userName = item.querySelector('strong').textContent.toLowerCase();
                     if (userName.includes(searchTerm)) {

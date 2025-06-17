@@ -30,8 +30,8 @@ class Reserva:
     def guardar(cls, datos):
         try:
             consulta = """
-            INSERT INTO reservas (id_cancha, id_usuario, fecha_reserva, hora_inicio, hora_fin)
-            VALUES (%(id_cancha)s, %(id_usuario)s, %(fecha_reserva)s, %(hora_inicio)s, %(hora_fin)s);
+            INSERT INTO reservas (id_cancha,id_recinto, id_usuario, fecha_reserva, hora_inicio, hora_fin)
+            VALUES (%(id_cancha)s, %(id_recinto)s, %(id_usuario)s, %(fecha_reserva)s, %(hora_inicio)s, %(hora_fin)s);
             """
             return connectToMySQL(BASE_DATOS).query_db(consulta, datos)
         except Exception as e:

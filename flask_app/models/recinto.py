@@ -37,10 +37,10 @@ class Recinto:
         INSERT INTO recintos (nombre, direccion, id_localidad) 
         VALUES (%(nombre)s, %(direccion)s, %(id_localidad)s);
         """
-        logging.info(f"Datos enviados para guardar recinto: {data}")
+        logging.debug(f"Datos enviados para guardar recinto: {data}")
         try:
             resultado = connectToMySQL(DATABASE).query_db(query, data)
-            logging.info(f"Resultado de la consulta: {resultado}")
+            logging.debug(f"Resultado de la consulta: {resultado}")
             return resultado
         except Exception as e:
             logging.error(f"Error al guardar recinto: {e}")
@@ -52,8 +52,8 @@ class Recinto:
         data = {'id_recinto': id_recinto}
         try:
             resultado = connectToMySQL(DATABASE).query_db(query, data)
-            logging.info(f"Datos enviados para obtener recinto por id_recinto: {data}")
-            logging.info(f"Resultado de la consulta: {resultado}")
+            logging.debug(f"Datos enviados para obtener recinto por id_recinto: {data}")
+            logging.debug(f"Resultado de la consulta: {resultado}")
             if resultado:
                 return cls(resultado[0])  # Crear un objeto Recinto con el primer resultado
         except Exception as e:
@@ -82,8 +82,8 @@ class Recinto:
         data = {'id_recinto': id_recinto}
         try:
             resultado = connectToMySQL(DATABASE).query_db(query, data)
-            logging.info(f"Datos enviados para obtener canchas por id_recinto: {data}")
-            logging.info(f"Resultado de la consulta: {resultado}")
+            logging.debug(f"Datos enviados para obtener canchas por id_recinto: {data}")
+            logging.debug(f"Resultado de la consulta: {resultado}")
             if resultado:
                 canchas = []
                 for cancha in resultado:

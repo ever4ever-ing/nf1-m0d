@@ -48,7 +48,7 @@ def dashboard():
     
     # Utilizamos get_partidos_by_localidad tanto para todos como para un filtro específico
     # Este método ya maneja correctamente el caso de id_localidad = 0
-    print(f"Filtrando partidos por localidad ID: {id_localidad}")
+    #print(f"Filtrando partidos por localidad ID: {id_localidad}")
     partidos_filtrados = Partido.get_partidos_by_localidad(id_localidad)
     partidos = agregar_participantes(partidos_filtrados)
         

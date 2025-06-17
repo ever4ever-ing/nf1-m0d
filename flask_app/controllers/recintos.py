@@ -64,6 +64,8 @@ def registrar_recinto():
 @app.route('/agendar_recinto/<int:id_recinto>/<int:id_partido>', methods=['GET'])
 @login_required
 def agendar_recinto(id_recinto,id_partido):
+
+    logging.info(f' id_recinto: {id_recinto}, id_partido{id_partido}')
     # Obtener la fecha seleccionada desde los parámetros de la URL o usar la fecha actual
     fecha_seleccionada = request.args.get('fecha', datetime.now().strftime('%Y-%m-%d'))
     try:

@@ -9,7 +9,7 @@ def agregar_participante():
         'id_partido': request.form['id_partido'],
         'id_usuario': request.form['id_usuario']
     }
-    print("Datos del formulario para AGREGAR PARTICIPANTE:", data)
+    #print("Datos del formulario para AGREGAR PARTICIPANTE:", data)
     Participante.agregar_participante(data)
     return redirect(url_for('editar_partido', id=data['id_partido']))
 
@@ -19,7 +19,7 @@ def eliminar_participante():
         'id_partido': request.form['id_partido_delete'], 
         'id_usuario': request.form['id_usuario_delete']
     }
-    print("Datos del formulario para ELIMINAR:", data)
+    #print("Datos del formulario para ELIMINAR:", data)
     Participante.eliminar_participante(data)
     return redirect(url_for('editar_partido', id=data['id_partido']))
 
@@ -29,7 +29,8 @@ def unirse():
         'id_partido': request.form['id_partido'],
         'id_usuario': request.form['id_usuario']
     }
-    print("Datos del formulario para UNIRSE:", data)
+    
+    #print("Datos del formulario para UNIRSE:", data)
     flash("Te has unido al partido", "success")
     Participante.agregar_participante(data)
     return redirect(url_for('dashboard'))

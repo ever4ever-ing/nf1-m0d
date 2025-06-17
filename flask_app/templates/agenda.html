@@ -182,8 +182,9 @@
                                                             onclick="return confirm('¿Estás seguro de cancelar esta reserva?')">Cancelar</button>
                                                     </form>
                                                     {% endif %}
-                                                    {% else %} <form method="POST"
-                                                        action="{{ url_for('reservar', id_cancha=cancha.id_cancha, id_partido=partido.id_partido) }}"
+                                                    {% else %}
+                                                    <form method="POST"
+                                                        action="{{ url_for('reservar', id_cancha=cancha.id_cancha, id_partido=partido.id_partido, id_recinto=id_recinto) }}"
                                                         class="d-inline">
                                                         <input type="hidden" name="fecha_reserva"
                                                             value="{{ fecha_seleccionada if fecha_seleccionada else '' }}">
