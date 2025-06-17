@@ -10,7 +10,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;500;600;700&display=swap">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;500;600;700&display=swap">
     <style>
         body {
             background-image: url('{{ url_for('static', filename='img/bg2.webp') }}');
@@ -19,16 +20,90 @@
             background-repeat: no-repeat;
             background-attachment: fixed;
         }
+
+        @media (max-width: 767.98px) {
+            body {
+                font-size: 0.8rem;
+                /* Reducir tamaño de fuente base para móviles */
+            }
+
+            .container-fluid {
+                padding-left: 5px !important;
+                /* Reducir padding izquierdo */
+                padding-right: 5px !important;
+                /* Reducir padding derecho */
+            }
+
+            .table th,
+            .table td {
+                padding: 0.3rem 0.2rem;
+                /* Reducir padding en celdas de tabla */
+            }
+
+            .btn-group-sm>.btn,
+            .btn-sm {
+                font-size: 0.7rem;
+                /* Reducir tamaño de fuente en botones pequeños */
+                padding: 0.15rem 0.3rem;
+                /* Reducir padding en botones pequeños */
+            }
+
+            .section-header h3 {
+                font-size: 1rem !important;
+                /* Ajustar tamaño de títulos de sección */
+            }
+
+            .filter-container .form-label {
+                font-size: 0.75rem;
+                /* Ajustar tamaño de etiquetas en filtros */
+            }
+
+            .filter-container .form-select-sm {
+                font-size: 0.75rem;
+                /* Ajustar tamaño de select en filtros */
+            }
+        }
+
+        /* Estilos para Tabletas */
+        @media (min-width: 768px) and (max-width: 991.98px) {
+            body {
+                font-size: 0.9rem;
+                /* Tamaño de fuente base para tabletas */
+            }
+
+            .container-fluid {
+                padding-left: 10px !important;
+                padding-right: 10px !important;
+            }
+
+            .table th,
+            .table td {
+                padding: 0.4rem 0.3rem;
+                /* Padding en celdas de tabla para tabletas */
+            }
+
+            .btn-group-sm>.btn,
+            .btn-sm {
+                font-size: 0.8rem;
+                /* Tamaño de fuente en botones pequeños para tabletas */
+                padding: 0.2rem 0.4rem;
+                /* Padding en botones pequeños para tabletas */
+            }
+
+            .section-header h3 {
+                font-size: 1.1rem !important;
+                /* Tamaño de títulos de sección para tabletas */
+            }
+        }
     </style>
 </head>
 
 <body id="dashboard">
-    <div class="container-fluid py-3 d-flex flex-column align-items-center ">
+    <div class="container-fluid d-flex flex-column align-items-center ">
         <!-- Navbar actualizado según la estructura proporcionada -->
         <nav class="navbar navbar-expand-lg bg-primary  w-100 justify-content-center" data-bs-theme="dark">
             <div class="container-fluid justify-content-center">
-                <img src="{{ url_for('static', filename='img/futbol.png') }}" alt="NosFalta1" width="30"
-                    class="me-2">
+                <img src="{{ url_for('static', filename='img/futbol.png') }}" alt="NosFalta1" width="30" class="me-2">
 
                 <a class="navbar-brand mx-auto" href="#">NosFalta1</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor01"
@@ -80,19 +155,21 @@
         </div>
         {% endif %}
         {% endwith %} <!-- Sección de filtros -->
-        <div class="section-header py-1 mb-2 w-75 justify-content-center bg-primary bg-opacity-25">
+        <div class="section-header py-1 mb-2 w-100 justify-content-center bg-primary bg-opacity-25">
             <h3 class="section-title mb-0 text-white text-center w-100  " style="font-size:1.01rem; font-weight:500;">
                 <i class="fas fa-filter card-icon text-white mb-2 "></i> Filtrar Partidos
             </h3>
             <div class="filter-container p-2 mb-0 w-100 bg-primary bg-opacity-75  text-white shadow-sm border ">
-                <form id="filterForm" method="GET" action="{{ url_for('dashboard') }}" class="row justify-content-center align-items-center g-2">
+                <form id="filterForm" method="GET" action="{{ url_for('dashboard') }}"
+                    class="row justify-content-center align-items-center g-2">
                     <div class="col-auto d-flex align-items-center">
                         <label for="id_localidad" class="form-label mb-0 me-2">Localidad:</label>
                         <select class="form-select form-select-sm" id="id_localidad" name="id_localidad">
                             <option value="0">Todas las localidades</option>
                             {% if localidades %}
                             {% for localidad in localidades %}
-                            <option value="{{ localidad.id_localidad }}" {% if id_localidad==localidad.id_localidad %}selected{% endif %}>{{ localidad.nombre }}</option>
+                            <option value="{{ localidad.id_localidad }}" {% if id_localidad==localidad.id_localidad
+                                %}selected{% endif %}>{{ localidad.nombre }}</option>
                             {% endfor %}
                             {% endif %}
                         </select>
@@ -107,21 +184,20 @@
                     </div>
                 </form>
             </div>
-        </div>        <!-- Mis Partidos -->
-        <div class="section-header py-1 mb-2 w-75 bg-primary bg-opacity-75">
+        </div> <!-- Mis Partidos -->
+        <div class="section-header py-1 mb-2 w-100 bg-primary bg-opacity-75">
             <h3 class="section-title mb-0 text-white text-center w-100">
                 <i class="fas fa-futbol me-2"></i>Mis Partidos
             </h3>
         </div>
-        <div class="w-75 mb-3">
+        <div class="w-100 mb-3 p-2">
             <div class="table-responsive">
                 <table class="table table-hover table-sm align-middle">
                     <thead class="table-light">
                         <tr>
-                            <th>Lugar</th>
-                            <th>Estado Reserva</th>
+                            <th class="d-none d-md-table-cell">Estado Reserva</th>
                             <th>Fecha</th>
-                            <th>Hora</th>
+                            <th class="d-none d-md-table-cell">Hora</th>
                             <th class="text-center">Jugadores</th>
                             <th class="text-center">Acciones</th>
                         </tr>
@@ -129,20 +205,21 @@
                     <tbody>
                         {% for partido in mis_partidos %}
                         <tr>
-                            <td>{{ partido.lugar }}</td>
-                            <td>
+                            <td class="d-none d-md-table-cell">
                                 {% if partido.id_reserva %}
-                                    <span class="badge bg-success"><i class="fas fa-check-circle me-1"></i>Cancha reservada</span>
-                                    {% if partido.reserva_info %}
-                                        <small class="d-block text-muted">{{ partido.reserva_info.recinto_nombre }}</small>
-                                        <small class="d-block text-muted">{{ partido.reserva_info.cancha_nombre }}</small>
-                                    {% endif %}
+                                <span class="badge bg-success"><i class="fas fa-check-circle me-1"></i>Cancha
+                                    reservada</span>
+                                {% if partido.reserva_info %}
+                                <small class="d-block text-muted">{{ partido.reserva_info.recinto_nombre }}</small>
+                                <small class="d-block text-muted">{{ partido.reserva_info.cancha_nombre }}</small>
+                                {% endif %}
                                 {% else %}
-                                    <span class="badge bg-danger"><i class="fas fa-exclamation-circle me-1"></i>Sin cancha</span>
+                                <span class="badge bg-danger"><i class="fas fa-exclamation-circle me-1"></i>Sin
+                                    cancha</span>
                                 {% endif %}
                             </td>
                             <td>{{ partido.fecha_inicio.strftime('%d/%m/%Y') }}</td>
-                            <td>{{ partido.fecha_inicio.strftime('%H:%M') }}</td>
+                            <td class="d-none d-md-table-cell">{{ partido.fecha_inicio.strftime('%H:%M') }}</td>
                             <td class="text-center">{{ partido.participantes | length }}</td>
                             <td class="text-center">
                                 <div class="btn-group btn-group-sm" role="group">
@@ -165,7 +242,7 @@
                         </tr>
                         {% else %}
                         <tr>
-                            <td colspan="6" class="text-center">
+                            <td colspan="5" class="text-center">
                                 <div class="alert alert-info d-inline-block my-3">
                                     <i class="fas fa-info-circle me-2"></i>No tienes partidos registrados.
                                     <a href="{{ url_for('nuevo_partido') }}" class="alert-link">¡Organiza uno nuevo!</a>
@@ -176,24 +253,23 @@
                     </tbody>
                 </table>
             </div>
-        </div>     
+        </div>
         <!-- Partidos disponibles -->
-        <div class="section-header py-1 mb-2 w-75 bg-primary bg-opacity-75">
+        <div class="section-header py-1 mb-2 w-100 bg-primary bg-opacity-75">
             <h3 class="section-title mb-0 text-white text-center w-100">
                 <i class="fas fa-search me-2"></i>Partidos Disponibles
             </h3>
         </div>
 
-        <div class="w-75 mb-3">
+        <div class="w-100 mb-3 p-2">
             <div class="table-responsive">
                 <table class="table table-hover table-sm align-middle">
                     <thead class="table-light">
                         <tr>
-                            <th>Lugar</th>
-                            <th>Estado Reserva</th>
+                            <th class="d-none d-md-table-cell">Estado Reserva</th>
                             <th>Fecha</th>
-                            <th>Hora</th>
-                            <th>Organizador</th>
+                            <th class="d-none d-md-table-cell">Hora</th>
+                            <th class="d-none d-md-table-cell">Organizador</th>
                             <th class="text-center">Jugadores</th>
                             <th class="text-center">Acciones</th>
                         </tr>
@@ -201,21 +277,22 @@
                     <tbody>
                         {% for partido in partidos %}
                         <tr>
-                            <td>{{ partido.lugar }}</td>
-                            <td>
+                            <td class="d-none d-md-table-cell">
                                 {% if partido.id_reserva %}
-                                    <span class="badge bg-success"><i class="fas fa-check-circle me-1"></i>Cancha reservada</span>
-                                    {% if partido.reserva_info %}
-                                        <small class="d-block text-muted">{{ partido.reserva_info.recinto_nombre }}</small>
-                                        <small class="d-block text-muted">{{ partido.reserva_info.cancha_nombre }}</small>
-                                    {% endif %}
+                                <span class="badge bg-success"><i class="fas fa-check-circle me-1"></i>Cancha
+                                    reservada</span>
+                                {% if partido.reserva_info %}
+                                <small class="d-block text-muted">{{ partido.reserva_info.recinto_nombre }}</small>
+                                <small class="d-block text-muted">{{ partido.reserva_info.cancha_nombre }}</small>
+                                {% endif %}
                                 {% else %}
-                                    <span class="badge bg-danger"><i class="fas fa-exclamation-circle me-1"></i>Sin cancha</span>
+                                <span class="badge bg-danger"><i class="fas fa-exclamation-circle me-1"></i>Sin
+                                    cancha</span>
                                 {% endif %}
                             </td>
                             <td>{{ partido.fecha_inicio.strftime('%d/%m/%Y') }}</td>
-                            <td>{{ partido.fecha_inicio.strftime('%H:%M') }}</td>
-                            <td>{{ partido.organizador }}</td>
+                            <td class="d-none d-md-table-cell">{{ partido.fecha_inicio.strftime('%H:%M') }}</td>
+                            <td class="d-none d-md-table-cell">{{ partido.organizador }}</td>
                             <td class="text-center">{{ partido.participantes | length }}</td>
                             <td class="text-center">
                                 <div class="btn-group btn-group-sm" role="group">
@@ -224,33 +301,35 @@
                                     </a>
                                     {% set ya_unido = false %}
                                     {% for p in partido.participantes %}
-                                        {% if p.id_usuario == session.usuario_id %}
-                                            {% set ya_unido = true %}
-                                        {% endif %}
+                                    {% if p.id_usuario == session.usuario_id %}
+                                    {% set ya_unido = true %}
+                                    {% endif %}
                                     {% endfor %}
 
                                     {% if not ya_unido %}
-                                        <form action="{{ url_for('unirse') }}" method="POST" class="d-inline">
-                                            <input type="hidden" name="id_partido" value="{{ partido.id_partido }}">
-                                            <input type="hidden" name="id_usuario" value="{{ session.usuario_id }}">
-                                            <button type="submit" class="btn btn-success">
-                                                <i class="fas fa-user-plus"></i> <span class="d-none d-md-inline">Unirse</span>
-                                            </button>
-                                        </form>
-                                    {% else %}
-                                        <button type="button" class="btn btn-secondary disabled">
-                                            <i class="fas fa-check"></i> <span class="d-none d-md-inline">Ya unido</span>
+                                    <form action="{{ url_for('unirse') }}" method="POST" class="d-inline">
+                                        <input type="hidden" name="id_partido" value="{{ partido.id_partido }}">
+                                        <input type="hidden" name="id_usuario" value="{{ session.usuario_id }}">
+                                        <button type="submit" class="btn btn-success">
+                                            <i class="fas fa-user-plus"></i> <span
+                                                class="d-none d-md-inline">Unirse</span>
                                         </button>
+                                    </form>
+                                    {% else %}
+                                    <button type="button" class="btn btn-secondary disabled">
+                                        <i class="fas fa-check"></i> <span class="d-none d-md-inline">Ya unido</span>
+                                    </button>
                                     {% endif %}
                                 </div>
                             </td>
                         </tr>
                         {% else %}
                         <tr>
-                            <td colspan="8" class="text-center">
+                            <td colspan="7" class="text-center">
                                 <div class="alert alert-info d-inline-block my-3">
                                     {% if id_localidad != 0 %}
-                                    <i class="fas fa-info-circle me-2"></i>No hay partidos disponibles en la localidad seleccionada.
+                                    <i class="fas fa-info-circle me-2"></i>No hay partidos disponibles en la localidad
+                                    seleccionada.
                                     <a href="{{ url_for('dashboard') }}" class="alert-link">Ver todos los partidos</a>
                                     {% else %}
                                     <i class="fas fa-info-circle me-2"></i>No hay partidos disponibles actualmente.
