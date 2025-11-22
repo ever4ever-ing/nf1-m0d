@@ -45,31 +45,27 @@ def reservar(id_cancha, id_partido):
             flash('El partido no existe', 'danger')
             return redirect('/dashboard')
 
-        # Preparar datos para actualizar el partido con la fecha y hora de la reserva
-        data_partido = {
-            'id_partido': partido_obj.id_partido,
-            'fecha_inicio': f"{fecha_reserva} {hora_inicio}",  # Actualizar con fecha y hora de la reserva
-            'descripcion': partido_obj.descripcion,  # Mantener la descripción original del partido
-            'id_localidad': partido_obj.id_localidad
-        }
-
         # Validar y guardar reserva
         if Reserva.validar_reserva(datos_reserva):
             # Guardar la reserva y obtener el ID
             id_reserva = Reserva.guardar(datos_reserva)
 
             if id_reserva:
-                # Actualizar el ID de reserva en los datos del partido
-                # Corregir: usar el ID de reserva real
-                data_partido['id_reserva'] = id_reserva
-                #print("ID RESERVA:", id_reserva)
-                # Actualizar el partido y guardar el resultado en una variable diferente
-
+                # Preparar datos para actualizar el partido con la reserva
+                data_partido = {
+                    'id_partido': partido_obj.id_partido,
+                    'fecha_inicio': f"{fecha_reserva} {hora_inicio}",  # Sincronizar con fecha y hora de la reserva
+                    'id_reserva': id_reserva
+                }
+                
+                logging.info(f"Actualizando partido {partido_obj.id_partido} con reserva {id_reserva}")
+                
+                # Actualizar el partido
                 resultado_actualizacion = Partido.actualizar(data_partido)
                 if resultado_actualizacion:
-                    flash('Partido actualizado exitosamente', 'success')
+                    flash(f'¡Reserva confirmada! Cancha reservada para el {fecha_reserva} de {hora_inicio} a {hora_fin}', 'success')
                 else:
-                    flash('Error al actualizar el partido', 'danger')
+                    flash('Reserva creada pero hubo un error al actualizar el partido', 'warning')
 
                 return redirect(url_for('dashboard'))
             else:

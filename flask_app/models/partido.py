@@ -29,20 +29,33 @@ class Partido:
     @classmethod
     def get_all(cls):
         query = """
-            SELECT v.*, u.nombre as organizador 
+            SELECT v.*, u.nombre as organizador,
+                   r.fecha_reserva, r.hora_inicio as reserva_hora_inicio, r.hora_fin as reserva_hora_fin,
+                   c.nombre as cancha_nombre, rec.nombre as recinto_nombre
             FROM partidos v
             JOIN usuarios u ON v.id_organizador = u.id_usuario
+            LEFT JOIN reservas r ON v.id_reserva = r.id_reserva
+            LEFT JOIN canchas c ON r.id_cancha = c.id_cancha
+            LEFT JOIN recintos rec ON r.id_recinto = rec.id_recinto
             ORDER BY v.fecha_inicio;
         """
         resultado = connectToMySQL(DATABASE).query_db(query)
         partidos = []
         if resultado:
-            for partido in resultado:
-                # cls.get_participantes_partidos({'id_partido': partido['id_partido']})
-                # print("Participantes:************ \n",type(participante.Participante.obtener_participantes_por_partido(partido['id_partido'])))
-                cls(partido).participantes = participante.Participante.obtener_participantes_por_partido(
-                    partido['id_partido'])
-        partidos.append(cls(partido))
+            for partido_data in resultado:
+                partido_obj = cls(partido_data)
+                partido_obj.participantes = participante.Participante.obtener_participantes_por_partido(
+                    partido_data['id_partido'])
+                # Agregar información de la reserva si existe
+                if partido_data.get('fecha_reserva'):
+                    partido_obj.reserva_info = {
+                        'fecha_reserva': partido_data['fecha_reserva'],
+                        'hora_inicio': partido_data['reserva_hora_inicio'],
+                        'hora_fin': partido_data['reserva_hora_fin'],
+                        'cancha_nombre': partido_data['cancha_nombre'],
+                        'recinto_nombre': partido_data['recinto_nombre']
+                    }
+                partidos.append(partido_obj)
         return partidos
         
     @classmethod
@@ -69,16 +82,31 @@ class Partido:
     @classmethod
     def obtener_por_id(cls, id_partido):
         query = """
-            SELECT p.*, u.nombre as organizador
+            SELECT p.*, u.nombre as organizador,
+                   r.fecha_reserva, r.hora_inicio as reserva_hora_inicio, r.hora_fin as reserva_hora_fin,
+                   c.nombre as cancha_nombre, rec.nombre as recinto_nombre
             FROM partidos p
             JOIN usuarios u ON p.id_organizador = u.id_usuario
+            LEFT JOIN reservas r ON p.id_reserva = r.id_reserva
+            LEFT JOIN canchas c ON r.id_cancha = c.id_cancha
+            LEFT JOIN recintos rec ON r.id_recinto = rec.id_recinto
             WHERE p.id_partido = %(id_partido)s;
         """
         data = {'id_partido': id_partido}
         results = connectToMySQL(DATABASE).query_db(query, data)
-        #print("Obtener por id")
-        #print(results)
-        return cls(results[0]) if results else None
+        if results:
+            partido = cls(results[0])
+            # Agregar información de la reserva si existe
+            if results[0].get('fecha_reserva'):
+                partido.reserva_info = {
+                    'fecha_reserva': results[0]['fecha_reserva'],
+                    'hora_inicio': results[0]['reserva_hora_inicio'],
+                    'hora_fin': results[0]['reserva_hora_fin'],
+                    'cancha_nombre': results[0]['cancha_nombre'],
+                    'recinto_nombre': results[0]['recinto_nombre']
+                }
+            return partido
+        return None
 
     @classmethod
     def crear(cls, data):
@@ -121,23 +149,34 @@ class Partido:
 
     @classmethod
     def actualizar(cls, data):
-        query = """
+        # Construir query dinámicamente basado en campos presentes
+        campos_actualizar = []
+        
+        if 'fecha_inicio' in data:
+            campos_actualizar.append("fecha_inicio = %(fecha_inicio)s")
+        if 'descripcion' in data:
+            campos_actualizar.append("descripcion = %(descripcion)s")
+        if 'max_jugadores' in data:
+            campos_actualizar.append("max_jugadores = %(max_jugadores)s")
+        if 'id_reserva' in data:
+            campos_actualizar.append("id_reserva = %(id_reserva)s")
+        
+        if not campos_actualizar:
+            logging.warning("No hay campos para actualizar")
+            return False
+        
+        query = f"""
             UPDATE partidos 
-            SET
-                fecha_inicio = %(fecha_inicio)s,
-                descripcion = %(descripcion)s,
-                max_jugadores = %(max_jugadores)s,
-                id_reserva = %(id_reserva)s
+            SET {', '.join(campos_actualizar)}
             WHERE id_partido = %(id_partido)s;
         """
 
         try:
             resultado = connectToMySQL(DATABASE).query_db(query, data)
-            # Para operaciones UPDATE, normalmente solo necesitamos saber si se ejecutó sin errores
-            # Un resultado None usualmente significa "éxito sin datos para devolver"
+            logging.info(f"Partido {data['id_partido']} actualizado exitosamente")
             return True
         except Exception as e:
-            #print(f"Error al actualizar partido: {e}")
+            logging.error(f"Error al actualizar partido: {e}")
             return False
 
     @classmethod
@@ -191,9 +230,14 @@ class Partido:
     @classmethod
     def obtener_por_organizador(cls, id_organizador):
         query = """
-            SELECT v.*, u.nombre as organizador 
+            SELECT v.*, u.nombre as organizador,
+                   r.fecha_reserva, r.hora_inicio as reserva_hora_inicio, r.hora_fin as reserva_hora_fin,
+                   c.nombre as cancha_nombre, rec.nombre as recinto_nombre
             FROM partidos v
             JOIN usuarios u ON v.id_organizador = u.id_usuario
+            LEFT JOIN reservas r ON v.id_reserva = r.id_reserva
+            LEFT JOIN canchas c ON r.id_cancha = c.id_cancha
+            LEFT JOIN recintos rec ON r.id_recinto = rec.id_recinto
             WHERE v.id_organizador = %(id_organizador)s
             ORDER BY v.fecha_inicio;
         """
@@ -202,7 +246,17 @@ class Partido:
         partidos = []
         if results:
             for row in results:
-                partidos.append(cls(row))
+                partido_obj = cls(row)
+                # Agregar información de la reserva si existe
+                if row.get('fecha_reserva'):
+                    partido_obj.reserva_info = {
+                        'fecha_reserva': row['fecha_reserva'],
+                        'hora_inicio': row['reserva_hora_inicio'],
+                        'hora_fin': row['reserva_hora_fin'],
+                        'cancha_nombre': row['cancha_nombre'],
+                        'recinto_nombre': row['recinto_nombre']
+                    }
+                partidos.append(partido_obj)
         return partidos
 
     # Método para validar los datos del partido
@@ -274,20 +328,30 @@ class Partido:
         # Si id_localidad es 0 o None, mostrar todos los partidos de todas las localidades
         if id_localidad == 0 or id_localidad is None:
             query = """
-                SELECT p.*, u.nombre as organizador, l.nombre as localidad_nombre
+                SELECT p.*, u.nombre as organizador, l.nombre as localidad_nombre,
+                       r.fecha_reserva, r.hora_inicio as reserva_hora_inicio, r.hora_fin as reserva_hora_fin,
+                       c.nombre as cancha_nombre, rec.nombre as recinto_nombre
                 FROM partidos p
                 JOIN usuarios u ON p.id_organizador = u.id_usuario
                 LEFT JOIN localidades l ON p.id_localidad = l.id_localidad
+                LEFT JOIN reservas r ON p.id_reserva = r.id_reserva
+                LEFT JOIN canchas c ON r.id_cancha = c.id_cancha
+                LEFT JOIN recintos rec ON r.id_recinto = rec.id_recinto
                 ORDER BY p.fecha_inicio;
             """
             data = {}
             logging.debug("Mostrando TODOS los partidos de TODAS las localidades")
         else:
             query = """
-                SELECT p.*, u.nombre as organizador, l.nombre as localidad_nombre
+                SELECT p.*, u.nombre as organizador, l.nombre as localidad_nombre,
+                       r.fecha_reserva, r.hora_inicio as reserva_hora_inicio, r.hora_fin as reserva_hora_fin,
+                       c.nombre as cancha_nombre, rec.nombre as recinto_nombre
                 FROM partidos p
                 JOIN usuarios u ON p.id_organizador = u.id_usuario
                 LEFT JOIN localidades l ON p.id_localidad = l.id_localidad
+                LEFT JOIN reservas r ON p.id_reserva = r.id_reserva
+                LEFT JOIN canchas c ON r.id_cancha = c.id_cancha
+                LEFT JOIN recintos rec ON r.id_recinto = rec.id_recinto
                 WHERE p.id_localidad = %(id_localidad)s
                 ORDER BY p.fecha_inicio;
             """
@@ -305,6 +369,15 @@ class Partido:
                 partido = cls(row)
                 # Añadimos los participantes a cada partido
                 partido.participantes = cls.obtener_participantes(partido.id_partido)
+                # Agregar información de la reserva si existe
+                if row.get('fecha_reserva'):
+                    partido.reserva_info = {
+                        'fecha_reserva': row['fecha_reserva'],
+                        'hora_inicio': row['reserva_hora_inicio'],
+                        'hora_fin': row['reserva_hora_fin'],
+                        'cancha_nombre': row['cancha_nombre'],
+                        'recinto_nombre': row['recinto_nombre']
+                    }
                 partidos.append(partido)
         else:
             logging.debug("No se encontraron partidos con los criterios de búsqueda")
