@@ -122,6 +122,18 @@
                         <div>
                             <a href="{{ url_for('nuevo_partido') }}" class="btn btn-success btn-sm mr-4">Organizar</a>
                         </div>
+                        <!-- Notificaciones -->
+                        <div class="ms-2 position-relative">
+                            <a href="{{ url_for('ver_notificaciones') }}" class="btn btn-outline-light btn-sm position-relative">
+                                <i class="fas fa-bell"></i>
+                                {% if notificaciones_count > 0 %}
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                    {{ notificaciones_count }}
+                                    <span class="visually-hidden">notificaciones no leídas</span>
+                                </span>
+                                {% endif %}
+                            </a>
+                        </div>
                         <ul class="navbar-nav me-auto">
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button"

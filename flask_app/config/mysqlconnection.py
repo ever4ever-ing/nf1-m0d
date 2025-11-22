@@ -7,11 +7,11 @@ env_file = os.getenv('.env')  # Por defecto, carga .env
 load_dotenv(dotenv_path=env_file)
 
 # Asegurarse de que las variables de entorno estén configuradas
-DB_HOST = os.getenv('MYSQLHOST')
-DB_USER = os.getenv('MYSQLUSER')
-DB_PASSWORD = os.getenv('MYSQL_ROOT_PASSWORD')
-DATABASE = os.getenv('MYSQL_DATABASE')
-DB_PORT = os.getenv('MYSQLPORT')
+DB_HOST = os.getenv('MYSQLHOST', 'localhost')
+DB_USER = os.getenv('MYSQLUSER', 'root')
+DB_PASSWORD = os.getenv('MYSQL_ROOT_PASSWORD', '')
+DATABASE = os.getenv('MYSQL_DATABASE', 'nf1')
+DB_PORT = os.getenv('MYSQLPORT', '3306')
 
 # Configuración de logging según variable de entorno
 log_level = os.getenv("LOG_LEVEL", "INFO").upper()

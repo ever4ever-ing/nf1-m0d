@@ -5,6 +5,7 @@ from flask_app.models.participante import Participante
 from flask_app.models.partido import Partido
 from flask_app.models.recinto import Recinto
 from flask_app.models.usuario import Usuario
+from flask_app.models.notificacion import Notificacion
 from datetime import datetime
 from flask_app import app
 
@@ -170,6 +171,14 @@ def unirse_partido(id_partido):
 
     # Intentar agregar al participante
     if Participante.agregar_participante(datos_participante):
+        # Crear notificación
+        usuario = Usuario.get_by_id(session['usuario_id'])
+        if usuario:
+            Notificacion.notificar_union_partido(
+                id_partido,
+                session['usuario_id'],
+                usuario.nombre
+            )
         flash("¡Te has unido al partido exitosamente!", "success")
     else:
         flash("Hubo un error al intentar unirte al partido.", "error")
@@ -187,8 +196,18 @@ def salir_partido(id_partido):
         'id_usuario': session['usuario_id']
     }
 
+    # Obtener info del usuario antes de salir
+    usuario = Usuario.get_by_id(session['usuario_id'])
+
     # Asumiendo que tienes un método Participante.eliminar_participacion(datos)
     if Participante.eliminar_participacion(datos_eliminar): # Necesitarás crear este método
+        # Crear notificación de salida
+        if usuario:
+            Notificacion.notificar_salida_partido(
+                id_partido,
+                session['usuario_id'],
+                usuario.nombre
+            )
         flash("Has salido del partido.", "success")
     else:
         flash("Error al intentar salir del partido.", "error")

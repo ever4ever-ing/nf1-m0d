@@ -27,6 +27,12 @@ class Participante:
         logging.debug("Eliminando participante:")
         logging.debug(query)
         return connectToMySQL(DATABASE).query_db(query, data)
+    
+    @classmethod
+    def eliminar_participacion(cls, data):
+        """Alias para eliminar_participante para consistencia"""
+        return cls.eliminar_participante(data)
+    
     @classmethod
     def verificar_participante(cls, id_partido, id_usuario):
         query = """

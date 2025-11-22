@@ -4,6 +4,7 @@ from flask_app.models.usuario import Usuario
 from flask_app.models.partido import Partido
 from flask_app.models.localidad import Localidad
 from flask_app.models.partido import Partido
+from flask_app.models.notificacion import Notificacion
 from datetime import date
 from functools import wraps
 
@@ -51,6 +52,9 @@ def dashboard():
     #print(f"Filtrando partidos por localidad ID: {id_localidad}")
     partidos_filtrados = Partido.get_partidos_by_localidad(id_localidad)
     partidos = agregar_participantes(partidos_filtrados)
+    
+    # Obtener notificaciones no leídas
+    notificaciones_count = Notificacion.contar_no_leidas(session['usuario_id'])
         
     return render_template(
         "dashboard.html",
@@ -58,7 +62,8 @@ def dashboard():
         partidos=partidos,
         localidades=localidades,
         id_localidad=id_localidad,
-        usuario_id=session['usuario_id']
+        usuario_id=session['usuario_id'],
+        notificaciones_count=notificaciones_count
     )
 
 
