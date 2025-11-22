@@ -38,7 +38,7 @@ class Participante:
             'id_usuario': id_usuario
         }
         result = connectToMySQL(DATABASE).query_db(query, data)
-        return result != None
+        return result is not None and len(result) > 0
 
     @classmethod
     def obtener_participantes_por_partido(cls, id_partido):

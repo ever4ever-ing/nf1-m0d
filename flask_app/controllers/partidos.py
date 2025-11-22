@@ -163,19 +163,13 @@ def unirse_partido(id_partido):
         # como 'estado_confirmacion', 'fecha_union', etc.
     }
 
-    # Verificar si el usuario ya está unido (opcional, pero buena práctica)
-    # Esto dependerá de cómo tengas implementado Participante.obtener_participantes_por_partido
-    # o si tienes un método específico como Participante.ya_es_participante(datos_participante)
-    
-    # Ejemplo de verificación (necesitarás adaptar esto a tus modelos):
-    participantes_actuales = Participante.obtener_participantes_por_partido(id_partido)
-    if any(p['id_usuario'] == session['usuario_id'] for p in participantes_actuales):
+    # Verificar si el usuario ya está unido
+    if Participante.verificar_participante(id_partido, session['usuario_id']):
         flash("Ya estás unido a este partido.", "info")
         return redirect(url_for('ver_partido', id=id_partido))
 
     # Intentar agregar al participante
-    # Asumiendo que tienes un método Participante.agregar(datos) o similar
-    if Participante.agregar(datos_participante): # Necesitarás crear este método en tu modelo Participante
+    if Participante.agregar_participante(datos_participante):
         flash("¡Te has unido al partido exitosamente!", "success")
     else:
         flash("Hubo un error al intentar unirte al partido.", "error")

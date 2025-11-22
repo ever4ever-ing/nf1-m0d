@@ -9,8 +9,15 @@ def agregar_participante():
         'id_partido': request.form['id_partido'],
         'id_usuario': request.form['id_usuario']
     }
+    
+    # Verificar si el usuario ya está en el partido
+    if Participante.verificar_participante(data['id_partido'], data['id_usuario']):
+        flash("Este usuario ya está en el partido", "warning")
+        return redirect(url_for('editar_partido', id=data['id_partido']))
+    
     #print("Datos del formulario para AGREGAR PARTICIPANTE:", data)
     Participante.agregar_participante(data)
+    flash("Participante agregado exitosamente", "success")
     return redirect(url_for('editar_partido', id=data['id_partido']))
 
 @app.route('/eliminar_participante', methods=['POST'])
@@ -30,9 +37,14 @@ def unirse():
         'id_usuario': request.form['id_usuario']
     }
     
+    # Verificar si el usuario ya está en el partido
+    if Participante.verificar_participante(data['id_partido'], data['id_usuario']):
+        flash("Ya estás unido a este partido", "info")
+        return redirect(url_for('dashboard'))
+    
     #print("Datos del formulario para UNIRSE:", data)
-    flash("Te has unido al partido", "success")
     Participante.agregar_participante(data)
+    flash("Te has unido al partido", "success")
     return redirect(url_for('dashboard'))
     
 
