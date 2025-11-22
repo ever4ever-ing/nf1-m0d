@@ -2,9 +2,13 @@ from flask_app.config.mysqlconnection import connectToMySQL, DB_HOST, DB_USER, D
 from flask import flash
 import re
 
+import os
+from dotenv import load_dotenv
+load_dotenv()
+DATABASE = os.getenv('MYSQL_DATABASE')
+
 EMAIL_REGEX = re.compile(r'^[a-zA-Z0-9.+_-]+@[a-zA-Z0-9._-]+\.[a-zA-Z]+$')
 NOMBRE_REGEX = re.compile(r'^[a-zA-Z\s]+$')
-DATABASE = 'nosfalta1'
 
 class Usuario:
     def __init__(self, data):
@@ -42,10 +46,10 @@ class Usuario:
 
     @classmethod
     def get_by_id(cls, id_usuario):
-        query = "SELECT * FROM usuarios WHERE id = %(id_usuario)s;"
-        resultado = connectToMySQL(DATABASE).query_db(query, {'id': id})
+        query = "SELECT * FROM usuarios WHERE id_usuario = %(id_usuario)s;"
+        resultado = connectToMySQL(DATABASE).query_db(query, {'id_usuario': id_usuario})
         if not resultado:
-            return False
+            return None
         return cls(resultado[0])
 
     @staticmethod

@@ -4,6 +4,11 @@ import re
 import os
 from flask_app.config.mysqlconnection import connectToMySQL, DB_HOST, DB_USER, DB_PASSWORD, DATABASE
 
+import os
+from dotenv import load_dotenv
+load_dotenv()
+DATABASE = os.getenv('MYSQL_DATABASE')
+
 class Recinto:
     def __init__(self, data):
         self.id_recinto = data.get('id_recinto')  # Usa get para evitar KeyError

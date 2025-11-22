@@ -1,5 +1,5 @@
-CREATE DATABASE IF NOT EXISTS nosfalta1;
-USE nosfalta1;
+CREATE DATABASE IF NOT EXISTS nf1;
+USE nf1;
 
 -- Tabla de usuarios
 CREATE TABLE usuarios (
@@ -104,7 +104,7 @@ CREATE TABLE reservas (
 CREATE TABLE partidos (
     id_partido INT PRIMARY KEY AUTO_INCREMENT,
     lugar VARCHAR(100) NOT NULL,
-    fecha_inicio DATETIME NOT NULL,
+    fecha_inicio DATETIME,
     descripcion TEXT,
     id_organizador INT NOT NULL,
     id_localidad BIGINT UNSIGNED NOT NULL,

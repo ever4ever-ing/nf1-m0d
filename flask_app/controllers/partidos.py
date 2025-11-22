@@ -20,11 +20,17 @@ def nuevo_partido():
     
     if request.method == 'POST':
         # Crear diccionario con los datos del formulario
+        id_organizador = session.get('usuario_id')
+        # Validar que el organizador existe en la base de datos
+        organizador = Usuario.get_by_id(id_organizador)
+        if not organizador:
+            flash('El organizador no existe. Debes iniciar sesión con un usuario válido.', 'error')
+            return redirect(url_for('login'))
         data = {
-            'id_organizador': session['usuario_id'],
+            'id_organizador': id_organizador,
             'id_localidad': request.form['id_localidad'],
-            'fecha_inicio': request.form['fechaInicio'],
-            'descripcion': request.form['descripcion'],
+            'fecha_inicio': request.form.get('fechaInicio', None),  # Opcional
+            'descripcion': request.form.get('descripcion', '')  # Opcional, valor por defecto vacío
         }
 
         # Validar los datos
@@ -109,11 +115,23 @@ def actualizar_partido():
     if 'usuario_id' not in session:
         return redirect('/login')
     
+    # Combinar fecha y hora si ambos están presentes
+    fecha_inicio = None
+    fecha_input = request.form.get('fechaInicio')
+    hora_input = request.form.get('horaInicio')
+    
+    if fecha_input and hora_input:
+        # Combinar fecha y hora
+        fecha_inicio = f"{fecha_input} {hora_input}:00"
+    elif fecha_input:
+        # Solo fecha, asignar hora por defecto
+        fecha_inicio = f"{fecha_input} 00:00:00"
+    
     datos = {
         "id_partido": request.form['id'],
         'id_localidad': request.form['id_localidad'],
-        "fecha_inicio": request.form['fechaInicio'],
-        "descripcion": request.form['descripcion'],
+        "fecha_inicio": fecha_inicio,
+        "descripcion": request.form.get('descripcion', ''),
         "participantes": Participante.obtener_participantes_por_partido(request.form['id'])
     }
     #print("********ACTUALIZANDO********")

@@ -1,6 +1,9 @@
 from flask_app.config.mysqlconnection import connectToMySQL, DB_HOST, DB_USER, DB_PASSWORD, DATABASE
 import logging
-
+import os
+from dotenv import load_dotenv
+load_dotenv()
+DATABASE = os.getenv('MYSQL_DATABASE')
 class Participante:
     def __init__(self, data):
         self.id_participante = data['id_participante']

@@ -2,7 +2,10 @@ import logging
 from flask_app.models import participante
 import os
 from flask_app.config.mysqlconnection import connectToMySQL, DB_HOST, DB_USER, DB_PASSWORD, DATABASE
-
+import os
+from dotenv import load_dotenv
+load_dotenv()
+DATABASE = os.getenv('MYSQL_DATABASE')
 
 log_level = os.getenv("LOG_LEVEL", "INFO").upper()
 logging.basicConfig(level=getattr(logging, log_level, logging.INFO))

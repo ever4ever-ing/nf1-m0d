@@ -14,7 +14,7 @@ def reservar(id_cancha, id_partido):
     # Configure logging for debug data
 
     logging.info(f"Reserva solicitada para cancha ID: {id_cancha}, partido ID: {id_partido}")
-    logging.info(f"Método de solicitud: {request.method}")
+    logging.debug(f"Método de solicitud: {request.method}")
     logging.info(f"Datos de sesión: {session}")
     if 'usuario_id' not in session:
         flash('Debe iniciar sesión para realizar una reserva', 'warning')
@@ -45,16 +45,12 @@ def reservar(id_cancha, id_partido):
             flash('El partido no existe', 'danger')
             return redirect('/dashboard')
 
-        # Preparar datos para actualizar el partido
+        # Preparar datos para actualizar el partido con la fecha y hora de la reserva
         data_partido = {
             'id_partido': partido_obj.id_partido,
-            'fecha_inicio': fecha_reserva + ' ' + hora_inicio,
-            'descripcion': 'Reserva de cancha',
-            'id_organizador': session['usuario_id'],
-            # Usar el objeto partido_obj, no la clase
-            'id_localidad': partido_obj.id_localidad,
-            'fecha_creacion': datetime.now(),
-            'fecha_actualizacion': datetime.now()
+            'fecha_inicio': f"{fecha_reserva} {hora_inicio}",  # Actualizar con fecha y hora de la reserva
+            'descripcion': partido_obj.descripcion,  # Mantener la descripción original del partido
+            'id_localidad': partido_obj.id_localidad
         }
 
         # Validar y guardar reserva

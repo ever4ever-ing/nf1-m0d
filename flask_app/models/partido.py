@@ -2,13 +2,18 @@
 import logging
 from flask_app.models import participante
 from flask_app.models.localidad import Localidad
+from flask_app.models.reserva import Reserva
 from flask_app.config.mysqlconnection import connectToMySQL, DB_HOST, DB_USER, DB_PASSWORD, DATABASE
 
+import os
+from dotenv import load_dotenv
+load_dotenv()
+DATABASE = os.getenv('MYSQL_DATABASE')
 class Partido:
     def __init__(self, data):
         self.id_partido = data['id_partido']
         self.lugar = data.get('lugar', None)  # Usar .get para evitar KeyError
-        self.fecha_inicio = data['fecha_inicio']
+        self.fecha_inicio = data.get('fecha_inicio', None)  # Usar .get para permitir NULL
         self.descripcion = data['descripcion']
         self.id_organizador = data['id_organizador']
         # Usar .get para evitar KeyError
@@ -76,6 +81,7 @@ class Partido:
 
     @classmethod
     def crear(cls, data):
+        # Obtener el nombre de la localidad
         lugar = Localidad.obtener_por_id(data['id_localidad'])
         if lugar:
             logging.debug(f"Localidad encontrada: {lugar.nombre}")
@@ -84,6 +90,17 @@ class Partido:
             logging.error(
                 f"partido.py En crear: No se encontró localidad con id {data['id_localidad']}")
             data['lugar'] = None
+        
+        # Asegurar que fecha_inicio esté en data, aunque sea None
+        if 'fecha_inicio' not in data or not data['fecha_inicio']:
+            data['fecha_inicio'] = None
+            logging.debug("fecha_inicio no proporcionada, se establecerá como NULL")
+        
+        # Asegurar que descripcion esté en data, aunque sea vacía
+        if 'descripcion' not in data or not data['descripcion']:
+            data['descripcion'] = ''
+            logging.debug("descripcion no proporcionada, se establecerá como cadena vacía")
+        
         query = """
             INSERT INTO partidos (lugar, fecha_inicio, descripcion, id_organizador, id_localidad)
             VALUES (%(lugar)s, %(fecha_inicio)s, %(descripcion)s, %(id_organizador)s, %(id_localidad)s);
@@ -118,12 +135,51 @@ class Partido:
 
     @classmethod
     def eliminar(cls, id_partido):
-        query1 = "DELETE FROM participantes_partido WHERE id_partido = %(id_partido)s;"
-        query2 = "DELETE FROM partidos WHERE id_partido = %(id_partido)s;"
-        data = {'id_partido': id_partido}
-        connectToMySQL(DATABASE).query_db(query1, data)
-        connectToMySQL(DATABASE).query_db(query2, data)
-        return True
+        """
+        Elimina un partido y todos sus datos relacionados (reserva y participantes)
+        
+        Parameters:
+            id_partido (int): ID del partido a eliminar
+            
+        Returns:
+            bool: True si se eliminó correctamente, False en caso contrario
+        """
+        try:
+            data = {'id_partido': id_partido}
+            
+            # Primero, obtener el id_reserva del partido (si existe)
+            query_get_reserva = "SELECT id_reserva FROM partidos WHERE id_partido = %(id_partido)s;"
+            resultado = connectToMySQL(DATABASE).query_db(query_get_reserva, data)
+            
+            # Si existe una reserva asociada, eliminarla ANTES de eliminar el partido
+            if resultado and resultado[0]['id_reserva']:
+                id_reserva = resultado[0]['id_reserva']
+                logging.info(f"Partido {id_partido} tiene reserva asociada: {id_reserva}")
+                
+                # Usar el método eliminar de la clase Reserva
+                if Reserva.eliminar(id_reserva):
+                    logging.info(f"✓ Reserva {id_reserva} eliminada exitosamente")
+                else:
+                    logging.error(f"✗ Error al eliminar reserva {id_reserva}")
+                    # Continuar con la eliminación del partido aunque falle la reserva
+            else:
+                logging.info(f"Partido {id_partido} no tiene reserva asociada")
+            
+            # Eliminar participantes del partido
+            query1 = "DELETE FROM participantes_partido WHERE id_partido = %(id_partido)s;"
+            connectToMySQL(DATABASE).query_db(query1, data)
+            logging.info(f"✓ Participantes del partido {id_partido} eliminados")
+            
+            # Finalmente, eliminar el partido
+            query2 = "DELETE FROM partidos WHERE id_partido = %(id_partido)s;"
+            connectToMySQL(DATABASE).query_db(query2, data)
+            
+            logging.info(f"✓ Partido {id_partido} eliminado exitosamente")
+            return True
+            
+        except Exception as e:
+            logging.error(f"✗ Error al eliminar partido {id_partido}: {str(e)}")
+            return False
 
     @classmethod
     def obtener_por_organizador(cls, id_organizador):
@@ -147,11 +203,17 @@ class Partido:
     def validar_partido(data):
         errores = []
 
-        if not data['fecha_inicio']:
-            errores.append("La fecha de inicio es obligatoria")
+        # fecha_inicio ya no es obligatoria
+        # if not data['fecha_inicio']:
+        #     errores.append("La fecha de inicio es obligatoria")
 
-        if not data['descripcion']:
-            errores.append("La descripcion es obligatorio")
+        # descripcion ya no es obligatoria
+        # if not data['descripcion']:
+        #     errores.append("La descripcion es obligatorio")
+        
+        # Validar que id_localidad esté presente y sea válido
+        if not data.get('id_localidad'):
+            errores.append("La localidad es obligatoria")
 
         return errores
 

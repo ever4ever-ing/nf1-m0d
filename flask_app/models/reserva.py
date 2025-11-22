@@ -1,10 +1,14 @@
 import logging
-from flask_app.config.mysqlconnection import connectToMySQL, DB_HOST, DB_USER, DB_PASSWORD, DATABASE
+from flask_app.config.mysqlconnection import connectToMySQL, DB_HOST, DB_USER, DB_PASSWORD
 from flask import flash, jsonify
 from datetime import datetime, timedelta
 
 from flask_app.models.cancha import Cancha
-BASE_DATOS = 'nosfalta1'
+
+import os
+from dotenv import load_dotenv
+load_dotenv()
+DATABASE = os.getenv('MYSQL_DATABASE')
 
 class Reserva:
     def __init__(self, datos):
@@ -20,7 +24,7 @@ class Reserva:
     @classmethod
     def obtener_todas(cls):
         consulta = "SELECT * FROM reservas;"
-        resultados = connectToMySQL(BASE_DATOS).query_db(consulta)
+        resultados = connectToMySQL(DATABASE).query_db(consulta)
         reservas = []
         for reserva in resultados:
             reservas.append(cls(reserva))
@@ -33,7 +37,7 @@ class Reserva:
             INSERT INTO reservas (id_cancha,id_recinto, id_usuario, fecha_reserva, hora_inicio, hora_fin)
             VALUES (%(id_cancha)s, %(id_recinto)s, %(id_usuario)s, %(fecha_reserva)s, %(hora_inicio)s, %(hora_fin)s);
             """
-            return connectToMySQL(BASE_DATOS).query_db(consulta, datos)
+            return connectToMySQL(DATABASE).query_db(consulta, datos)
         except Exception as e:
             logging.error(f"Error al guardar reserva: {str(e)}")
             flash(f"Error al guardar la reserva. Por favor, contacte al administrador.", "danger")
@@ -81,7 +85,7 @@ class Reserva:
             OR (hora_fin = %(hora_fin)s)
         );
         """
-        resultado = connectToMySQL(BASE_DATOS).query_db(consulta, datos)
+        resultado = connectToMySQL(DATABASE).query_db(consulta, datos)
         if resultado:
             flash('La cancha ya está reservada en este horario', 'danger')
             return False
@@ -125,7 +129,7 @@ class Reserva:
         consulta += " ORDER BY r.id_cancha, r.hora_inicio;"
         
         # Ejecutar consulta
-        resultados = connectToMySQL(BASE_DATOS).query_db(consulta, params)
+        resultados = connectToMySQL(DATABASE).query_db(consulta, params)
         
         # Organizar resultados por cancha
         reservas_por_cancha = {id_cancha: [] for id_cancha in ids_canchas}
@@ -176,7 +180,7 @@ class Reserva:
         datos = {
             'fecha': fecha.strftime('%Y-%m-%d')
         }
-        resultados = connectToMySQL(BASE_DATOS).query_db(consulta, datos)
+        resultados = connectToMySQL(DATABASE).query_db(consulta, datos)
         reservas = {}
         for resultado in resultados:
             try:
@@ -198,7 +202,7 @@ class Reserva:
     @classmethod
     def obtener_por_id(cls, id_reserva):
         consulta = "SELECT * FROM reservas WHERE id_reserva = %(id_reserva)s;"
-        resultado = connectToMySQL(BASE_DATOS).query_db(consulta, {'id_reserva': id_reserva})
+        resultado = connectToMySQL(DATABASE).query_db(consulta, {'id_reserva': id_reserva})
         if resultado:
             return cls(resultado[0])
         return None
@@ -212,7 +216,7 @@ class Reserva:
         WHERE r.id_usuario = %(id_usuario)s
         ORDER BY r.fecha_reserva DESC, r.hora_inicio;
         """
-        resultados = connectToMySQL(BASE_DATOS).query_db(consulta, {'id_usuario': id_usuario})
+        resultados = connectToMySQL(DATABASE).query_db(consulta, {'id_usuario': id_usuario})
         reservas = []
         for fila in resultados:
             reserva = cls(fila)
@@ -223,5 +227,20 @@ class Reserva:
 
     @classmethod
     def eliminar(cls, id_reserva):
-        consulta = "DELETE FROM reservas WHERE id_reserva = %(id_reserva)s;"
-        return connectToMySQL(BASE_DATOS).query_db(consulta, {'id_reserva': id_reserva})
+        """
+        Elimina una reserva de la base de datos
+        
+        Parameters:
+            id_reserva (int): ID de la reserva a eliminar
+            
+        Returns:
+            bool: True si se eliminó correctamente, False en caso contrario
+        """
+        try:
+            consulta = "DELETE FROM reservas WHERE id_reserva = %(id_reserva)s;"
+            resultado = connectToMySQL(DATABASE).query_db(consulta, {'id_reserva': id_reserva})
+            logging.info(f"Reserva {id_reserva} eliminada exitosamente de la base de datos")
+            return True
+        except Exception as e:
+            logging.error(f"Error al eliminar reserva {id_reserva}: {str(e)}")
+            return False

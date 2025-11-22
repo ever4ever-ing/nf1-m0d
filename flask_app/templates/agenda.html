@@ -107,12 +107,12 @@
                                     {% if reserva.id_usuario == session.usuario_id %}
                                     <div>
                                         <span class="badge bg-primary">Tu reserva</span>
-                                        <form method="POST"
+                                        <!-- <form method="POST"
                                             action="{{ url_for('eliminar_reserva', id_reserva=reserva.id_reserva) }}"
                                             class="d-inline">
                                             <button type="submit" class="btn btn-sm btn-danger"
                                                 onclick="return confirm('¿Estás seguro de cancelar esta reserva?')">Cancelar</button>
-                                        </form>
+                                        </form> -->
                                     </div>
                                     {% endif %}
                                 </li>

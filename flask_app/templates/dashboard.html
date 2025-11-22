@@ -218,8 +218,8 @@
                                     cancha</span>
                                 {% endif %}
                             </td>
-                            <td>{{ partido.fecha_inicio.strftime('%d/%m/%Y') }}</td>
-                            <td class="d-none d-md-table-cell">{{ partido.fecha_inicio.strftime('%H:%M') }}</td>
+                            <td>{% if partido.fecha_inicio %}{{ partido.fecha_inicio.strftime('%d/%m/%Y') }}{% else %}<span class="text-muted">Sin fecha</span>{% endif %}</td>
+                            <td class="d-none d-md-table-cell">{% if partido.fecha_inicio %}{{ partido.fecha_inicio.strftime('%H:%M') }}{% else %}<span class="text-muted">-</span>{% endif %}</td>
                             <td class="text-center">{{ partido.participantes | length }}</td>
                             <td class="text-center">
                                 <div class="btn-group btn-group-sm" role="group">
@@ -290,8 +290,8 @@
                                     cancha</span>
                                 {% endif %}
                             </td>
-                            <td>{{ partido.fecha_inicio.strftime('%d/%m/%Y') }}</td>
-                            <td class="d-none d-md-table-cell">{{ partido.fecha_inicio.strftime('%H:%M') }}</td>
+                            <td>{% if partido.fecha_inicio %}{{ partido.fecha_inicio.strftime('%d/%m/%Y') }}{% else %}<span class="text-muted">Sin fecha</span>{% endif %}</td>
+                            <td class="d-none d-md-table-cell">{% if partido.fecha_inicio %}{{ partido.fecha_inicio.strftime('%H:%M') }}{% else %}<span class="text-muted">-</span>{% endif %}</td>
                             <td class="d-none d-md-table-cell">{{ partido.organizador }}</td>
                             <td class="text-center">{{ partido.participantes | length }}</td>
                             <td class="text-center">

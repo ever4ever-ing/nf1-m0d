@@ -133,21 +133,21 @@
 
                 <div class="row mb-3">
                     <div class="col-md-6 mb-2 mb-md-0">
-                        <label for="fechaInicio" class="form-label">Fecha</label>
+                        <label for="fechaInicio" class="form-label">Fecha </label>
                         <input type="date" id="fechaInicio" name="fechaInicio" class="form-control"
-                            value="{{ partido.fecha_inicio.strftime('%Y-%m-%d') }}" required>
+                            value="{% if partido.fecha_inicio %}{{ partido.fecha_inicio.strftime('%Y-%m-%d') }}{% endif %}">
                     </div>
                     <div class="col-md-6">
                         <label for="horaInicio" class="form-label">Hora de Inicio</label>
                         <input type="time" id="horaInicio" name="horaInicio" class="form-control"
-                            value="{{ partido.fecha_inicio.strftime('%H:%M') }}" required>
+                            value="{% if partido.fecha_inicio %}{{ partido.fecha_inicio.strftime('%H:%M') }}{% endif %}">
                     </div>
                 </div>
 
                 <div class="mb-3">
-                    <label for="descripcion" class="form-label">Descripción</label>
-                    <textarea id="descripcion" name="descripcion" class="form-control" rows="3"
-                        required>{{ partido.descripcion }}</textarea>
+                    <label for="descripcion" class="form-label">Descripción (Opcional)</label>
+                    <textarea id="descripcion" name="descripcion" class="form-control" rows="3" 
+                        placeholder="Añade detalles sobre el partido...">{{ partido.descripcion if partido.descripcion else '' }}</textarea>
                 </div>
 
                 <div class="d-flex justify-content-between">

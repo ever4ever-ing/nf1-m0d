@@ -1,5 +1,8 @@
 from flask_app.config.mysqlconnection import connectToMySQL, DB_HOST, DB_USER, DB_PASSWORD, DATABASE
-
+import os
+from dotenv import load_dotenv
+load_dotenv()
+DATABASE = os.getenv('MYSQL_DATABASE')
 class Cancha:
     def __init__(self, data):
         self.id_cancha = data['id_cancha']

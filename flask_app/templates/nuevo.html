@@ -51,16 +51,17 @@
                 </select>
             </div>
 
-            <div class="mb-3">
-                <label for="fechaInicio" class="form-label">Fecha y Hora de Inicio</label>
-                <input type="datetime-local" id="fechaInicio" name="fechaInicio" class="form-control" required
+            <!-- <div class="mb-3">
+                <label for="fechaInicio" class="form-label">Fecha y Hora de Inicio (Opcional)</label>
+                <input type="datetime-local" id="fechaInicio" name="fechaInicio" class="form-control" 
                     min="{{ today }}" value="{{ data.fecha_inicio if data else '' }}">
-            </div>
+                <small class="form-text text-muted">Puedes definir la fecha más tarde</small>
+            </div> -->
 
             <div class="mb-3">
-                <label for="descripcion" class="form-label">Descripción</label>
-                <textarea id="descripcion" name="descripcion" class="form-control" rows="4"
-                    required>{{ data.descripcion if data else '' }}</textarea>
+                <label for="descripcion" class="form-label">Descripción (Opcional)</label>
+                <textarea id="descripcion" name="descripcion" class="form-control" rows="4" 
+                    placeholder="Añade detalles sobre el partido...">{{ data.descripcion if data else '' }}</textarea>
             </div>
 
             <div class="d-flex justify-content-between">
