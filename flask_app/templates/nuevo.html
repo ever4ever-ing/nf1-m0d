@@ -59,6 +59,13 @@
             </div> -->
 
             <div class="mb-3">
+                <label for="max_jugadores" class="form-label">Número máximo de jugadores</label>
+                <input type="number" id="max_jugadores" name="max_jugadores" class="form-control" 
+                    min="2" max="50" value="{{ data.max_jugadores if data else '10' }}" required>
+                <small class="form-text text-muted">Máximo de jugadores permitidos (por defecto: 10)</small>
+            </div>
+
+            <div class="mb-3">
                 <label for="descripcion" class="form-label">Descripción (Opcional)</label>
                 <textarea id="descripcion" name="descripcion" class="form-control" rows="4" 
                     placeholder="Añade detalles sobre el partido...">{{ data.descripcion if data else '' }}</textarea>

@@ -220,7 +220,7 @@
                             </td>
                             <td>{% if partido.fecha_inicio %}{{ partido.fecha_inicio.strftime('%d/%m/%Y') }}{% else %}<span class="text-muted">Sin fecha</span>{% endif %}</td>
                             <td class="d-none d-md-table-cell">{% if partido.fecha_inicio %}{{ partido.fecha_inicio.strftime('%H:%M') }}{% else %}<span class="text-muted">-</span>{% endif %}</td>
-                            <td class="text-center">{{ partido.participantes | length }}</td>
+                            <td class="text-center">{{ partido.participantes | length }}/{{ partido.max_jugadores if partido.max_jugadores else 10 }}</td>
                             <td class="text-center">
                                 <div class="btn-group btn-group-sm" role="group">
                                     <a href="{{ url_for('ver_partido', id=partido.id_partido) }}" class="btn btn-info">
@@ -293,7 +293,7 @@
                             <td>{% if partido.fecha_inicio %}{{ partido.fecha_inicio.strftime('%d/%m/%Y') }}{% else %}<span class="text-muted">Sin fecha</span>{% endif %}</td>
                             <td class="d-none d-md-table-cell">{% if partido.fecha_inicio %}{{ partido.fecha_inicio.strftime('%H:%M') }}{% else %}<span class="text-muted">-</span>{% endif %}</td>
                             <td class="d-none d-md-table-cell">{{ partido.organizador }}</td>
-                            <td class="text-center">{{ partido.participantes | length }}</td>
+                            <td class="text-center">{{ partido.participantes | length }}/{{ partido.max_jugadores if partido.max_jugadores else 10 }}</td>
                             <td class="text-center">
                                 <div class="btn-group btn-group-sm" role="group">
                                     <a href="{{ url_for('ver_partido', id=partido.id_partido) }}" class="btn btn-info">
@@ -316,9 +316,9 @@
                                         </button>
                                     </form>
                                     {% else %}
-                                    <button type="button" class="btn btn-secondary disabled">
-                                        <i class="fas fa-check"></i> <span class="d-none d-md-inline">Ya unido</span>
-                                    </button>
+                                    <span class="badge bg-info">
+                                        <i class="fas fa-check-circle me-1"></i>Ya te has unido
+                                    </span>
                                     {% endif %}
                                 </div>
                             </td>

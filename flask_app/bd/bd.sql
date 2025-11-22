@@ -106,6 +106,7 @@ CREATE TABLE partidos (
     lugar VARCHAR(100) NOT NULL,
     fecha_inicio DATETIME,
     descripcion TEXT,
+    max_jugadores INT DEFAULT 10,
     id_organizador INT NOT NULL,
     id_localidad BIGINT UNSIGNED NOT NULL,
     id_reserva BIGINT UNSIGNED,

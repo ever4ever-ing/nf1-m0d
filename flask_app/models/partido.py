@@ -15,6 +15,7 @@ class Partido:
         self.lugar = data.get('lugar', None)  # Usar .get para evitar KeyError
         self.fecha_inicio = data.get('fecha_inicio', None)  # Usar .get para permitir NULL
         self.descripcion = data['descripcion']
+        self.max_jugadores = data.get('max_jugadores', 10)  # Valor por defecto 10
         self.id_organizador = data['id_organizador']
         # Usar .get para evitar KeyError
         self.id_localidad = data.get('id_localidad', None)
@@ -101,9 +102,14 @@ class Partido:
             data['descripcion'] = ''
             logging.debug("descripcion no proporcionada, se establecerá como cadena vacía")
         
+        # Asegurar que max_jugadores esté en data
+        if 'max_jugadores' not in data or not data['max_jugadores']:
+            data['max_jugadores'] = 10
+            logging.debug("max_jugadores no proporcionado, se establecerá como 10")
+        
         query = """
-            INSERT INTO partidos (lugar, fecha_inicio, descripcion, id_organizador, id_localidad)
-            VALUES (%(lugar)s, %(fecha_inicio)s, %(descripcion)s, %(id_organizador)s, %(id_localidad)s);
+            INSERT INTO partidos (lugar, fecha_inicio, descripcion, max_jugadores, id_organizador, id_localidad)
+            VALUES (%(lugar)s, %(fecha_inicio)s, %(descripcion)s, %(max_jugadores)s, %(id_organizador)s, %(id_localidad)s);
         """
         # Ejecutar la consulta y obtener el resultado
         resultado = connectToMySQL(DATABASE).query_db(query, data)
@@ -120,6 +126,7 @@ class Partido:
             SET
                 fecha_inicio = %(fecha_inicio)s,
                 descripcion = %(descripcion)s,
+                max_jugadores = %(max_jugadores)s,
                 id_reserva = %(id_reserva)s
             WHERE id_partido = %(id_partido)s;
         """

@@ -30,7 +30,8 @@ def nuevo_partido():
             'id_organizador': id_organizador,
             'id_localidad': request.form['id_localidad'],
             'fecha_inicio': request.form.get('fechaInicio', None),  # Opcional
-            'descripcion': request.form.get('descripcion', '')  # Opcional, valor por defecto vacío
+            'descripcion': request.form.get('descripcion', ''),  # Opcional, valor por defecto vacío
+            'max_jugadores': request.form.get('max_jugadores', 10)  # Opcional, valor por defecto 10
         }
 
         # Validar los datos
@@ -132,6 +133,7 @@ def actualizar_partido():
         'id_localidad': request.form['id_localidad'],
         "fecha_inicio": fecha_inicio,
         "descripcion": request.form.get('descripcion', ''),
+        "max_jugadores": request.form.get('max_jugadores', 10),
         "participantes": Participante.obtener_participantes_por_partido(request.form['id'])
     }
     #print("********ACTUALIZANDO********")
